@@ -1,13 +1,13 @@
 const grpc = require('grpc');
 
-/*
+/**
  *  @typedef {Object} ClientConfig
  *  @property {string} host - grpc host url
  *  @property {boolean} isSecure - grpc secure connection flag
  */
 class ClientConfig {
 
-  /*
+  /**
    * @constructor
    * @param {string} host
    * @param {boolean} isSecure
