@@ -1,0 +1,33 @@
+{
+  "name": "warp-js",
+  "version": "0.0.1",
+  "description": "warp protocol javascript sdk for client side",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evrynet-official/warp-js.git"
+  },
+  "keywords": [
+    "warp",
+    "bridge",
+    "stellar",
+    "evrynet"
+  ],
+  "author": "EvryNet Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/evrynet-official/warp-js/issues"
+  },
+  "homepage": "https://github.com/evrynet-official/warp-js#readme",
+  "dependencies": {
+    "@grpc/proto-loader": "^0.5.1",
+    "grpc": "^1.21.1",
+    "grpc-mock": "^0.6.0",
+    "mocha": "^6.1.4",
+    "stellar-base": "^1.0.2",
+    "stellar-sdk": "^1.0.4"
+  }
+}

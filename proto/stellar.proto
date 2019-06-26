@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package stellar;
+
+message GetNextSequenceNumberRequest {
+    string stellarAddress = 1;
+}
+
+message GetNextSequenceNumberResponse {
+    string sequenceNumber = 1;
+}
+
+service StellarService{
+    rpc GetNextSequenceNumber(GetNextSequenceNumberRequest) returns (stream GetNextSequenceNumberResponse);
+}
