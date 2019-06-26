@@ -22,7 +22,7 @@ const transfer_proto = packageDescriptor.transfer;
 
 var tc;
 
-/*
+/**
  * returns a Transfer client
  * @param{ClientConfig} config - grpc client configuration
  * @return {Transfer}
@@ -34,14 +34,14 @@ function getTransferClient(config) {
   return tc;
 }
 
-/*
+/**
  *  @typedef {Object} Transfer
  *  @property {ClientConfig} config - grpc client config
  *  @property {Object} client - grpc client for transfer
  */
 class Transfer {
 
-  /*
+  /**
    * @constructor
    * @param {ClientConfig} config
    */
@@ -73,7 +73,7 @@ class Transfer {
     );
   }
 
-  /*
+  /**
    * makes a move asset from stellar to evrynet request
    * @param {string} src - a sender's stellar secret which contains the target asset
    * @param {string} amount - amount of an asset to be transfered

@@ -21,7 +21,7 @@ const stellar_proto = packageDescriptor.stellar;
 
 var sc;
 
-/*
+/**
  * returns a Stellar client
  * @param {ClientConfig} config - grpc client configuration
  * @return {Stellar}
@@ -33,13 +33,13 @@ function getStellarClient(config) {
   return sc;
 }
 
-/*
+/**
  *  @typedef {Object} Stellar
  *  @property {Object} client - grpc client for stellar integration
  */
 class Stellar {
 
-  /*
+  /**
    * @constructor
    * @param {ClientConfig} config
    */
