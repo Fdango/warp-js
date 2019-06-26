@@ -6,7 +6,7 @@ const PROTO_PATH = __dirname + '/../proto/transfer.proto';
 
 const host = 'localhost:50052';
 
-describe('Transfer', function() {
+describe('Transfer', function () {
   let config = new cf(host);
   let client = getTransferClient(config);
   const mockServer = createMockServer({
@@ -19,22 +19,22 @@ describe('Transfer', function() {
         method: "ToEvrynet",
         streamType: "server",
         stream: [
-          { output: { stellarTxHash: "Foo", evrynetTxHash: "Bar" } },
+          {output: {stellarTxHash: "Foo", evrynetTxHash: "Bar"}},
         ],
-        input: { stellarXDR: "Foo", evrynetAccount : "Bar" }
+        input: {stellarXDR: "Foo", evrynetAccount: "Bar"}
       },
 
     ]
   });
   mockServer.listen(host);
 
-  it('should make a transfer request correctly', async function() {
+  it('should make a transfer request correctly', async function () {
     let res = await client.transfer("Foo", "Bar");
     assert(res.stellarTxHash == 'Foo');
     assert(res.evrynetTxHash == 'Bar');
   });
 
-  it('should fail to make a transfer request, invalid input', async function() {
+  it('should fail to make a transfer request, invalid input', async function () {
     try {
       await client.transfer("Bad", "Bad");
       assert.fail("it should fail");
@@ -44,8 +44,8 @@ describe('Transfer', function() {
     }
   });
 
-  after(function() {
-    mockServer.close(true);  
+  after(function () {
+    mockServer.close(true);
   });
 
 });

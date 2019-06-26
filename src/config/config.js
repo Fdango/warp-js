@@ -12,7 +12,7 @@ class ClientConfig {
    * @param {string} host
    * @param {boolean} isSecure
    */
-  constructor(host, isSecure){
+  constructor(host, isSecure) {
     this.host = host || 'localhost:8080';
     this.isSecure = isSecure || false;
   }
@@ -22,9 +22,9 @@ class ClientConfig {
   }
 
   getSecure() {
-    if(this.isSecure) {
+    if (this.isSecure) {
       return grpc.credentials.createSsl();
-    } 
+    }
     return grpc.credentials.createInsecure();
   }
 }
