@@ -4,7 +4,8 @@
   "description": "warp protocol javascript sdk for client side",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --require @babel/register",
+    "build": "babel src -d lib"
   },
   "repository": {
     "type": "git",
@@ -23,11 +24,21 @@
   },
   "homepage": "https://github.com/evrynet-official/warp-js#readme",
   "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/runtime": "^7.4.5",
     "@grpc/proto-loader": "^0.5.1",
+    "chai": "^4.2.0",
     "grpc": "^1.21.1",
     "grpc-mock": "^0.6.0",
     "mocha": "^6.1.4",
     "stellar-base": "^1.0.2",
     "stellar-sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/register": "^7.4.4",
+    "eslint": "^6.0.1"
   }
 }

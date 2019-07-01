@@ -1,11 +1,11 @@
-const grpc = require('grpc');
+import grpc from 'grpc';
 
 /**
  *  @typedef {Object} ClientConfig
  *  @property {string} host - grpc host url
  *  @property {boolean} isSecure - grpc secure connection flag
  */
-class ClientConfig {
+export default class ClientConfig {
 
   /**
    * @constructor
@@ -17,10 +17,16 @@ class ClientConfig {
     this.isSecure = isSecure || false;
   }
 
+  /**
+  *	Returns grpc client endpoint
+  **/
   getHost() {
     return this.host;
   }
 
+  /**
+  *	Returns grpc client's credentials
+  **/
   getSecure() {
     if (this.isSecure) {
       return grpc.credentials.createSsl();
@@ -29,4 +35,3 @@ class ClientConfig {
   }
 }
 
-module.exports = ClientConfig;

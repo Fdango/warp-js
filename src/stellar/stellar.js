@@ -1,10 +1,10 @@
-const grpc = require('grpc');
-const protoLoader = require('@grpc/proto-loader');
-const StellarSDK = require('stellar-sdk');
-const ClientConfig = require('../config/config.js');
+import grpc from 'grpc';
+import {loadSync} from '@grpc/proto-loader';
+import StellarSDK from 'stellar-sdk';
+import path from 'path';
 
-const PROTO_PATH = __dirname + '/../../proto/stellar.proto';
-const packageDefinition = protoLoader.loadSync(
+const PROTO_PATH = path.resolve() + '/proto/stellar.proto';
+const packageDefinition = loadSync(
   PROTO_PATH, {
     keepCase: true,
     longs: String,
@@ -19,11 +19,11 @@ const stellar_proto = packageDescriptor.stellar;
 var sc;
 
 /**
- * returns a Stellar client
+ * Returns a Stellar client
  * @param {ClientConfig} config - grpc client configuration
  * @return {Stellar}
  */
-function getStellarClient(config) {
+export function getStellarClient(config) {
   if (!sc) {
     sc = new Stellar(config);
   }
@@ -41,12 +41,13 @@ class Stellar {
    * @param {ClientConfig} config
    */
   constructor(config) {
+    StellarSDK.Network.useTestNetwork();
     this.client = new stellar_proto
-      .StellarService(config.getHost(), config.getSecure());;
+      .StellarService(config.getHost(), config.getSecure());
   }
 
   /**
-   * gets a next sequence number for a given address
+   * Returns a next sequence number for a given address
    * @param {string} address - stellar address to get a sequence number
    **/
   getSequenceNumber(address) {
@@ -64,7 +65,7 @@ class Stellar {
   }
 
   /**
-   * creates a payment operation XDR for given params
+   * Creates a payment operation XDR for given params
    * @param {string} src - a sender's stellar secret which contains the target asset
    * @param {string} amount - amount of an asset to be transfered
    * @param {StellarSDK.Asset} asset - stellar asset to be transfered
@@ -98,4 +99,3 @@ class Stellar {
   }
 }
 
-module.exports = {getStellarClient};
