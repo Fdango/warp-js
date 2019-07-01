@@ -19,7 +19,7 @@ var tc;
 
 /**
  * Returns a Transfer client
- * @param{ClientConfig} config - grpc client configuration
+ * @param {ClientConfig} config - grpc client configuration
  * @return {Transfer}
  */
 export function getTransferClient(config) {
