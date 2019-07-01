@@ -1,14 +1,16 @@
-const assert = require('assert');
-const {getStellarClient} = require('../src/stellar/stellar.js');
-const cf = require('../src/config/config.js');
-const StellarSDK = require('stellar-sdk');
-const {createMockServer} = require("grpc-mock");
-const PROTO_PATH = __dirname + '/../proto/stellar.proto';
+import assert from 'assert';
+import path from 'path';
 
+import StellarSDK from 'stellar-sdk';
+import {createMockServer} from 'grpc-mock';
+import {getStellarClient} from '../src/stellar/stellar.js';
+import ClientConfig from '../src/config/config.js';
+
+const PROTO_PATH = path.resolve() + '/proto/stellar.proto';
 const host = 'localhost:50051';
 
-describe('Stellar', function () {
-  let config = new cf(host);
+describe('Stellar', () => {
+  let config = new ClientConfig(host);
   let client = getStellarClient(config);
   let sender = 'SBYOQRUXJEMYTSCSBEXRSPX7EXLD3A6ZFUO5OCOU6D7TTLDO2NPBXL52';
   let senderpk = 'GDRB5MQNWBB6LJJE3XO7PGH4KK7WZJZKZ47ABUC5NVSHCZH7VCR4OGII';
@@ -34,12 +36,12 @@ describe('Stellar', function () {
   });
   mockServer.listen(host);
 
-  it('should get a stellar sequenceNumber correctly', async function () {
+  it('should get a stellar sequenceNumber correctly', async () => {
     let seq = await client.getSequenceNumber(senderpk);
     assert(seq.sequenceNumber == currentSeq);
   });
 
-  it('should fail to get a stellar sequenceNumber, invalid input', async function () {
+  it('should fail to get a stellar sequenceNumber, invalid input', async () => {
     try {
       await client.getSequenceNumber('Bad');
       assert.fail("it should fail");
@@ -49,7 +51,7 @@ describe('Stellar', function () {
     }
   });
 
-  it('should create a correct payment transaction', async function () {
+  it('should create a correct payment transaction', async () => {
     let amount = '100.0000000';
     let asset = StellarSDK.Asset.native();
 
@@ -83,7 +85,7 @@ describe('Stellar', function () {
     assert(true === kp.verify(tx.hash(), signatures[0].signature()));
   });
 
-  after(function () {
+  after(() => {
     mockServer.close(true);
   });
 

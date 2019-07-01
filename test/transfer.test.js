@@ -1,12 +1,14 @@
-const assert = require('assert');
-const {getTransferClient} = require('../src/transfer/transfer.js');
-const cf = require('../src/config/config.js');
-const {createMockServer} = require("grpc-mock");
-const PROTO_PATH = __dirname + '/../proto/transfer.proto';
+import assert from 'assert';
+import path from 'path';
 
+import {createMockServer} from "grpc-mock";
+import {getTransferClient} from '../src/transfer/transfer.js';
+import cf from '../src/config/config.js';
+
+const PROTO_PATH = path.resolve() + '/proto/transfer.proto';
 const host = 'localhost:50052';
 
-describe('Transfer', function () {
+describe('Transfer', () => {
   let config = new cf(host);
   let client = getTransferClient(config);
   const mockServer = createMockServer({
@@ -28,13 +30,13 @@ describe('Transfer', function () {
   });
   mockServer.listen(host);
 
-  it('should make a transfer request correctly', async function () {
+  it('should make a transfer request correctly', async () => {
     let res = await client.transfer("Foo", "Bar");
     assert(res.stellarTxHash == 'Foo');
     assert(res.evrynetTxHash == 'Bar');
   });
 
-  it('should fail to make a transfer request, invalid input', async function () {
+  it('should fail to make a transfer request, invalid input', async () => {
     try {
       await client.transfer("Bad", "Bad");
       assert.fail("it should fail");
@@ -44,7 +46,7 @@ describe('Transfer', function () {
     }
   });
 
-  after(function () {
+  after(() => {
     mockServer.close(true);
   });
 

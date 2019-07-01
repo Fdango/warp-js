@@ -1,12 +1,9 @@
-const grpc = require('grpc');
-const protoLoader = require('@grpc/proto-loader');
-const StellarSDK = require('stellar-sdk');
-const ClientConfig = require('../config/config.js');
+import grpc from 'grpc';
+import {loadSync} from '@grpc/proto-loader';
+import path from 'path';
 
-StellarSDK.Network.useTestNetwork();
-
-const PROTO_PATH = __dirname + '/../../proto/transfer.proto';
-const packageDefinition = protoLoader.loadSync(
+const PROTO_PATH = path.resolve() + '/proto/transfer.proto';
+const packageDefinition = loadSync(
   PROTO_PATH, {
     keepCase: true,
     longs: String,
@@ -21,11 +18,11 @@ const transfer_proto = packageDescriptor.transfer;
 var tc;
 
 /**
- * returns a Transfer client
- * @param{ClientConfig} config - grpc client configuration
+ * Returns a Transfer client
+ * @param {ClientConfig} config - grpc client configuration
  * @return {Transfer}
  */
-function getTransferClient(config) {
+export function getTransferClient(config) {
   if (!tc) {
     tc = new Transfer(config);
   }
@@ -45,12 +42,12 @@ class Transfer {
    */
   constructor(config) {
     this.client = new transfer_proto
-      .TransferService(config.getHost(), config.getSecure());
+      .TransferGRPC(config.getHost(), config.getSecure());
     this.config = config;
   }
 
   /**
-   *  transfers a stellar asset to the Evrynet chain
+   *  Transfers a stellar asset to the Evrynet chain
    *  @param {string} xdr - a stellar payment operation XDR
    *  @param {string} evrynetAddress - a recipient's Evrynet address
    **/
@@ -71,5 +68,3 @@ class Transfer {
     );
   }
 }
-
-module.exports = {getTransferClient};

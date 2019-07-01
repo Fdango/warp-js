@@ -1,9 +1,10 @@
-var {getStellarClient} = require('./src/stellar/stellar.js');
-var {getTransferClient} = require('./src/transfer/transfer.js');
-var config = require('./src/config/config.js');
+import {getStellarClient} from './stellar/stellar.js';
+import {getTransferClient} from './transfer/transfer.js';
+import config from './config/config.js';
+import asset from './asset/asset.js';
 
 /**
- * makes a move asset from stellar to evrynet request
+ * Makes a move asset from stellar to evrynet request
  * @param {string} src - a sender's stellar secret which contains the target asset
  * @param {string} amount - amount of an asset to be transfered
  * @param {StellarBase.Asset} asset - stellar asset to be transfered
@@ -21,4 +22,8 @@ async function ToEvrynet(src, amount, asset, evrynetAddress, config) {
   }
 }
 
-module.exports = {config, ToEvrynet, transfer}
+export default {
+  asset,
+  config,
+  ToEvrynet
+}

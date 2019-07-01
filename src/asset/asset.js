@@ -1,7 +1,12 @@
-const StellarSDK = require('stellar-sdk');
+import StellarSDK from 'stellar-sdk';
 
-module.exports = {
-  XLM: () => {
-    return StellarSDK.Asset.native();
-  },
+/**
+*	Returns XLM asset
+**/
+function XLM() {
+  return StellarSDK.Asset.native();
 }
+
+export default {
+  XLM
+};
