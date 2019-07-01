@@ -43,7 +43,7 @@ class Stellar {
   constructor(config) {
     StellarSDK.Network.useTestNetwork();
     this.client = new stellar_proto
-      .StellarService(config.getHost(), config.getSecure());
+      .StellarGRPC(config.getHost(), config.getSecure());
   }
 
   /**
@@ -53,7 +53,7 @@ class Stellar {
   getSequenceNumber(address) {
     return new Promise(
       (resolve, reject) => {
-        var chan = this.client.GetNextSequenceNumber({stellarAddress: address});
+        var chan = this.client.GetSequenceNumber({stellarAddress: address});
         chan.on('data', data => {
           resolve(data);
         });
@@ -83,7 +83,7 @@ class Stellar {
       })
         // add a payment operation to the transaction
         .addOperation(StellarSDK.Operation.payment({
-          destination: "GASOCNHNNLYFNMDJYQ3XFMI7BYHIOCFW3GJEOWRPEGK2TDPGTG2E5EDW",
+          destination: "GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ",
           asset: asset,
           amount: amount
         }))

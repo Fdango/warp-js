@@ -12,6 +12,6 @@ message ToEvrynetResponse {
     string evrynetTxHash = 2;
 }
 
-service TransferService {
+service TransferGRPC {
     rpc ToEvrynet (ToEvrynetRequest) returns (stream ToEvrynetResponse);
 }

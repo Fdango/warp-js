@@ -1,7 +1,7 @@
-import {getStellarClient} from './src/stellar/stellar.js';
-import {getTransferClient} from './src/transfer/transfer.js';
-import config from './src/config/config.js';
-import asset from './src/asset/asset.js';
+import {getStellarClient} from './stellar/stellar.js';
+import {getTransferClient} from './transfer/transfer.js';
+import config from './config/config.js';
+import asset from './asset/asset.js';
 
 /**
  * Makes a move asset from stellar to evrynet request

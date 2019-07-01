@@ -42,7 +42,7 @@ class Transfer {
    */
   constructor(config) {
     this.client = new transfer_proto
-      .TransferService(config.getHost(), config.getSecure());
+      .TransferGRPC(config.getHost(), config.getSecure());
     this.config = config;
   }
 

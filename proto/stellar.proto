@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package stellar;
 
-message GetNextSequenceNumberRequest {
+message GetSequenceNumberRequest {
     string stellarAddress = 1;
 }
 
-message GetNextSequenceNumberResponse {
+message GetSequenceNumberResponse {
     string sequenceNumber = 1;
 }
 
-service StellarService{
-    rpc GetNextSequenceNumber(GetNextSequenceNumberRequest) returns (stream GetNextSequenceNumberResponse);
+service StellarGRPC {
+    rpc GetSequenceNumber (GetSequenceNumberRequest) returns (stream GetSequenceNumberResponse);
 }
