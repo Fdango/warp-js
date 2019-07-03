@@ -1,8 +1,9 @@
 import path from 'path';
 
 import {createMockServer} from 'grpc-mock';
-import {getEvryClient} from '../src/evrynet/evrynet.js';
+import {getEvryClient, getWarpContract} from '../src/evrynet/evrynet.js';
 import ClientConfig from '../src/config/config.js';
+import asset from '../src/asset/asset.js';
 
 const PROTO_PATH = path.resolve() + '/proto/evrynet.proto';
 const host = 'localhost:50053';
@@ -10,7 +11,7 @@ const host = 'localhost:50053';
 describe('EvryNet', () => {
   var client;
   var mockServer;
-  let senderpk = "test";
+  let senderpk = "0x789CA41C61F599ee883eB604c7D616F458dfC606";
   let currentNonce = '1';
 
   beforeAll(() => {
@@ -48,5 +49,58 @@ describe('EvryNet', () => {
 
   it('should fail to get a stellar sequenceNumber, invalid input', async () => {
     await expect(client.getNonce('Bad')).rejects.toBeDefined();
+  });
+
+
+});
+
+describe('WarpContract', () => {
+  let senderpriv = "2ec3fa79b5abe6069df85f33f6ebc858b1b08f6ea5fb91713ea109098b59b2a0";
+  let xlm = asset.Lumens();
+  test('creating a new lock lumens raw tx', async () => {
+    let warp = getWarpContract();
+    let tx = await warp.newCreditLockTx(xlm, 10, senderpriv, '1');
+    expect(tx.validate()).toBeTruthy();
+
+    let rwtxHex = warp.txToHex(tx);
+    expect(rwtxHex).toBeDefined();
+
+  });
+
+  test('creating a new lock raw tx with in valid priv', async () => {
+    expect.assertions(1);
+    try {
+      await getWarpContract()
+        .newCreditLockTx(xlm, 10, 'badpriv', '1');
+    } catch (e) {
+      expect(e).toBeDefined();
+    }
+  });
+  test('creating a new lock raw tx with in valid asset', async () => {
+    expect.assertions(1);
+    try {
+      await getWarpContract()
+        .newCreditLockTx(null, 10, senderpriv, '1');
+    } catch (e) {
+      expect(e).toBeDefined();
+    }
+  });
+  test('creating a new lock raw tx with in valid amount (zero)', async () => {
+    expect.assertions(1);
+    try {
+      await getWarpContract()
+        .newCreditLockTx(xlm, 0, senderpriv, '1');
+    } catch (e) {
+      expect(e).toBeDefined();
+    }
+  });
+  test('creating a new lock raw tx with in valid amount (negative)', async () => {
+    expect.assertions(1);
+    try {
+      await getWarpContract()
+        .newCreditLockTx(xlm, -1, senderpriv, '1');
+    } catch (e) {
+      expect(e).toBeDefined();
+    }
   });
 });

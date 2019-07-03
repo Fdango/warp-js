@@ -28,6 +28,7 @@
     "@babel/runtime": "^7.4.5",
     "@grpc/proto-loader": "^0.5.1",
     "chai": "^4.2.0",
+    "ethereumjs-tx": "^2.0.0",
     "grpc": "^1.21.1",
     "grpc-mock": "^0.6.0",
     "stellar-base": "^1.0.2",
