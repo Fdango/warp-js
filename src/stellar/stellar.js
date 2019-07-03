@@ -31,8 +31,8 @@ export function getStellarClient(config) {
 }
 
 /**
- *  @typedef {Object} Stellar
- *  @property {Object} client - grpc client for stellar integration
+ * @typedef {Object} Stellar
+ * @property {Object} client - grpc client for stellar integration
  */
 class Stellar {
 
@@ -49,7 +49,7 @@ class Stellar {
   /**
    * Returns a next sequence number for a given address
    * @param {string} address - stellar address to get a sequence number
-   **/
+   */
   getSequenceNumber(address) {
     return new Promise(
       (resolve, reject) => {
@@ -69,7 +69,7 @@ class Stellar {
    * @param {string} src - a sender's stellar secret which contains the target asset
    * @param {string} amount - amount of an asset to be transfered
    * @param {StellarSDK.Asset} asset - stellar asset to be transfered
-   **/
+   */
   async createPayment(src, amount, asset) {
     let kp = StellarSDK.Keypair.fromSecret(src);
     let pk = kp.publicKey();
