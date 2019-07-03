@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package evrynet;
+
+message GetNonceRequest {
+    string evrynetAddress = 1;
+}
+
+message GetNonceResponse {
+    string nonce = 1;
+}
+
+service EvrynetGRPC {
+    rpc GetNonce(GetNonceRequest) returns (stream GetNonceResponse);
+}
