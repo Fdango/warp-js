@@ -4,7 +4,7 @@
   "description": "warp protocol javascript sdk for client side",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require @babel/register",
+    "test": "jest",
     "build": "babel src -d lib"
   },
   "repository": {
@@ -30,9 +30,9 @@
     "chai": "^4.2.0",
     "grpc": "^1.21.1",
     "grpc-mock": "^0.6.0",
-    "mocha": "^6.1.4",
     "stellar-base": "^1.0.2",
-    "stellar-sdk": "^1.0.4"
+    "stellar-sdk": "^1.0.4",
+    "web3": "^1.0.0-beta.55"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
@@ -40,6 +40,8 @@
     "@babel/node": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
-    "eslint": "^6.0.1"
+    "babel-jest": "^24.8.0",
+    "eslint": "^6.0.1",
+    "jest": "^24.8.0"
   }
 }

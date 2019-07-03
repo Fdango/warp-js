@@ -1,10 +1,9 @@
-import assert from 'assert';
 import asset from '../src/asset/asset.js';
 
 describe('Asset', () => {
-  it('should returns XLM asset', () => {
+  it('should returns a valid XLM asset', () => {
     let xlm = asset.XLM();
-    assert(xlm.code === 'XLM');
-    assert(xlm.issuer === undefined);
+    expect(xlm.code).toBe('XLM');
+    expect(xlm.issuer).toBeUndefined();
   });
 });
