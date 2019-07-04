@@ -78,6 +78,26 @@ class Evrynet {
       }
     );
   }
+
+  /**
+   * Returns a nonce for a given address
+   * @param {string} priv - evrynet private key to get a nonce
+   */
+  getNonceFromPriv(priv) {
+    return new Promise(
+      (resolve, reject) => {
+        let account = web3.eth.accounts.privateKeyToAccount(priv);
+        console.log(account.address)
+        var chan = this.client.GetNonce({evrynetAddress: account.address});
+        chan.on('data', data => {
+          resolve(data);
+        });
+        chan.on('error', err => {
+          reject(err);
+        });
+      }
+    );
+  }
 }
 
 /**
@@ -86,17 +106,12 @@ class Evrynet {
 class WarpContract {
 
   constructor(contractAddr) {
-    this.warp = this.newWarpContract(contractAddr);
+    this.warp = this._newWarpContract(contractAddr);
   }
 
-  /**
-     * Creates a new warp contract instance
-     * @param {string} contractAddr
-     * @return {Object} warp contract
-     */
-  newWarpContract(contractAddr) {
+  _newWarpContract(contractAddr) {
     let abiPath = path.resolve();
-    let abi = fs.readFileSync(abiPath + "/abi/abi.json");
+    let abi = fs.readFileSync(abiPath + "/abi/warpABI.json");
     return new web3.eth.Contract(JSON.parse(abi), contractAddr);
   }
 

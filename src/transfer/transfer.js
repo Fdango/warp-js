@@ -51,12 +51,34 @@ class Transfer {
    *  @param {string} xdr - a stellar payment operation XDR
    *  @param {string} evrynetAddress - a recipient's Evrynet address
    **/
-  transfer(xdr, evrynetAddress) {
+  ToEvrynet(xdr, evrynetAddress) {
     return new Promise(
       (resolve, reject) => {
         let chan = this.client.ToEvrynet({
           stellarXDR: xdr,
           evrynetAccount: evrynetAddress,
+        });
+        chan.on('data', data => {
+          resolve(data);
+        });
+        chan.on('error', err => {
+          reject(err);
+        });
+      }
+    );
+  }
+
+  /**
+     *  Transfers a stellar asset to the Evrynet chain
+     *  @param {string} xdr - a stellar payment operation XDR
+     *  @param {string} evrynetAddress - a recipient's Evrynet address
+     **/
+  ToStellar(evRawTx, stXDR) {
+    return new Promise(
+      (resolve, reject) => {
+        let chan = this.client.ToStellar({
+          evrynetRawTx: evRawTx,
+          stellarXDR: stXDR,
         });
         chan.on('data', data => {
           resolve(data);

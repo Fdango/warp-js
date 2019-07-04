@@ -12,6 +12,17 @@ message ToEvrynetResponse {
     string evrynetTxHash = 2;
 }
 
+message ToStellarRequest {
+    string evrynetRawTx = 1;
+    string stellarXDR = 2;
+}
+
+message ToStellarResponse {
+    string stellarTxHash = 1;
+    string evrynetTxHash = 2;
+}
+
 service TransferGRPC {
     rpc ToEvrynet (ToEvrynetRequest) returns (stream ToEvrynetResponse);
+    rpc ToStellar (ToStellarRequest) returns (stream ToStellarResponse);
 }
