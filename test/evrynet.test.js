@@ -55,16 +55,15 @@ describe('EvryNet', () => {
 });
 
 describe('WarpContract', () => {
-  let senderpriv = "2ec3fa79b5abe6069df85f33f6ebc858b1b08f6ea5fb91713ea109098b59b2a0";
+  let senderpriv = "eec741cb4f13d6f4c873834bcce86b4059f32f54744a37042969fb37b5f2b4b0";
   let xlm = asset.Lumens();
   test('creating a new lock lumens raw tx', async () => {
     let warp = getWarpContract();
-    let tx = await warp.newCreditLockTx(xlm, 10, senderpriv, '1');
+    let tx = await warp.newCreditLockTx(xlm, 10, senderpriv, 0);
     expect(tx.validate()).toBeTruthy();
 
     let rwtxHex = warp.txToHex(tx);
     expect(rwtxHex).toBeDefined();
-
   });
 
   test('creating a new lock raw tx with in valid priv', async () => {

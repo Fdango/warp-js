@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import grpc from 'grpc';
+import BigNumber from 'bignumber.js';
 import {loadSync} from '@grpc/proto-loader';
 import Web3 from 'web3';
 import {Transaction} from 'ethereumjs-tx';
@@ -36,7 +37,7 @@ export function getEvryClient(config) {
 var wc;
 
 export function getWarpContract(address) {
-  let _addr = "0x789CA41C61F599ee883eB604c7D616F458dfC606";
+  let _addr = "0xbd35E99ff8C84F946710FDac18D37AcE4fAcD352";
   if (address) {
     _addr = address;
   }
@@ -86,8 +87,7 @@ class Evrynet {
   getNonceFromPriv(priv) {
     return new Promise(
       (resolve, reject) => {
-        let account = web3.eth.accounts.privateKeyToAccount(priv);
-        console.log(account.address)
+        let account = web3.eth.accounts.privateKeyToAccount('0x' + priv);
         var chan = this.client.GetNonce({evrynetAddress: account.address});
         chan.on('data', data => {
           resolve(data);
@@ -120,7 +120,7 @@ class WarpContract {
    * @param {Credit} asset to be locked
    * @param {number} amount of the asset to be locked
    * @param {string} priv key used to sign the tx
-   * @param {string} nonce
+   * @param {uint} nonce
    * @return {Transaction|error} raw tx
    */
   newCreditLockTx(asset, amount, priv, nonce) {
@@ -132,7 +132,8 @@ class WarpContract {
       throw ('invalid amount, it should greater than 0');
     }
     let assetHexName = asset.getHexName()
-    let data = this.warp.methods.lock(assetHexName, amount).encodeABI();
+    let bnAmount = new BigNumber(amount).mul(10000000).toString();
+    let data = this.warp.methods.lock(assetHexName, bnAmount).encodeABI();
     let rawTx = {
       nonce: nonce,
       from: account.address,
@@ -150,7 +151,7 @@ class WarpContract {
    * @param {Transaction} tx
    */
   txToHex(tx) {
-    return Buffer.from(tx.serialize(), 'hex');
+    let w = Buffer.from(tx.serialize(), 'hex').toString('hex');
+    return w;
   }
-
 }

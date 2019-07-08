@@ -17,8 +17,8 @@ async function ToEvrynet(src, amount, asset, evrynetAddress, config) {
     // load the grpc config
     let conf = config || new config();
     let stClient = getStellarClient(conf);
-    let seq = await stClient.getSequenceNumberBySecret(src);
-    let paymentXDR = await stClient.createDepositTx(src, seq, amount, asset);
+    let res = await stClient.getSequenceNumberBySecret(src);
+    let paymentXDR = await stClient.createDepositTx(src, res.sequenceNumber, amount, asset);
     return await getTransferClient(conf).ToEvrynet(paymentXDR, evrynetAddress);
   } catch (e) {
     return e;
@@ -39,19 +39,19 @@ async function ToStellar(evrynetPriv, stellarPriv, amount, asset, config) {
     let conf = config || new config();
     // instanciate stellar client
     let stClient = getStellarClient(conf);
-    let seq = await stClient.getSequenceNumber(stellarPriv);
+    let res = await stClient.getSequenceNumberBySecret(stellarPriv);
     // make a stellar withdraw from escrow
-    let stellarTx = await stClient.createWithdrawTx(stellarPriv, seq, amount, asset);
+    let stellarTx = await stClient.createWithdrawTx(stellarPriv, res.sequenceNumber, amount, asset);
     // instanciate evrynet client
     let evClient = getEvryClient(conf);
-    let nonce = await evClient.getNonceFromPriv(evrynetPriv);
+    let nonceRes = await evClient.getNonceFromPriv(evrynetPriv);
     // instanciate warp contract
     let wrp = getWarpContract();
     // make a lock asset msg call
-    let tx = wrp.newCreditLockTx(asset, amount, evrynetPriv, nonce);
+    let tx = wrp.newCreditLockTx(asset, amount, evrynetPriv, Number(nonceRes.nonce));
     let evrynetTx = wrp.txToHex(tx);
     // make a transfer request
-    return await getTransferClient(conf).ToEvrynet(evrynetTx, stellarTx);
+    return await getTransferClient(conf).ToStellar(evrynetTx, stellarTx);
   } catch (e) {
     return e;
   }

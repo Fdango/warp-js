@@ -16,6 +16,8 @@ const packageDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
 const stellar_proto = packageDescriptor.stellar;
 
+const Escrow = 'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ';
+
 var sc;
 
 /**
@@ -91,14 +93,7 @@ class Stellar {
    * @param {Object} asset - stellar asset to be transfered
    */
   async createDepositTx(src, seq, amount, asset) {
-    return this.newPaymentTx(
-      src,
-      '',
-      'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ',
-      seq,
-      amount,
-      asset
-    );
+    return this.newPaymentTx(src, '', Escrow, seq, amount, asset);
   }
 
   /**
@@ -109,14 +104,7 @@ class Stellar {
    * @param {Object} asset - stellar asset to be transfered
    */
   async createWithdrawTx(src, seq, amount, asset) {
-    return this.newPaymentTx(
-      src,
-      "GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ",
-      '',
-      seq,
-      amount,
-      asset
-    );
+    return this.newPaymentTx(src, Escrow, '', seq, amount, asset);
   }
 
   async newPaymentTx(txSrc, opSrc, opDest, seq, amount, asset) {
