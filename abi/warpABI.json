@@ -1,0 +1,20 @@
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "assetName",
+        "type": "bytes32"
+      },
+      {
+        "name": "tokens",
+        "type": "uint256"
+      }
+    ],
+    "name": "lock",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
