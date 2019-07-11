@@ -3,6 +3,9 @@ import Web3 from 'web3';
 
 const web3 = new Web3();
 
+const nativeCode = "EVRY"
+const nativeIssuer = "GATIJFZRBQH6S2BM2M2LPK7NMZWS43VQJQJNMSAR7LHW3XVPBBNV7BE5"
+
 /**
 *	Returns XLM asset
 *	@return {Credit} Lumens(XLM)
@@ -16,7 +19,7 @@ function Lumens() {
 *	@return {Credit} Evry Coint
 **/
 function Evry() {
-  return new Credit('Evry Coin', new StellarSDK.Asset("EVRY", "GATIJFZRBQH6S2BM2M2LPK7NMZWS43VQJQJNMSAR7LHW3XVPBBNV7BE5"));
+  return new Credit('Evry Coin', new StellarSDK.Asset(nativeCode, nativeIssuer));
 }
 
 /**
@@ -34,6 +37,10 @@ class Credit {
       throw ('cannot read name property');
     }
     return web3.utils.asciiToHex(this.name);
+  }
+
+  isNative() {
+    return this.asset.getCode() == nativeCode && this.asset.getIssuer() == nativeIssuer
   }
 }
 

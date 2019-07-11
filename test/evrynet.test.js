@@ -50,8 +50,6 @@ describe('EvryNet', () => {
   it('should fail to get a stellar sequenceNumber, invalid input', async () => {
     await expect(client.getNonce('Bad')).rejects.toBeDefined();
   });
-
-
 });
 
 describe('WarpContract', () => {
