@@ -16,5 +16,14 @@
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "lockNative",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
   }
 ]

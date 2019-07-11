@@ -48,7 +48,12 @@ async function ToStellar(evrynetPriv, stellarPriv, amount, asset, config) {
     // instanciate warp contract
     let wrp = getWarpContract();
     // make a lock asset msg call
-    let tx = wrp.newCreditLockTx(asset, amount, evrynetPriv, Number(nonceRes.nonce));
+    let tx;
+    if (asset.isNative()) {
+      tx = wrp.newNativeLockTx(amount, evrynetPriv, Number(nonceRes.nonce));
+    } else {
+      tx = wrp.newCreditLockTx(asset, amount, evrynetPriv, Number(nonceRes.nonce));
+    }
     let evrynetTx = wrp.txToHex(tx);
     // make a transfer request
     return await getTransferClient(conf).ToStellar(evrynetTx, stellarTx);

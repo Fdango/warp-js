@@ -15,8 +15,8 @@ const packageDefinition = loadSync(
     oneofs: true
   });
 const packageDescriptor = grpc.loadPackageDefinition(packageDefinition);
-
 const evrynet_proto = packageDescriptor.evrynet;
+const StellarOne = Math.pow(10, 7)
 
 const web3 = new Web3();
 
@@ -37,7 +37,7 @@ export function getEvryClient(config) {
 var wc;
 
 export function getWarpContract(address) {
-  let _addr = "0xbd35E99ff8C84F946710FDac18D37AcE4fAcD352";
+  let _addr = "0xC7B9e4b1414d61136B1e777CFBe84802435Fd2C8";
   if (address) {
     _addr = address;
   }
@@ -132,13 +132,43 @@ class WarpContract {
       throw ('invalid amount, it should greater than 0');
     }
     let assetHexName = asset.getHexName()
-    let bnAmount = new BigNumber(amount).mul(10000000).toString();
+    let bnAmount = new BigNumber(amount).mul(StellarOne).toString();
     let data = this.warp.methods.lock(assetHexName, bnAmount).encodeABI();
     let rawTx = {
       nonce: nonce,
       from: account.address,
       gasLimit: 50000,
       to: this.warp.address,
+      data: data
+    }
+    let tx = new Transaction(rawTx);
+    tx.sign(Buffer.from(priv, 'hex'));
+    return tx;
+  }
+
+  /**
+     * Creates a new native (Evry Coin) lock transaction
+     * @param {number} amount of the asset to be locked
+     * @param {string} priv key used to sign the tx
+     * @param {uint} nonce
+     * @return {Transaction|error} raw tx
+     */
+  newNativeLockTx(amount, priv, nonce) {
+    let account = web3.eth.accounts.privateKeyToAccount(priv);
+    if (amount <= 0) {
+      throw ('invalid amount, it should greater than 0');
+    }
+    let bnAmount = new BigNumber(amount).mul(StellarOne).toNumber();
+    if (bnAmount <= 0) {
+      throw "not allow to move evry coin  less than 7 decimals"
+    }
+    let data = this.warp.methods.lockNative().encodeABI();
+    let rawTx = {
+      nonce: nonce,
+      from: account.address,
+      to: this.warp.address,
+      value: bnAmount,
+      gasLimit: 50000,
       data: data
     }
     let tx = new Transaction(rawTx);
