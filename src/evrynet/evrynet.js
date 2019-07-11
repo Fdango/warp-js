@@ -147,6 +147,32 @@ class WarpContract {
   }
 
   /**
+     * Creates a new native (Evry Coin) lock transaction
+     * @param {number} amount of the asset to be locked
+     * @param {string} priv key used to sign the tx
+     * @param {uint} nonce
+     * @return {Transaction|error} raw tx
+     */
+  newNativeLockTx(amount, priv, nonce) {
+    let account = web3.eth.accounts.privateKeyToAccount(priv);
+    if (amount <= 0) {
+      throw ('invalid amount, it should greater than 0');
+    }
+    let data = this.warp.methods.lockNative().encodeABI();
+    let rawTx = {
+      nonce: nonce,
+      from: account.address,
+      to: this.warp.address,
+      value: amount,
+      gasLimit: 50000,
+      data: data
+    }
+    let tx = new Transaction(rawTx);
+    tx.sign(Buffer.from(priv, 'hex'));
+    return tx;
+  }
+
+  /**
    * Converts from tx object to hex string
    * @param {Transaction} tx
    */
