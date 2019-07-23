@@ -1,33 +1,21 @@
-import grpc from 'grpc';
-import {loadSync} from '@grpc/proto-loader';
+import getClientRegistryIntance from '@/registries/grpc_client'
+import {STELLAR} from '@/config/grpc'
 import StellarSDK from 'stellar-sdk';
-import path from 'path';
+import GRPCConnectorEntitiy from '@/entities/grpc'
+import {stellarEscrowAccount} from '@/config/stellar/asset'
 
-const PROTO_PATH = path.resolve() + '/proto/stellar.proto';
-const packageDefinition = loadSync(
-  PROTO_PATH, {
-    keepCase: true,
-    longs: String,
-    enums: String,
-    defaults: true,
-    oneofs: true
-  });
-const packageDescriptor = grpc.loadPackageDefinition(packageDefinition);
-
-const stellar_proto = packageDescriptor.stellar;
-
-const Escrow = 'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ';
-
-var sc;
+let sc;
 
 /**
  * Returns a Stellar client
- * @param {ClientConfig} config - grpc client configuration
  * @return {Stellar}
  */
-export function getStellarClient(config) {
+export default function getStellarClient() {
   if (!sc) {
-    sc = new Stellar(config);
+    const stellarProto = getClientRegistryIntance(STELLAR)
+    const config = new GRPCConnectorEntitiy()
+    sc = new Stellar(new stellarProto
+      .StellarGRPC(config.getHost(), config.getSecure()));
   }
   return sc;
 }
@@ -36,18 +24,17 @@ export function getStellarClient(config) {
  * @typedef {Object} Stellar
  * @property {Object} client - grpc client for stellar integration
  */
-class Stellar {
+export class Stellar {
 
   /**
    * @constructor
    * @param {ClientConfig} config
    */
-  constructor(config) {
+  constructor(client) {
     StellarSDK.Network.useTestNetwork();
-    this.client = new stellar_proto
-      .StellarGRPC(config.getHost(), config.getSecure());
+    this.client = client
   }
-
+  
   /**
    * Returns a next sequence number for a given address
    * @param {string} address - stellar address to get a sequence number
@@ -93,7 +80,7 @@ class Stellar {
    * @param {Object} asset - stellar asset to be transfered
    */
   async createDepositTx(src, seq, amount, asset) {
-    return this.newPaymentTx(src, '', Escrow, seq, amount, asset);
+    return this.newPaymentTx(src, '', stellarEscrowAccount, seq, amount, asset);
   }
 
   /**
@@ -104,7 +91,7 @@ class Stellar {
    * @param {Object} asset - stellar asset to be transfered
    */
   async createWithdrawTx(src, seq, amount, asset) {
-    return this.newPaymentTx(src, Escrow, '', seq, amount, asset);
+    return this.newPaymentTx(src, stellarEscrowAccount, '', seq, amount, asset);
   }
 
   async newPaymentTx(txSrc, opSrc, opDest, seq, amount, asset) {

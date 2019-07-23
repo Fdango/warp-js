@@ -1,30 +1,19 @@
-import grpc from 'grpc';
-import {loadSync} from '@grpc/proto-loader';
-import path from 'path';
-
-const PROTO_PATH = path.resolve() + '/proto/transfer.proto';
-const packageDefinition = loadSync(
-  PROTO_PATH, {
-    keepCase: true,
-    longs: String,
-    enums: String,
-    defaults: true,
-    oneofs: true
-  });
-const packageDescriptor = grpc.loadPackageDefinition(packageDefinition);
-
-const transfer_proto = packageDescriptor.transfer;
+import getClientRegistryIntance from '@/registries/grpc_client'
+import {TRANSFER} from '@/config/grpc'
+import GRPCConnectorEntitiy from '@/entities/grpc'
 
 var tc;
 
 /**
  * Returns a Transfer client
- * @param {ClientConfig} config - grpc client configuration
  * @return {Transfer}
  */
-export function getTransferClient(config) {
+export default function getTransferClient() {
   if (!tc) {
-    tc = new Transfer(config);
+    const transferProto = getClientRegistryIntance(TRANSFER)
+    const config = new GRPCConnectorEntitiy()
+    tc = new Transfer(new transferProto
+      .TransferGRPC(config.getHost(), config.getSecure()));
   }
   return tc;
 }
@@ -34,16 +23,14 @@ export function getTransferClient(config) {
  *  @property {ClientConfig} config - grpc client config
  *  @property {Object} client - grpc client for transfer
  */
-class Transfer {
+export class Transfer {
 
   /**
    * @constructor
-   * @param {ClientConfig} config
+   * @param {Object} client
    */
-  constructor(config) {
-    this.client = new transfer_proto
-      .TransferGRPC(config.getHost(), config.getSecure());
-    this.config = config;
+  constructor(client) {
+    this.client = client
   }
 
   /**

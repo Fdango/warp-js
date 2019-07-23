@@ -1,10 +1,7 @@
 import StellarSDK from 'stellar-sdk';
 import Web3 from 'web3';
-
+import {stellarEVRYAsset, stellarEVRYAssetIssuer} from '@/config/stellar/asset'
 const web3 = new Web3();
-
-const nativeCode = "EVRY"
-const nativeIssuer = "GATIJFZRBQH6S2BM2M2LPK7NMZWS43VQJQJNMSAR7LHW3XVPBBNV7BE5"
 
 /**
 *	Returns XLM asset
@@ -19,7 +16,7 @@ function Lumens() {
 *	@return {Credit} Evry Coint
 **/
 function Evry() {
-  return new Credit('Evry Coin', new StellarSDK.Asset(nativeCode, nativeIssuer));
+  return new Credit('Evry Coin', new StellarSDK.Asset(stellarEVRYAsset, stellarEVRYAssetIssuer));
 }
 
 /**
@@ -32,6 +29,7 @@ class Credit {
     this.name = name;
     this.asset = asset;
   }
+  
   getHexName() {
     if (!this.name) {
       throw ('cannot read name property');
@@ -40,7 +38,7 @@ class Credit {
   }
 
   isNative() {
-    return this.asset.getCode() == nativeCode && this.asset.getIssuer() == nativeIssuer
+    return this.asset.getCode() === stellarEVRYAsset && this.asset.getIssuer() === stellarEVRYAssetIssuer
   }
 }
 

@@ -2,7 +2,7 @@ import {getStellarClient} from './stellar/stellar.js';
 import {getWarpContract, getEvryClient} from './evrynet/evrynet.js';
 import {getTransferClient} from './transfer/transfer.js';
 import config from './config/config.js';
-import asset from './asset/asset.js';
+import asset from './entities/asset.js/index.js';
 
 /**
  * Makes a move asset from stellar to evrynet request

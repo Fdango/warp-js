@@ -1,11 +1,12 @@
 import grpc from 'grpc';
+import {DEFAULT_HOST} from '@/config/grpc'
 
 /**
- *  @typedef {Object} ClientConfig
+ *  @typedef {Object} GRPCConnector
  *  @property {string} host - grpc host url
  *  @property {boolean} isSecure - grpc secure connection flag
  */
-export default class ClientConfig {
+export default class GRPCConnectorEntitiy {
 
   /**
    * @constructor
@@ -13,7 +14,7 @@ export default class ClientConfig {
    * @param {boolean} isSecure
    */
   constructor(host, isSecure) {
-    this.host = host || 'localhost:8080';
+    this.host = host || DEFAULT_HOST;
     this.isSecure = isSecure || false;
   }
 

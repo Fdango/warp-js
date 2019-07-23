@@ -1,4 +1,5 @@
 {
+  "root": true,
   "env": {
     "browser": true,
     "es6": true,
@@ -11,6 +12,7 @@
     "SharedArrayBuffer": "readonly"
   },
   "parserOptions": {
+    "parser": "babel-eslint",
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
