@@ -5,6 +5,7 @@ import Web3 from 'web3';
 import {Transaction} from 'ethereumjs-tx';
 const stellarOne = Math.pow(10, 7)
 import {DEFAULT_CONTRACT_ADDRESS} from '@/config/evrynet/address'
+import {GASLIMIT} from '@/config/evrynet/contract'
 
 var wc;
 
@@ -20,14 +21,12 @@ export function getWarpContract(address) {
  */
 export class WarpContract {
 
-    constructor(contractAddr, ethClient) {
-      this.warp = this._newWarpContract(contractAddr);
+    constructor(contractAddr, ethClient, abi) {
+      this.warp = this._newWarpContract(contractAddr, fs.readFileSync(`${path.resolve()}/abi/${abi}.json`));
       this.web3 = ethClient
     }
   
-    _newWarpContract(contractAddr) {
-      let abiPath = path.resolve();
-      let abi = fs.readFileSync(`${abiPath}/abi/warpABI.json`);
+    _newWarpContract(contractAddr, abi) {
       return new this.web3.eth.Contract(JSON.parse(abi), contractAddr);
     }
   
@@ -40,7 +39,7 @@ export class WarpContract {
      * @return {Transaction|error} raw tx
      */
     newCreditLockTx(asset, amount, priv, nonce) {
-      let account = this.web3.eth.accounts.privateKeyToAccount(priv);
+      const account = this.web3.eth.accounts.privateKeyToAccount(priv);
       if (!asset) {
         throw ('invalid asset');
       }
@@ -84,7 +83,7 @@ export class WarpContract {
         from: account.address,
         to: this.warp.address,
         value: bnAmount,
-        gasLimit: 50000,
+        gasLimit: GASLIMIT,
         data: data
       }
       let tx = new Transaction(rawTx);
