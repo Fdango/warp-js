@@ -2,6 +2,7 @@ import getClientRegistryIntance from '@/registries/grpc_client'
 import {grpc} from '@/config/config'
 import Web3 from 'web3';
 import GRPCConnectorEntitiy from '@/entities/grpc'
+import EvrynetException from '@/exceptions/evrynet'
 const {EVRYNET} = grpc
 
 
@@ -49,7 +50,7 @@ export class Evrynet {
           resolve(data);
         });
         chan.on('error', err => {
-          reject(err);
+          reject(new EvrynetException(null, err.message()));
         });
       }
     );
@@ -68,7 +69,7 @@ export class Evrynet {
           resolve(data);
         });
         chan.on('error', err => {
-          reject(err);
+          reject(new EvrynetException(null, err.message()));
         });
       }
     );

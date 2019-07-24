@@ -2,6 +2,7 @@ import getClientRegistryIntance from '@/registries/grpc_client'
 import {grpc, stellar} from '@/config/config'
 import StellarSDK from 'stellar-sdk';
 import GRPCConnectorEntitiy from '@/entities/grpc'
+import StellarException from '@/exceptions/stellar'
 const {STELLAR} = grpc
 const {ESCROW_ACCOUNT} = stellar
 
@@ -48,7 +49,7 @@ export class Stellar {
           resolve(data);
         });
         chan.on('error', err => {
-          reject(err);
+          reject(new StellarException(null, err.message()));
         });
       }
     );
@@ -67,7 +68,7 @@ export class Stellar {
           resolve(data);
         });
         chan.on('error', err => {
-          reject(err);
+          reject(new StellarException(null, err.message()));
         });
       }
     );
@@ -126,7 +127,7 @@ export class Stellar {
       transaction.sign(kp);
       return transaction.toXDR();
     } catch (e) {
-      return e;
+      return new StellarException(null, e.message());
     }
   }
 }

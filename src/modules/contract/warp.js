@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 import {Transaction} from 'ethereumjs-tx';
 import {evrynet, stellar} from '@/config/config'
+import WrapContractException from '@/exceptions/warp_contract'
 const {DEFAULT_CONTRACT_ADDRESS, GASLIMIT} = evrynet
 const {STROOP_OF_ONE_STELLAR} = stellar
 
@@ -41,10 +42,10 @@ export class WarpContract {
     newCreditLockTx(asset, amount, priv, nonce) {
       const account = this.web3.eth.accounts.privateKeyToAccount(priv);
       if (!asset) {
-        throw ('invalid asset');
+        throw new WrapContractException(null, 'Invalid Asset')
       }
       if (amount <= 0) {
-        throw ('invalid amount, it should greater than 0');
+        throw new WrapContractException(null, 'Amount should be greater than 0')
       }
       let assetHexName = asset.getHexName()
       let bnAmount = new BigNumber(amount).mul(STROOP_OF_ONE_STELLAR).toString();
@@ -71,11 +72,11 @@ export class WarpContract {
     newNativeLockTx(amount, priv, nonce) {
       let account = this.web3.eth.accounts.privateKeyToAccount(priv);
       if (amount <= 0) {
-        throw ('invalid amount, it should greater than 0');
+        throw new WrapContractException(null, 'Amount should be greater than 0')
       }
       let bnAmount = new BigNumber(amount).mul(STROOP_OF_ONE_STELLAR).toNumber();
       if (bnAmount <= 0) {
-        throw "not allow to move evry coin  less than 7 decimals"
+        throw new WrapContractException(null, 'not allow to move evry coin more than 7 decimals')
       }
       let data = this.warp.methods.lockNative().encodeABI();
       let rawTx = {
