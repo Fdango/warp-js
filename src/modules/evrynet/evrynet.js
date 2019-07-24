@@ -1,7 +1,9 @@
 import getClientRegistryIntance from '@/registries/grpc_client'
-import {EVRYNET} from '@/config/grpc'
+import {grpc} from '@/config/config'
 import Web3 from 'web3';
 import GRPCConnectorEntitiy from '@/entities/grpc'
+const {EVRYNET} = grpc
+
 
 // ec represent singleton instance 
 var ec;

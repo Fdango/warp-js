@@ -3,11 +3,11 @@ import path from 'path';
 import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 import {Transaction} from 'ethereumjs-tx';
-const stellarOne = Math.pow(10, 7)
-import {DEFAULT_CONTRACT_ADDRESS} from '@/config/evrynet/address'
-import {GASLIMIT} from '@/config/evrynet/contract'
+import {evrynet, stellar} from '@/config/config'
+const {DEFAULT_CONTRACT_ADDRESS, GASLIMIT} = evrynet
+const {STROOP_OF_ONE_STELLAR} = stellar
 
-var wc;
+let wc;
 
 export function getWarpContract(address) {
   if (!wc) {
@@ -47,7 +47,7 @@ export class WarpContract {
         throw ('invalid amount, it should greater than 0');
       }
       let assetHexName = asset.getHexName()
-      let bnAmount = new BigNumber(amount).mul(stellarOne).toString();
+      let bnAmount = new BigNumber(amount).mul(STROOP_OF_ONE_STELLAR).toString();
       let data = this.warp.methods.lock(assetHexName, bnAmount).encodeABI();
       let rawTx = {
         nonce: nonce,
@@ -73,7 +73,7 @@ export class WarpContract {
       if (amount <= 0) {
         throw ('invalid amount, it should greater than 0');
       }
-      let bnAmount = new BigNumber(amount).mul(stellarOne).toNumber();
+      let bnAmount = new BigNumber(amount).mul(STROOP_OF_ONE_STELLAR).toNumber();
       if (bnAmount <= 0) {
         throw "not allow to move evry coin  less than 7 decimals"
       }

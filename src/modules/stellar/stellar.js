@@ -1,8 +1,9 @@
 import getClientRegistryIntance from '@/registries/grpc_client'
-import {STELLAR} from '@/config/grpc'
+import {grpc, stellar} from '@/config/config'
 import StellarSDK from 'stellar-sdk';
 import GRPCConnectorEntitiy from '@/entities/grpc'
-import {stellarEscrowAccount} from '@/config/stellar/asset'
+const {STELLAR} = grpc
+const {ESCROW_ACCOUNT} = stellar
 
 let sc;
 
@@ -80,7 +81,7 @@ export class Stellar {
    * @param {Object} asset - stellar asset to be transfered
    */
   async createDepositTx(src, seq, amount, asset) {
-    return this.newPaymentTx(src, '', stellarEscrowAccount, seq, amount, asset);
+    return this.newPaymentTx(src, '', ESCROW_ACCOUNT, seq, amount, asset);
   }
 
   /**
@@ -91,7 +92,7 @@ export class Stellar {
    * @param {Object} asset - stellar asset to be transfered
    */
   async createWithdrawTx(src, seq, amount, asset) {
-    return this.newPaymentTx(src, stellarEscrowAccount, '', seq, amount, asset);
+    return this.newPaymentTx(src, ESCROW_ACCOUNT, '', seq, amount, asset);
   }
 
   async newPaymentTx(txSrc, opSrc, opDest, seq, amount, asset) {

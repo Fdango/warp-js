@@ -1,7 +1,8 @@
 import StellarSDK from 'stellar-sdk';
 import Web3 from 'web3';
-import {stellarEVRYAsset, stellarEVRYAssetIssuer} from '@/config/stellar/asset'
+import {stellar} from '@/config/config';
 const web3 = new Web3();
+const {EVRY_ASSET_NAME, EVRY_ASSET_ISSUER_PUB} = stellar
 
 /**
 *	Returns XLM asset
@@ -16,7 +17,7 @@ function Lumens() {
 *	@return {Credit} Evry Coint
 **/
 function Evry() {
-  return new Credit('Evry Coin', new StellarSDK.Asset(stellarEVRYAsset, stellarEVRYAssetIssuer));
+  return new Credit('Evry Coin', new StellarSDK.Asset(EVRY_ASSET_NAME, EVRY_ASSET_ISSUER_PUB));
 }
 
 /**
@@ -38,7 +39,7 @@ class Credit {
   }
 
   isNative() {
-    return this.asset.getCode() === stellarEVRYAsset && this.asset.getIssuer() === stellarEVRYAssetIssuer
+    return this.asset.getCode() === EVRY_ASSET_NAME && this.asset.getIssuer() === EVRY_ASSET_ISSUER_PUB
   }
 }
 

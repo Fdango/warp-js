@@ -1,5 +1,6 @@
 import grpc from 'grpc';
-import {DEFAULT_HOST} from '@/config/grpc'
+import {grpc as grpcConf} from '@/config/config'
+const {DEFAULT_HOST} = grpcConf
 
 /**
  *  @typedef {Object} GRPCConnector

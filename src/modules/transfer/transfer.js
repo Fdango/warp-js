@@ -1,8 +1,9 @@
 import getClientRegistryIntance from '@/registries/grpc_client'
-import {TRANSFER} from '@/config/grpc'
+import {grpc} from '@/config/config'
 import GRPCConnectorEntitiy from '@/entities/grpc'
+const {TRANSFER} = grpc
 
-var tc;
+let tc;
 
 /**
  * Returns a Transfer client
