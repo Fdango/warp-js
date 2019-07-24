@@ -1,4 +1,4 @@
-import getClientRegistryIntance from '@/registries/grpc_client'
+import getClientRegistryIntance from '@/interfaces/registries/grpc_client'
 import {grpc} from '@/config/config'
 import GRPCConnectorEntitiy from '@/entities/grpc'
 import TransferException from '@/exceptions/transfer'

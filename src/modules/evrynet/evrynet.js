@@ -1,4 +1,4 @@
-import getClientRegistryIntance from '@/registries/grpc_client'
+import getClientRegistryIntance from '@/interfaces/registries/grpc_client'
 import {grpc} from '@/config/config'
 import Web3 from 'web3';
 import GRPCConnectorEntitiy from '@/entities/grpc'
