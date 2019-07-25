@@ -1,12 +1,15 @@
 import getClientRegistryIntance from '@/interfaces/registries/grpc_client'
 import config from '@/config/config'
-import StellarSDK from 'stellar-sdk';
+import StellarSDK from 'stellar-sdk'
 import GRPCConnectorEntitiy from '@/entities/grpc'
 import StellarException from '@/exceptions/stellar'
 
-const {grpc: {STELLAR}, stellar: {ESCROW_ACCOUNT}} = config
+const {
+  grpc: { STELLAR },
+  stellar: { ESCROW_ACCOUNT },
+} = config
 
-let sc = [];
+let sc = []
 
 /**
  * Returns a Stellar client
@@ -20,10 +23,11 @@ export function getStellarClient(connectionOpts = {}) {
       host: connectionOpts.host,
       isSecure: connectionOpts.isSecure,
     })
-    sc[key] = new Stellar(new stellarProto
-      .StellarGRPC(config.getHost(), config.getSecure()));
+    sc[key] = new Stellar(
+      new stellarProto.StellarGRPC(config.getHost(), config.getSecure()),
+    )
   }
-  return sc[key];
+  return sc[key]
 }
 
 /**
@@ -31,51 +35,48 @@ export function getStellarClient(connectionOpts = {}) {
  * @property {Object} client - grpc client for stellar integration
  */
 export class Stellar {
-
   /**
    * @constructor
    * @param {ClientConfig} config
    */
   constructor(client) {
-    StellarSDK.Network.useTestNetwork();
+    StellarSDK.Network.useTestNetwork()
     this.client = client
   }
-  
+
   /**
    * Returns a next sequence number for a given address
    * @param {string} address - stellar address to get a sequence number
    */
   getSequenceNumber(address) {
-    return new Promise(
-      (resolve, reject) => {
-        const chan = this.client.GetSequenceNumber({stellarAddress: address});
-        chan.on('data', data => {
-          resolve(data);
-        });
-        chan.on('error', err => {
-          reject(new StellarException(null, err.message));
-        });
-      }
-    );
+    return new Promise((resolve, reject) => {
+      const chan = this.client.GetSequenceNumber({ stellarAddress: address })
+      chan.on('data', (data) => {
+        resolve(data)
+      })
+      chan.on('error', (err) => {
+        reject(new StellarException(null, err.message))
+      })
+    })
   }
 
   /**
-     * Returns a next sequence number for a given secret
-     * @param {string} seed - stellar seed to get a sequence number
-     */
+   * Returns a next sequence number for a given secret
+   * @param {string} seed - stellar seed to get a sequence number
+   */
   getSequenceNumberBySecret(seed) {
-    return new Promise(
-      (resolve, reject) => {
-        const kp = StellarSDK.Keypair.fromSecret(seed);
-        const chan = this.client.GetSequenceNumber({stellarAddress: kp.publicKey()});
-        chan.on('data', data => {
-          resolve(data);
-        });
-        chan.on('error', err => {
-          reject(new StellarException(null, err.message));
-        });
-      }
-    );
+    return new Promise((resolve, reject) => {
+      const kp = StellarSDK.Keypair.fromSecret(seed)
+      const chan = this.client.GetSequenceNumber({
+        stellarAddress: kp.publicKey(),
+      })
+      chan.on('data', (data) => {
+        resolve(data)
+      })
+      chan.on('error', (err) => {
+        reject(new StellarException(null, err.message))
+      })
+    })
   }
 
   /**
@@ -85,8 +86,8 @@ export class Stellar {
    * @param {string} amount - amount of an asset to be transfered
    * @param {Object} asset - stellar asset to be transfered
    */
-  async createDepositTx({src, seq, amount, asset}) {
-    return this.newPaymentTx(src, '', ESCROW_ACCOUNT, seq, amount, asset);
+  async createDepositTx({ src, seq, amount, asset }) {
+    return this.newPaymentTx(src, '', ESCROW_ACCOUNT, seq, amount, asset)
   }
 
   /**
@@ -96,33 +97,34 @@ export class Stellar {
    * @param {string} amount - amount of an asset to be transfered
    * @param {Object} asset - stellar asset to be transfered
    */
-  async createWithdrawTx({src, seq, amount, asset}) {
-    return this.newPaymentTx(src, ESCROW_ACCOUNT, '', seq, amount, asset);
+  async createWithdrawTx({ src, seq, amount, asset }) {
+    return this.newPaymentTx(src, ESCROW_ACCOUNT, '', seq, amount, asset)
   }
 
   async newPaymentTx(txSrc, opSrc, opDest, seq, amount, asset) {
     try {
-      const kp = StellarSDK.Keypair.fromSecret(txSrc);
-      const txPk = kp.publicKey();
-      const _opSrc = opSrc || txPk;
-      const _opDest = opDest || txPk;
-      const account = new StellarSDK.Account(txPk, seq);
+      const kp = StellarSDK.Keypair.fromSecret(txSrc)
+      const txPk = kp.publicKey()
+      const _opSrc = opSrc || txPk
+      const _opDest = opDest || txPk
+      const account = new StellarSDK.Account(txPk, seq)
       const transaction = new StellarSDK.TransactionBuilder(account, {
-        fee: StellarSDK.BASE_FEE
+        fee: StellarSDK.BASE_FEE,
       })
-      .addOperation(StellarSDK.Operation.payment({
-          source: _opSrc,
-          destination: _opDest,
-          asset: asset.asset,
-          amount: amount
-      }))
-      .setTimeout(StellarSDK.TimeoutInfinite)
-      .build();
-      transaction.sign(kp);
-      return transaction.toXDR();
+        .addOperation(
+          StellarSDK.Operation.payment({
+            source: _opSrc,
+            destination: _opDest,
+            asset: asset.asset,
+            amount: amount,
+          }),
+        )
+        .setTimeout(StellarSDK.TimeoutInfinite)
+        .build()
+      transaction.sign(kp)
+      return transaction.toXDR()
     } catch (e) {
-      return new StellarException(null, e.message);
+      return new StellarException(null, e.message)
     }
   }
 }
-

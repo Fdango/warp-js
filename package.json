@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest",
     "build": "NODE_ENV=production babel src -d lib",
-    "lint": "eslint --fix src/**"
+    "lint": "eslint --fix src/**",
+    "check:format": "prettier --check --config .prettierrc \"src/**/*.js\"",
+    "format": "prettier --write --config .prettierrc \"src/**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -47,7 +49,11 @@
     "babel-jest": "^24.8.0",
     "babel-plugin-module-resolver": "^3.2.0",
     "eslint": "^6.0.1",
-    "jest": "^24.8.0"
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-loader": "^2.2.1",
+    "eslint-plugin-prettier": "^3.1.0",
+    "jest": "^24.8.0",
+    "prettier": "^1.18.2"
   },
   "jest": {
     "verbose": true,
@@ -62,5 +68,4 @@
       "NODE_ENV": "test"
     }
   }
-  
 }

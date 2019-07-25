@@ -1,8 +1,8 @@
-import {getStellarClient} from '@/modules/stellar';
-import {getWarpContract, getEvryClient} from '@/modules/evrynet';
-import {getTransferClient} from '@/modules/transfer';
-import config from '@/entities/grpc';
-import asset from '@/entities/asset';
+import { getStellarClient } from '@/modules/stellar'
+import { getWarpContract, getEvryClient } from '@/modules/evrynet'
+import { getTransferClient } from '@/modules/transfer'
+import config from '@/entities/grpc'
+import asset from '@/entities/asset'
 
 /**
  * Makes a move asset from stellar to evrynet request
@@ -15,13 +15,18 @@ import asset from '@/entities/asset';
 async function ToEvrynet(src, amount, asset, evrynetAddress, config) {
   try {
     // load the grpc config
-    let conf = config || new config();
-    let stClient = getStellarClient(conf);
-    let res = await stClient.getSequenceNumberBySecret(src);
-    let paymentXDR = await stClient.createDepositTx(src, res.sequenceNumber, amount, asset);
-    return await getTransferClient(conf).ToEvrynet(paymentXDR, evrynetAddress);
+    let conf = config || new config()
+    let stClient = getStellarClient(conf)
+    let res = await stClient.getSequenceNumberBySecret(src)
+    let paymentXDR = await stClient.createDepositTx(
+      src,
+      res.sequenceNumber,
+      amount,
+      asset,
+    )
+    return await getTransferClient(conf).ToEvrynet(paymentXDR, evrynetAddress)
   } catch (e) {
-    return e;
+    return e
   }
 }
 
@@ -36,29 +41,39 @@ async function ToEvrynet(src, amount, asset, evrynetAddress, config) {
 async function ToStellar(evrynetPriv, stellarPriv, amount, asset, config) {
   try {
     // load the grpc config
-    let conf = config || new config();
+    let conf = config || new config()
     // instanciate stellar client
-    let stClient = getStellarClient(conf);
-    let res = await stClient.getSequenceNumberBySecret(stellarPriv);
+    let stClient = getStellarClient(conf)
+    let res = await stClient.getSequenceNumberBySecret(stellarPriv)
     // make a stellar withdraw from escrow
-    let stellarTx = await stClient.createWithdrawTx(stellarPriv, res.sequenceNumber, amount, asset);
+    let stellarTx = await stClient.createWithdrawTx(
+      stellarPriv,
+      res.sequenceNumber,
+      amount,
+      asset,
+    )
     // instanciate evrynet client
-    let evClient = getEvryClient(conf);
-    let nonceRes = await evClient.getNonceFromPriv(evrynetPriv);
+    let evClient = getEvryClient(conf)
+    let nonceRes = await evClient.getNonceFromPriv(evrynetPriv)
     // instanciate warp contract
-    let wrp = getWarpContract();
+    let wrp = getWarpContract()
     // make a lock asset msg call
-    let tx;
+    let tx
     if (asset.isNative()) {
-      tx = wrp.newNativeLockTx(amount, evrynetPriv, Number(nonceRes.nonce));
+      tx = wrp.newNativeLockTx(amount, evrynetPriv, Number(nonceRes.nonce))
     } else {
-      tx = wrp.newCreditLockTx(asset, amount, evrynetPriv, Number(nonceRes.nonce));
+      tx = wrp.newCreditLockTx(
+        asset,
+        amount,
+        evrynetPriv,
+        Number(nonceRes.nonce),
+      )
     }
-    let evrynetTx = wrp.txToHex(tx);
+    let evrynetTx = wrp.txToHex(tx)
     // make a transfer request
-    return await getTransferClient(conf).ToStellar(evrynetTx, stellarTx);
+    return await getTransferClient(conf).ToStellar(evrynetTx, stellarTx)
   } catch (e) {
-    return e;
+    return e
   }
 }
 
@@ -66,5 +81,5 @@ export default {
   asset,
   config,
   ToEvrynet,
-  ToStellar
+  ToStellar,
 }

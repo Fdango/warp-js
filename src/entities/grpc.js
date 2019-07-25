@@ -1,6 +1,8 @@
 import config from '@/config/config'
-import grpc from 'grpc';
-const {grpc: {DEFAULT_HOST}} = config
+import grpc from 'grpc'
+const {
+  grpc: { DEFAULT_HOST },
+} = config
 
 /**
  *  @typedef {Object} GRPCConnector
@@ -8,33 +10,31 @@ const {grpc: {DEFAULT_HOST}} = config
  *  @property {boolean} isSecure - grpc secure connection flag
  */
 export default class GRPCConnectorEntitiy {
-
   /**
    * @constructor
    * @param {string} host
    * @param {boolean} isSecure
    */
   constructor(options = {}) {
-    const {host, isSecure} = options
-    this.host = host || DEFAULT_HOST;
-    this.isSecure = isSecure || false;
+    const { host, isSecure } = options
+    this.host = host || DEFAULT_HOST
+    this.isSecure = isSecure || false
   }
 
   /**
-  *	Returns grpc client endpoint
-  **/
+   *	Returns grpc client endpoint
+   **/
   getHost() {
-    return this.host;
+    return this.host
   }
 
   /**
-  *	Returns grpc client's credentials
-  **/
+   *	Returns grpc client's credentials
+   **/
   getSecure() {
     if (this.isSecure) {
-      return grpc.credentials.createSsl();
+      return grpc.credentials.createSsl()
     }
-    return grpc.credentials.createInsecure();
+    return grpc.credentials.createInsecure()
   }
 }
-

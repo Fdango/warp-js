@@ -3,9 +3,11 @@ import config from '@/config/config'
 import GRPCConnectorEntitiy from '@/entities/grpc'
 import TransferException from '@/exceptions/transfer'
 
-const {grpc: {TRANSFER}} = config
+const {
+  grpc: { TRANSFER },
+} = config
 
-let tc = [];
+let tc = []
 
 /**
  * Returns a Transfer client
@@ -19,10 +21,11 @@ export function getTransferClient(connectionOpts = {}) {
       host: connectionOpts.host,
       isSecure: connectionOpts.isSecure,
     })
-    tc[key] = new Transfer(new transferProto
-      .TransferGRPC(config.getHost(), config.getSecure()));
+    tc[key] = new Transfer(
+      new transferProto.TransferGRPC(config.getHost(), config.getSecure()),
+    )
   }
-  return tc[key];
+  return tc[key]
 }
 
 /**
@@ -31,7 +34,6 @@ export function getTransferClient(connectionOpts = {}) {
  *  @property {Object} client - grpc client for transfer
  */
 export class Transfer {
-
   /**
    * @constructor
    * @param {Object} client
@@ -46,41 +48,37 @@ export class Transfer {
    *  @param {string} evrynetAddress - a recipient's Evrynet address
    **/
   ToEvrynet(xdr, evrynetAddress) {
-    return new Promise(
-      (resolve, reject) => {
-        let chan = this.client.ToEvrynet({
-          stellarXDR: xdr,
-          evrynetAccount: evrynetAddress,
-        });
-        chan.on('data', data => {
-          resolve(data);
-        });
-        chan.on('error', err => {
-          reject(new TransferException(null, err.message));
-        });
-      }
-    );
+    return new Promise((resolve, reject) => {
+      let chan = this.client.ToEvrynet({
+        stellarXDR: xdr,
+        evrynetAccount: evrynetAddress,
+      })
+      chan.on('data', (data) => {
+        resolve(data)
+      })
+      chan.on('error', (err) => {
+        reject(new TransferException(null, err.message))
+      })
+    })
   }
 
   /**
-     *  Transfers a stellar asset to the Evrynet chain
-     *  @param {string} xdr - a stellar payment operation XDR
-     *  @param {string} evrynetAddress - a recipient's Evrynet address
-     **/
+   *  Transfers a stellar asset to the Evrynet chain
+   *  @param {string} xdr - a stellar payment operation XDR
+   *  @param {string} evrynetAddress - a recipient's Evrynet address
+   **/
   ToStellar(evRawTx, stXDR) {
-    return new Promise(
-      (resolve, reject) => {
-        let chan = this.client.ToStellar({
-          evrynetRawTx: evRawTx,
-          stellarXDR: stXDR,
-        });
-        chan.on('data', data => {
-          resolve(data);
-        });
-        chan.on('error', err => {
-          reject(new TransferException(null, err.message));
-        });
-      }
-    );
+    return new Promise((resolve, reject) => {
+      let chan = this.client.ToStellar({
+        evrynetRawTx: evRawTx,
+        stellarXDR: stXDR,
+      })
+      chan.on('data', (data) => {
+        resolve(data)
+      })
+      chan.on('error', (err) => {
+        reject(new TransferException(null, err.message))
+      })
+    })
   }
 }
