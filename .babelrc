@@ -17,11 +17,11 @@
       }
     ],
     [
-      "babel-plugin-module-resolver",
+      "module-resolver", 
       {
         "root": ["."],
         "alias": {
-          "@": "./src"
+          "@": "./src",
         }
       }
     ]

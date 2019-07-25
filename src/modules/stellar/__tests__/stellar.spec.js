@@ -1,28 +1,27 @@
 import path from 'path';
-
 import StellarSDK from 'stellar-sdk';
 import {createMockServer} from 'grpc-mock';
-import {getStellarClient} from '../src/stellar/stellar.js';
-import ClientConfig from '../src/config/config.js';
-import asset from '../src/asset/asset.js';
-
-const PROTO_PATH = path.resolve() + '/proto/stellar.proto';
-const host = 'localhost:50051';
+import {getStellarClient} from '@/modules/stellar/stellar';
+import getClientRegistryIntance from '@/interfaces/registries/grpc_client'
+import {getLumensAsset} from '@/entities/asset'
+import StellarException from '@/exceptions/stellar'
 
 describe('Stellar', () => {
-  var client;
-  var mockServer;
-  let sender = 'SBYOQRUXJEMYTSCSBEXRSPX7EXLD3A6ZFUO5OCOU6D7TTLDO2NPBXL52';
-  let senderpk = 'GDRB5MQNWBB6LJJE3XO7PGH4KK7WZJZKZ47ABUC5NVSHCZH7VCR4OGII';
-  let currentSeq = '1';
-  let nextSeq = '2';
+  let client;
+  let mockServer;
+  const sender = 'SBYOQRUXJEMYTSCSBEXRSPX7EXLD3A6ZFUO5OCOU6D7TTLDO2NPBXL52';
+  const senderpk = 'GDRB5MQNWBB6LJJE3XO7PGH4KK7WZJZKZ47ABUC5NVSHCZH7VCR4OGII';
+  const currentSeq = '1';
+  const nextSeq = '2';
+  const host = 'localhost:50051';
+  const protoPath = `${path.resolve()}/proto/stellar.proto`;
 
   beforeAll(() => {
-    let config = new ClientConfig(host);
-    client = getStellarClient(config);
-
+    client = getStellarClient({
+        host,
+    });
     mockServer = createMockServer({
-      protoPath: PROTO_PATH,
+      protoPath: protoPath,
       packageName: "stellar",
       serviceName: "StellarGRPC",
       rules: [
@@ -51,15 +50,19 @@ describe('Stellar', () => {
   });
 
   it('should fail to get a stellar sequenceNumber, invalid input', async () => {
-    await expect(client.getSequenceNumber('Bad')).rejects.toBeDefined();
+    await expect(client.getSequenceNumber('Bad')).rejects.toThrow(StellarException);
   });
 
   it('should create a correct deposit payment transaction', async () => {
     let amount = '100.0000000';
-    let xlm = asset.Lumens();
-
     let res = await client.getSequenceNumber(senderpk);
-    let txeB64 = await client.createDepositTx(sender, res.sequenceNumber, amount, xlm);
+    const xlm = getLumensAsset()
+    let txeB64 = await client.createDepositTx({
+        src: sender, 
+        seq: res.sequenceNumber, 
+        amount, 
+        asset: xlm,
+    });
     let tx = new StellarSDK.Transaction(txeB64);
 
     // validate sender pk
@@ -72,9 +75,9 @@ describe('Stellar', () => {
     expect(tx.timeBounds).toBeUndefined();
 
     // validate payment operation
-    const ops = tx.operations;
-    expect(ops.length).toBe(1);
-    let paymentOp = ops[0];
+    expect(tx.operations.length).toBe(1);
+
+    let paymentOp = tx.operations[0];
     expect(paymentOp.type).toBe('payment');
     expect(paymentOp.source).toBe(senderpk);
     expect(paymentOp.destination).toBe('GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ');
@@ -89,12 +92,17 @@ describe('Stellar', () => {
     let kp = StellarSDK.Keypair.fromPublicKey(senderpk);
     expect(kp.verify(tx.hash(), signatures[0].signature())).toBeTruthy();
   });
+
   it('should create a correct withdraw payment transaction', async () => {
     let amount = '100.0000000';
-    let xlm = asset.Lumens();
-
     let res = await client.getSequenceNumber(senderpk);
-    let txeB64 = await client.createWithdrawTx(sender, res.sequenceNumber, amount, xlm);
+    const xlm = getLumensAsset()
+    let txeB64 = await client.createWithdrawTx({
+        src: sender, 
+        seq: res.sequenceNumber, 
+        amount, 
+        asset: xlm
+    });
     let tx = new StellarSDK.Transaction(txeB64);
 
     // validate sender pk
@@ -107,9 +115,9 @@ describe('Stellar', () => {
     expect(tx.timeBounds).toBeUndefined();
 
     // validate payment operation
-    const ops = tx.operations;
-    expect(ops.length).toBe(1);
-    let paymentOp = ops[0];
+    expect(tx.operations.length).toBe(1);
+
+    let paymentOp = tx.operations[0];
     expect(paymentOp.type).toBe('payment');
     expect(paymentOp.source).toBe('GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ');
     expect(paymentOp.destination).toBe(senderpk);

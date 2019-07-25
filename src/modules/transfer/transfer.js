@@ -1,8 +1,9 @@
 import getClientRegistryIntance from '@/interfaces/registries/grpc_client'
-import {grpc} from '@/config/config'
+import config from '@/config/config'
 import GRPCConnectorEntitiy from '@/entities/grpc'
 import TransferException from '@/exceptions/transfer'
-const {TRANSFER} = grpc
+
+const {grpc: {TRANSFER}} = config
 
 let tc;
 
@@ -51,7 +52,7 @@ export class Transfer {
           resolve(data);
         });
         chan.on('error', err => {
-          reject(new TransferException(null, err.message()));
+          reject(new TransferException(null, err.message));
         });
       }
     );
@@ -73,7 +74,7 @@ export class Transfer {
           resolve(data);
         });
         chan.on('error', err => {
-          reject(new TransferException(null, err.message()));
+          reject(new TransferException(null, err.message));
         });
       }
     );

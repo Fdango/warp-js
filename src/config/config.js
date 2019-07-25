@@ -18,8 +18,15 @@ const development = {
         EVRYNET: 'evrynet',
         TRANSFER: 'transfer',
         DEFAULT_HOST: 'localhost:8080',
+    },
+    contract: {
+        ABI: {
+            WARP: 'warpABI'
+        }
     }
 }
+
+const test = development
 
 const production = {
 
@@ -28,7 +35,7 @@ const production = {
 const config = {
     development,
     production,
-    test: development,
+    test,
 }
 
 export default config[env]

@@ -20,7 +20,7 @@ export default function getClientRegistryIntance(client) {
             const packageDescriptor = grpc.loadPackageDefinition(packageDefinition);
             registry[client] = packageDescriptor[client]
         } catch (e) {
-            throw new GRPCRegistryException(null, e.message(), 'Unable to create a grpc client registry')
+            throw new GRPCRegistryException(null, e.message, 'Unable to create a grpc client registry')
         }
     }
     return registry[client]

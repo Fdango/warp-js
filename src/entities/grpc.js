@@ -1,6 +1,6 @@
+import config from '@/config/config'
 import grpc from 'grpc';
-import {grpc as grpcConf} from '@/config/config'
-const {DEFAULT_HOST} = grpcConf
+const {grpc: {DEFAULT_HOST}} = config
 
 /**
  *  @typedef {Object} GRPCConnector
@@ -14,7 +14,8 @@ export default class GRPCConnectorEntitiy {
    * @param {string} host
    * @param {boolean} isSecure
    */
-  constructor(host, isSecure) {
+  constructor({host, isSecure}) {
+
     this.host = host || DEFAULT_HOST;
     this.isSecure = isSecure || false;
   }

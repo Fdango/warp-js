@@ -3,16 +3,16 @@ import path from 'path';
 import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 import {Transaction} from 'ethereumjs-tx';
-import {evrynet, stellar} from '@/config/config'
+import config from '@/config/config'
 import WrapContractException from '@/exceptions/warp_contract'
-const {DEFAULT_CONTRACT_ADDRESS, GASLIMIT} = evrynet
-const {STROOP_OF_ONE_STELLAR} = stellar
+
+const {stellar: {STROOP_OF_ONE_STELLAR}, evrynet: {DEFAULT_CONTRACT_ADDRESS, GASLIMIT}, contract: {ABI: {WARP}}} = config
 
 let wc;
 
 export function getWarpContract(address) {
   if (!wc) {
-    wc = new WarpContract(address || DEFAULT_CONTRACT_ADDRESS, new Web3());
+    wc = new WarpContract(address || DEFAULT_CONTRACT_ADDRESS, new Web3(), fs.readFileSync(`${path.resolve()}/abi/${WARP}.json`));
   }
   return wc;
 }
@@ -23,12 +23,16 @@ export function getWarpContract(address) {
 export class WarpContract {
 
     constructor(contractAddr, ethClient, abi) {
-      this.warp = this._newWarpContract(contractAddr, fs.readFileSync(`${path.resolve()}/abi/${abi}.json`));
       this.web3 = ethClient
+      this.warp = this._newWarpContract(contractAddr, abi); 
     }
   
     _newWarpContract(contractAddr, abi) {
-      return new this.web3.eth.Contract(JSON.parse(abi), contractAddr);
+      try {
+        return new this.web3.eth.Contract(JSON.parse(abi), contractAddr);
+      } catch (e) {
+        throw new WrapContractException(null, 'Unable to lock a credit', e.message)
+      }
     }
   
     /**
@@ -40,26 +44,29 @@ export class WarpContract {
      * @return {Transaction|error} raw tx
      */
     newCreditLockTx(asset, amount, priv, nonce) {
-      const account = this.web3.eth.accounts.privateKeyToAccount(priv);
-      if (!asset) {
-        throw new WrapContractException(null, 'Invalid Asset')
+      try {
+        const account = this.web3.eth.accounts.privateKeyToAccount(priv);
+        if (!asset) {
+          throw new WrapContractException(null, 'Invalid Asset')
+        }
+        if (amount <= 0) {
+          throw new WrapContractException(null, 'Amount should be greater than 0')
+        }
+        const assetHexName = asset.getHexName()
+        const bnAmount = new BigNumber(amount).mul(STROOP_OF_ONE_STELLAR).toString();
+        const data = this.warp.methods.lock(assetHexName, bnAmount).encodeABI();
+        let tx = new Transaction({
+          nonce,
+          from: account.address,
+          gasLimit: 50000,
+          to: this.warp.address,
+          data
+        });
+        tx.sign(Buffer.from(priv, 'hex'));
+        return tx;
+      } catch (e) {
+        throw new WrapContractException(null, 'Unable to lock a credit', e.message)
       }
-      if (amount <= 0) {
-        throw new WrapContractException(null, 'Amount should be greater than 0')
-      }
-      let assetHexName = asset.getHexName()
-      let bnAmount = new BigNumber(amount).mul(STROOP_OF_ONE_STELLAR).toString();
-      let data = this.warp.methods.lock(assetHexName, bnAmount).encodeABI();
-      let rawTx = {
-        nonce: nonce,
-        from: account.address,
-        gasLimit: 50000,
-        to: this.warp.address,
-        data: data
-      }
-      let tx = new Transaction(rawTx);
-      tx.sign(Buffer.from(priv, 'hex'));
-      return tx;
     }
   
     /**
@@ -70,26 +77,29 @@ export class WarpContract {
        * @return {Transaction|error} raw tx
        */
     newNativeLockTx(amount, priv, nonce) {
-      let account = this.web3.eth.accounts.privateKeyToAccount(priv);
-      if (amount <= 0) {
-        throw new WrapContractException(null, 'Amount should be greater than 0')
+      try {
+        const account = this.web3.eth.accounts.privateKeyToAccount(priv);
+        if (amount <= 0) {
+          throw new WrapContractException(null, 'Amount should be greater than 0')
+        }
+        const bnAmount = new BigNumber(amount).mul(STROOP_OF_ONE_STELLAR).toNumber();
+        if (bnAmount <= 0) {
+          throw new WrapContractException(null, 'not allow to move evry coin more than 7 decimals')
+        }
+        const data = this.warp.methods.lockNative().encodeABI();
+        let tx = new Transaction({
+          nonce,
+          from: account.address,
+          to: this.warp.address,
+          value: bnAmount,
+          gasLimit: GASLIMIT,
+          data,
+        });
+        tx.sign(Buffer.from(priv, 'hex'));
+        return tx;
+      } catch (e) {
+        throw new WrapContractException(null, 'Unable to lock a credit', e.message)
       }
-      let bnAmount = new BigNumber(amount).mul(STROOP_OF_ONE_STELLAR).toNumber();
-      if (bnAmount <= 0) {
-        throw new WrapContractException(null, 'not allow to move evry coin more than 7 decimals')
-      }
-      let data = this.warp.methods.lockNative().encodeABI();
-      let rawTx = {
-        nonce: nonce,
-        from: account.address,
-        to: this.warp.address,
-        value: bnAmount,
-        gasLimit: GASLIMIT,
-        data: data
-      }
-      let tx = new Transaction(rawTx);
-      tx.sign(Buffer.from(priv, 'hex'));
-      return tx;
     }
   
     /**
@@ -97,8 +107,15 @@ export class WarpContract {
      * @param {Transaction} tx
      */
     txToHex(tx) {
-      let w = Buffer.from(tx.serialize(), 'hex').toString('hex');
-      return w;
+      try {
+        return Buffer.from(tx.serialize(), 'hex').toString('hex');
+      } catch (e) {
+        throw new WrapContractException(null, 'Unable to lock a credit', e.message)
+      }
     }
   }
   
+export default {
+  getWarpContract,
+  WarpContract
+}
