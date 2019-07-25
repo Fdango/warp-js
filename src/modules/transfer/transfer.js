@@ -5,23 +5,24 @@ import TransferException from '@/exceptions/transfer'
 
 const {grpc: {TRANSFER}} = config
 
-let tc;
+let tc = [];
 
 /**
  * Returns a Transfer client
  * @return {Transfer}
  */
 export function getTransferClient(connectionOpts = {}) {
-  if (!tc) {
+  const key = JSON.stringify(connectionOpts)
+  if (!tc[key]) {
     const transferProto = getClientRegistryIntance(TRANSFER)
     const config = new GRPCConnectorEntitiy({
       host: connectionOpts.host,
       isSecure: connectionOpts.isSecure,
     })
-    tc = new Transfer(new transferProto
+    tc[key] = new Transfer(new transferProto
       .TransferGRPC(config.getHost(), config.getSecure()));
   }
-  return tc;
+  return tc[key];
 }
 
 /**

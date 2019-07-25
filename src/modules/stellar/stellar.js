@@ -6,23 +6,24 @@ import StellarException from '@/exceptions/stellar'
 
 const {grpc: {STELLAR}, stellar: {ESCROW_ACCOUNT}} = config
 
-let sc;
+let sc = [];
 
 /**
  * Returns a Stellar client
  * @return {Stellar}
  */
 export function getStellarClient(connectionOpts = {}) {
-  if (!sc) {
+  const key = JSON.stringify(connectionOpts)
+  if (!sc[key]) {
     const stellarProto = getClientRegistryIntance(STELLAR)
     const config = new GRPCConnectorEntitiy({
       host: connectionOpts.host,
       isSecure: connectionOpts.isSecure,
     })
-    sc = new Stellar(new stellarProto
+    sc[key] = new Stellar(new stellarProto
       .StellarGRPC(config.getHost(), config.getSecure()));
   }
-  return sc;
+  return sc[key];
 }
 
 /**

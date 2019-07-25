@@ -8,13 +8,14 @@ import WrapContractException from '@/exceptions/warp_contract'
 
 const {stellar: {STROOP_OF_ONE_STELLAR}, evrynet: {DEFAULT_CONTRACT_ADDRESS, GASLIMIT}, contract: {ABI: {WARP}}} = config
 
-let wc;
+let wc = [];
 
 export function getWarpContract(address) {
-  if (!wc) {
-    wc = new WarpContract(address || DEFAULT_CONTRACT_ADDRESS, new Web3(), fs.readFileSync(`${path.resolve()}/abi/${WARP}.json`));
+  const key = address || DEFAULT_CONTRACT_ADDRESS
+  if (!wc[key]) {
+    wc[key] = new WarpContract(key, new Web3(), fs.readFileSync(`${path.resolve()}/abi/${WARP}.json`));
   }
-  return wc;
+  return wc[key];
 }
 
 /**

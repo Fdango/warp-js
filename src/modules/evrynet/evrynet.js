@@ -7,23 +7,24 @@ import EvrynetException from '@/exceptions/evrynet'
 const {grpc: {EVRYNET}} = config
 
 // ec represent singleton instance 
-let ec;
+let ec = [];
 
 /**
  * Returns a Stellar client
  * @return {Evrynet}
  */
 export function getEvryClient(connectionOpts = {}) {
-  if (!ec) {
+  const key = JSON.stringify(connectionOpts)
+  if (!ec[key]) {
     const evrynetProto = getClientRegistryIntance(EVRYNET)
     const config = new GRPCConnectorEntitiy({
       host: connectionOpts.host,
       isSecure: connectionOpts.isSecure,
     })
-    ec = new Evrynet(new evrynetProto
+    ec[key] = new Evrynet(new evrynetProto
       .EvrynetGRPC(config.getHost(), config.getSecure()), new Web3());
   }
-  return ec;
+  return ec[key];
 }
 
 /**
