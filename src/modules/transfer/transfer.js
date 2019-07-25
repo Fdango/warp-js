@@ -11,10 +11,13 @@ let tc;
  * Returns a Transfer client
  * @return {Transfer}
  */
-export default function getTransferClient() {
+export function getTransferClient(connectionOpts = {}) {
   if (!tc) {
     const transferProto = getClientRegistryIntance(TRANSFER)
-    const config = new GRPCConnectorEntitiy()
+    const config = new GRPCConnectorEntitiy({
+      host: connectionOpts.host,
+      isSecure: connectionOpts.isSecure,
+    })
     tc = new Transfer(new transferProto
       .TransferGRPC(config.getHost(), config.getSecure()));
   }
