@@ -2,7 +2,6 @@ import path from 'path'
 import StellarSDK from 'stellar-sdk'
 import { createMockServer } from 'grpc-mock'
 import { getStellarClient } from '@/modules/stellar/stellar'
-import getClientRegistryIntance from '@/interfaces/registries/grpc_client'
 import { getLumensAsset } from '@/entities/asset'
 import StellarException from '@/exceptions/stellar'
 

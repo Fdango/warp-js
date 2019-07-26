@@ -4,15 +4,15 @@ const {
   grpc: { DEFAULT_HOST },
 } = config
 
-describe('Config', () => {
-  describe('#no params in contructor', () => {
+describe('GRPC Config', () => {
+  describe('When no params in a contructor', () => {
     let config = new GRPCConnectorEntitiy()
     it('should returns defualt host', () => {
       expect(config.getHost()).toBe(DEFAULT_HOST)
     })
   })
 
-  describe('#with set params in contructor', () => {
+  describe('When set params in a contructor', () => {
     let host = 'foo'
     let config = new GRPCConnectorEntitiy({ host })
     it('should returns defualt host', () => {

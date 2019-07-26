@@ -10,8 +10,13 @@ const {
 let tc = []
 
 /**
- * Returns a Transfer client
- * @return {Transfer}
+ * @typedef {import('grpc').Client} GRPCClient
+ */
+
+/**
+ * Registry for creating a transter instance if not existed.
+ * @param {Object} [connectionOpts={}]
+ * @returns {Transfer}
  */
 export function getTransferClient(connectionOpts = {}) {
   const key = JSON.stringify(connectionOpts)
@@ -30,13 +35,12 @@ export function getTransferClient(connectionOpts = {}) {
 
 /**
  *  @typedef {Object} Transfer
- *  @property {ClientConfig} config - grpc client config
- *  @property {Object} client - grpc client for transfer
+ *  @property {GRPCClient} client - grpc client
  */
 export class Transfer {
   /**
    * @constructor
-   * @param {Object} client
+   * @param {GRPCClient} client
    */
   constructor(client) {
     this.client = client

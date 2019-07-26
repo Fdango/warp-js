@@ -12,7 +12,13 @@ const {
 let ec = []
 
 /**
+ *
+ * @typedef {import('grpc').Client} GRPCClient
+ */
+
+/**
  * Returns a Stellar client
+ * @param {Object} [connectionOpts={}] - is options for connection
  * @return {Evrynet}
  */
 export function getEvryClient(connectionOpts = {}) {
@@ -31,13 +37,14 @@ export function getEvryClient(connectionOpts = {}) {
 }
 
 /**
- * @typedef {Object} Evrynet
+ * @typedef Evrynet
+ * @property {GRPCClient} client - grpc client
+ * @property {Web3} web3 - web3 utility module
  */
 export class Evrynet {
   /**
    * @constructor
-   * @param {Object} client
-   * @param {Object} ethclient
+   * @param {GRPCClient} client - is a grpc client
    */
   constructor(client) {
     this.client = client
@@ -46,7 +53,9 @@ export class Evrynet {
 
   /**
    * Returns a nonce for a given address
+   * @public
    * @param {string} address - evrynet address to get a nonce
+   * @returns {Object} nounce object
    */
   getNonce(address) {
     return new Promise((resolve, reject) => {
@@ -63,6 +72,7 @@ export class Evrynet {
   /**
    * Returns a nonce for a given address
    * @param {string} priv - evrynet private key to get a nonce
+   * @returns {Object} nounce object
    */
   getNonceFromPriv(priv) {
     return new Promise((resolve, reject) => {

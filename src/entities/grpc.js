@@ -12,8 +12,7 @@ const {
 export default class GRPCConnectorEntitiy {
   /**
    * @constructor
-   * @param {string} host
-   * @param {boolean} isSecure
+   * @param {Object} [options={}] options - is configuration options for grpc entity.
    */
   constructor(options = {}) {
     const { host, isSecure } = options
@@ -23,13 +22,15 @@ export default class GRPCConnectorEntitiy {
 
   /**
    *	Returns grpc client endpoint
+   *  @returns {string} host
    **/
   getHost() {
     return this.host
   }
 
   /**
-   *	Returns grpc client's credentials
+   * Returns grpc client's credentials
+   * @returns {grpc.ChannelCredentials} channel credentials
    **/
   getSecure() {
     if (this.isSecure) {

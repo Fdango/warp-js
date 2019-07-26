@@ -16,6 +16,15 @@ const {
 
 let wc = []
 
+/**
+ *
+ * @typedef {import('web3-eth-contract').Contract} Contract
+ */
+
+/**
+ * A registry for creating warp contract based on abi file and contract address
+ * @param {string} address - is a contract address for ethereum
+ */
 export function getWarpContract(address) {
   const key = address || DEFAULT_CONTRACT_ADDRESS
   if (!wc[key]) {
@@ -28,14 +37,28 @@ export function getWarpContract(address) {
 }
 
 /**
+ * An adapter class for warp eth smart contract contract.
  * @typedef WarpContract
+ * @property {Web3} web3 - web3 utility module
+ * @property {Contract} warp - warp smart contract
  */
 export class WarpContract {
+  /**
+   * @constructor
+   * @param {string} contractAddr - a contract address
+   * @param {Buffer} abi - abi file contaning interface for the contract
+   */
   constructor(contractAddr, abi) {
     this.web3 = new Web3()
     this.warp = this._newWarpContract(contractAddr, abi)
   }
 
+  /**
+   *
+   * @param {string} contractAddr - contract address of warp contract
+   * @param {Buffer} abi - abi (interface) for contract
+   * @return {Contract|WrapContractException} warp smart contract or exception
+   */
   _newWarpContract(contractAddr, abi) {
     try {
       return new this.web3.eth.Contract(JSON.parse(abi), contractAddr)
@@ -54,7 +77,7 @@ export class WarpContract {
    * @param {number} amount of the asset to be locked
    * @param {string} priv key used to sign the tx
    * @param {uint} nonce
-   * @return {Transaction|error} raw tx
+   * @return {Transaction|WrapContractException} raw tx
    */
   newCreditLockTx(asset, amount, priv, nonce) {
     try {
@@ -94,7 +117,7 @@ export class WarpContract {
    * @param {number} amount of the asset to be locked
    * @param {string} priv key used to sign the tx
    * @param {uint} nonce
-   * @return {Transaction|error} raw tx
+   * @return {Transaction|WrapContractException} raw tx
    */
   newNativeLockTx(amount, priv, nonce) {
     try {
@@ -135,6 +158,7 @@ export class WarpContract {
   /**
    * Converts from tx object to hex string
    * @param {Transaction} tx
+   * @returns {string|WrapContractException}
    */
   txToHex(tx) {
     try {

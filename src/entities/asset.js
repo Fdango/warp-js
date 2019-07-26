@@ -8,39 +8,47 @@ const {
 } = config
 
 /**
- *	Returns XLM asset
- *	@return {Credit} Lumens(XLM)
+ *	Returns XLM asset.
+ *	@return {Credit} - Lumens(XLM).
  **/
 export function getLumensAsset() {
-  const web3 = new Web3()
-  return new Credit('Lumens', StellarSDK.Asset.native(), web3)
+  return new Credit('Lumens', StellarSDK.Asset.native())
 }
 
 /**
- *	Returns Evry coin (Native asset)
- *	@return {Credit} Evry Coint
+ *	Returns Evry coin (Native asset).
+ *	@return {Credit} - Evry Coin.
  **/
 export function getEvryAsset() {
-  const web3 = new Web3()
   return new Credit(
     'Evry Coin',
     new StellarSDK.Asset(EVRY_ASSET_NAME, EVRY_ASSET_ISSUER_PUB),
-    web3,
   )
 }
 
 /**
+ * Class representing credit.
  * @typedef Credit
  * @property {string} name
  * @property {Object} asset
  */
-class Credit {
-  constructor(name, asset, ethClient) {
+export class Credit {
+  /**
+   * Constructor for creating Credit.
+   * @class
+   * @param {string} name - credit name.
+   * @param {StellarSDK.Asset} asset - stellar asset.
+   */
+  constructor(name, asset) {
     this.name = name
     this.asset = asset
-    this.web3 = ethClient
+    this.web3 = new Web3()
   }
 
+  /**
+   * Get name in hex-encoded format.
+   * @returns {string} - hex-encoded of asset name.
+   */
   getHexName() {
     if (!this.name) {
       throw new AssetEntityException(null, 'cannot read name property')
@@ -48,6 +56,10 @@ class Credit {
     return this.web3.utils.asciiToHex(this.name)
   }
 
+  /**
+   * Check if this asset is native.
+   * @return {boolean} - the result wheter this asset if native or not.
+   */
   isNative() {
     return (
       this.asset.getCode() === EVRY_ASSET_NAME &&
