@@ -3,8 +3,6 @@ import { createMockServer } from 'grpc-mock'
 import { getEvryClient } from '@/modules/evrynet/evrynet'
 import EvrynetException from '@/exceptions/evrynet'
 
-jest.mock('web3')
-
 describe('EvryNet', () => {
   let client
   let mockServer

@@ -2,7 +2,6 @@ import { getWarpContract, WarpContract } from '@/modules/contract/warp'
 import { getLumensAsset } from '@/entities/asset'
 import WrapContractException from '@/exceptions/warp_contract'
 import config from '@/config/config'
-import Web3 from 'web3'
 
 const {
   contract: {
@@ -29,7 +28,7 @@ describe('WarpContract', () => {
       it('should throw an error', async () => {
         expect.assertions(1)
         try {
-          const warp = new WarpContract('foo', new Web3(), WARP)
+          new WarpContract('foo', WARP)
         } catch (e) {
           expect(e).toBeInstanceOf(WrapContractException)
         }

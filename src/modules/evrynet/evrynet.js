@@ -25,7 +25,6 @@ export function getEvryClient(connectionOpts = {}) {
     })
     ec[key] = new Evrynet(
       new evrynetProto.EvrynetGRPC(config.getHost(), config.getSecure()),
-      new Web3(),
     )
   }
   return ec[key]
@@ -40,9 +39,9 @@ export class Evrynet {
    * @param {Object} client
    * @param {Object} ethclient
    */
-  constructor(client, ethclient) {
+  constructor(client) {
     this.client = client
-    this.web3 = ethclient
+    this.web3 = new Web3()
   }
 
   /**

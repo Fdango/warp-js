@@ -8,7 +8,7 @@ import WrapContractException from '@/exceptions/warp_contract'
 
 const {
   stellar: { STROOP_OF_ONE_STELLAR },
-  evrynet: { DEFAULT_CONTRACT_ADDRESS, GASLIMIT },
+  evrynet: { DEFAULT_CONTRACT_ADDRESS, GASLIMIT, GASPRICE },
   contract: {
     ABI: { WARP },
   },
@@ -21,7 +21,6 @@ export function getWarpContract(address) {
   if (!wc[key]) {
     wc[key] = new WarpContract(
       key,
-      new Web3(),
       fs.readFileSync(`${path.resolve()}/abi/${WARP}.json`),
     )
   }
@@ -32,8 +31,8 @@ export function getWarpContract(address) {
  * @typedef WarpContract
  */
 export class WarpContract {
-  constructor(contractAddr, ethClient, abi) {
-    this.web3 = ethClient
+  constructor(contractAddr, abi) {
+    this.web3 = new Web3()
     this.warp = this._newWarpContract(contractAddr, abi)
   }
 
@@ -74,8 +73,9 @@ export class WarpContract {
       let tx = new Transaction({
         nonce,
         from: account.address,
-        gasLimit: 50000,
         to: this.warp.address,
+        gasLimit: GASLIMIT,
+        gasPrice: GASPRICE,
         data,
       })
       tx.sign(Buffer.from(priv, 'hex'))
@@ -118,6 +118,7 @@ export class WarpContract {
         to: this.warp.address,
         value: bnAmount,
         gasLimit: GASLIMIT,
+        gasPrice: GASPRICE,
         data,
       })
       tx.sign(Buffer.from(priv, 'hex'))

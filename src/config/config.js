@@ -2,10 +2,14 @@ const env = process.env.NODE_ENV
 
 // configuration file is used to configure application and interfaces
 // If anything needs to be sucured, save it in an environement variable file (.env) and paste process.env.[#varname] to this config file.
+import Web3 from 'web3'
+const web3 = new Web3()
+
 const development = {
   evrynet: {
     DEFAULT_CONTRACT_ADDRESS: '0xC7B9e4b1414d61136B1e777CFBe84802435Fd2C8',
     GASLIMIT: 50000,
+    GASPRICE: web3.utils.toWei('1', 'gwei'),
   },
   stellar: {
     ESCROW_ACCOUNT: 'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ',
