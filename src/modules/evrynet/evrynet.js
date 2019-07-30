@@ -54,7 +54,7 @@ export class Evrynet {
   /**
    * Returns a nonce for a given address
    * @param {string} address - evrynet address to get a nonce
-   * @returns {Object} nounce object
+   * @returns {Object|EvrynetException} nounce object
    */
   getNonce(address) {
     return new Promise((resolve, reject) => {
@@ -71,7 +71,7 @@ export class Evrynet {
   /**
    * Returns a nonce for a given address
    * @param {string} priv - evrynet private key to get a nonce
-   * @returns {Object} nounce object
+   * @returns {Object|EvrynetException} nounce object
    */
   getNonceFromPriv(priv) {
     return new Promise((resolve, reject) => {

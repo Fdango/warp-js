@@ -53,7 +53,7 @@ export class Stellar {
   /**
    * Returns a next sequence number for a given address
    * @param {string} address - stellar address to get a sequence number
-   * @returns {string|StellarException} sequence number
+   * @returns {Object|StellarException} sequence number
    */
   getSequenceNumber(address) {
     return new Promise((resolve, reject) => {
@@ -70,7 +70,7 @@ export class Stellar {
   /**
    * Returns a next sequence number for a given secret
    * @param {string} seed - stellar seed to get a sequence number
-   * @returns {string|StellarException}  sequence number
+   * @returns {Object|StellarException}  sequence number
    */
   getSequenceNumberBySecret(seed) {
     return new Promise((resolve, reject) => {
@@ -148,4 +148,9 @@ export class Stellar {
       return new StellarException(null, e.message)
     }
   }
+}
+
+export default {
+  Stellar,
+  getStellarClient,
 }

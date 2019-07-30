@@ -50,8 +50,9 @@ export class Transfer {
    *  Transfers a stellar asset to the Evrynet chain
    *  @param {string} xdr - a stellar payment operation XDR
    *  @param {string} evrynetAddress - a recipient's Evrynet address
+   *  @returns {Object|TransferException} response from API (stellar and evrynet tx hash)
    **/
-  ToEvrynet(xdr, evrynetAddress) {
+  toEvrynet(xdr, evrynetAddress) {
     return new Promise((resolve, reject) => {
       let chan = this.client.ToEvrynet({
         stellarXDR: xdr,
@@ -70,8 +71,9 @@ export class Transfer {
    *  Transfers a stellar asset to the Evrynet chain
    *  @param {string} xdr - a stellar payment operation XDR
    *  @param {string} evrynetAddress - a recipient's Evrynet address
+   *  @returns {Object|TransferException} response from API (stellar and evrynet tx hash)
    **/
-  ToStellar(evRawTx, stXDR) {
+  toStellar(evRawTx, stXDR) {
     return new Promise((resolve, reject) => {
       let chan = this.client.ToStellar({
         evrynetRawTx: evRawTx,
@@ -85,4 +87,9 @@ export class Transfer {
       })
     })
   }
+}
+
+export default {
+  getTransferClient,
+  Transfer,
 }

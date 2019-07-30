@@ -43,14 +43,14 @@ describe('Transfer', () => {
   describe('When make toEvrynetrequest', () => {
     describe('With valid input', () => {
       it('should make a ToEvrynet request correctly', async () => {
-        let res = await client.ToEvrynet('Foo', 'Bar')
+        let res = await client.toEvrynet('Foo', 'Bar')
         expect(res.stellarTxHash).toBe('Foo')
         expect(res.evrynetTxHash).toBe('Bar')
       })
     })
     describe('With invalid input', () => {
       it('should fail to make a ToEvrynet request', async () => {
-        await expect(client.ToEvrynet('Bad', 'Bad')).rejects.toThrow(
+        await expect(client.toEvrynet('Bad', 'Bad')).rejects.toThrow(
           TransferException,
         )
       })
@@ -60,14 +60,14 @@ describe('Transfer', () => {
   describe('When make ToStellar', () => {
     describe('With valid input', () => {
       it('should make a ToStellar request correctly', async () => {
-        let res = await client.ToStellar('Foo', 'Bar')
+        let res = await client.toStellar('Foo', 'Bar')
         expect(res.stellarTxHash).toBe('Foo')
         expect(res.evrynetTxHash).toBe('Bar')
       })
     })
     describe('With invalid input', () => {
       it('should fail to make a ToStellar request, invalid input', async () => {
-        await expect(client.ToStellar('Bad', 'Bad')).rejects.toThrow(
+        await expect(client.toStellar('Bad', 'Bad')).rejects.toThrow(
           TransferException,
         )
       })
