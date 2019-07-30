@@ -53,7 +53,6 @@ export class Evrynet {
 
   /**
    * Returns a nonce for a given address
-   * @public
    * @param {string} address - evrynet address to get a nonce
    * @returns {Object} nounce object
    */
