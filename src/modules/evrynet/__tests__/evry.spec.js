@@ -8,6 +8,11 @@ describe('EvryNet', () => {
   let mockServer
   const senderpk = '0x789CA41C61F599ee883eB604c7D616F458dfC606'
   const currentNonce = '1'
+  const expectedAsset = {
+    name: 'foo',
+    code: 'bar',
+    issuer: 'foo',
+  }
   const protoPath = `${path.resolve()}/proto/evrynet.proto`
   const host = 'localhost:50053'
 
@@ -26,6 +31,12 @@ describe('EvryNet', () => {
           stream: [{ output: { nonce: currentNonce } }],
           input: { evrynetAddress: senderpk },
         },
+        {
+          method: 'GetWhitelistAssets',
+          streamType: 'server',
+          stream: [{ output: { assets: [expectedAsset] } }],
+          input: {},
+        },
       ],
     })
     mockServer.listen(host)
@@ -35,7 +46,7 @@ describe('EvryNet', () => {
     mockServer.close(true)
   })
 
-  describe('when get nonce', () => {
+  describe('When get nonce', () => {
     it('should get a stellar sequenceNumber correctly', async () => {
       let res = await client.getNonce(senderpk)
       expect(res.nonce).toBe(currentNonce)
@@ -43,6 +54,15 @@ describe('EvryNet', () => {
 
     it('should fail getting a stellar sequenceNumber if input invalid', async () => {
       await expect(client.getNonce('Bad')).rejects.toThrow(EvrynetException)
+    })
+  })
+
+  describe('When get whitelist assets', () => {
+    describe('When success', () => {
+      it('should get a stellar sequenceNumber correctly', async () => {
+        let res = await client.getWhitelistAssets({})
+        expect(res.assets).toEqual(expect.arrayContaining([expectedAsset]))
+      })
     })
   })
 })

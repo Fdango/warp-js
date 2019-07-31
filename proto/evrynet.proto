@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package evrynet;
+import "google/protobuf/empty.proto";
 
 message GetNonceRequest {
     string evrynetAddress = 1;
@@ -10,6 +11,15 @@ message GetNonceResponse {
     string nonce = 1;
 }
 
+message Asset {  
+    string name = 1;  string code = 2;  string issuer = 3;
+}
+
+message GetWhitelistAssetsResponse {  
+    repeated Asset assets = 1;
+}
+
 service EvrynetGRPC {
     rpc GetNonce(GetNonceRequest) returns (stream GetNonceResponse);
+    rpc GetWhitelistAssets (google.protobuf.Empty) returns (stream GetWhitelistAssetsResponse);
 }

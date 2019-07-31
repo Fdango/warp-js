@@ -68,6 +68,18 @@ export class Evrynet {
     })
   }
 
+  getWhitelistAssets() {
+    return new Promise((resolve, reject) => {
+      const chan = this.client.GetWhitelistAssets()
+      chan.on('data', (data) => {
+        resolve(data)
+      })
+      chan.on('error', (err) => {
+        reject(new EvrynetException(null, err.message))
+      })
+    })
+  }
+
   /**
    * Returns a nonce for a given address
    * @param {string} priv - evrynet private key to get a nonce
