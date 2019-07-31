@@ -74,9 +74,9 @@ export class WarpContract {
   /**
    * Creates a new credit lock transaction
    * @param {Credit} asset to be locked
-   * @param {number} amount of the asset to be locked
+   * @param {string} amount of the asset to be locked
    * @param {string} priv key used to sign the tx
-   * @param {uint} nonce
+   * @param {number} nonce a postitive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
   newCreditLockTx(asset, amount, priv, nonce) {
@@ -114,9 +114,10 @@ export class WarpContract {
 
   /**
    * Creates a new native (Evry Coin) lock transaction
+   * @param {string} amount of the asset to be locked
    * @param {number} amount of the asset to be locked
    * @param {string} priv key used to sign the tx
-   * @param {uint} nonce
+   * @param {number} nonce a postitive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
   newNativeLockTx(amount, priv, nonce) {
