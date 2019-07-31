@@ -1,4 +1,4 @@
-import Warp from '../src/index.js'
+import Warp from '@/warp'
 
 const warp = new Warp()
 const xlm = warp.utils.getLumensAsset()

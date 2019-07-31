@@ -1,11 +1,16 @@
-import warp from '../src/index.js'
+import Warp from '@/warp'
 
-let evry = warp.asset.Evry()
-let sender = 'e21b5ec43b500add6a5574b07791944ae8b2d41851f02eefb276305b3d703d49'
+const warp = new Warp()
+const evry = warp.utils.getEvryAsset()
 let recipient = 'SDRQBLF772WER7UHHJPFVLHTDTRMNURXCVSMKJFUOC4XJCUJC4NA4COH'
-let conf = new warp.config('localhost:8080')
+let sender = 'e21b5ec43b500add6a5574b07791944ae8b2d41851f02eefb276305b3d703d49'
 
 warp
-  .ToStellar(sender, recipient, '0.001', evry, conf)
+  .toStellar({
+    evrynetPriv: sender,
+    stellarPriv: recipient,
+    amount: '0.01',
+    asset: evry,
+  })
   .then(console.log)
   .catch(console.error)
