@@ -1,37 +1,44 @@
-import grpc from 'grpc';
+const env = process.env.NODE_ENV
 
-/**
- *  @typedef {Object} ClientConfig
- *  @property {string} host - grpc host url
- *  @property {boolean} isSecure - grpc secure connection flag
- */
-export default class ClientConfig {
+// configuration file is used to configure application and interfaces
+// If anything needs to be sucured, save it in an environement variable file (.env) and paste process.env.[#varname] to this config file.
+import Web3 from 'web3'
+const web3 = new Web3()
 
-  /**
-   * @constructor
-   * @param {string} host
-   * @param {boolean} isSecure
-   */
-  constructor(host, isSecure) {
-    this.host = host || 'localhost:8080';
-    this.isSecure = isSecure || false;
-  }
-
-  /**
-  *	Returns grpc client endpoint
-  **/
-  getHost() {
-    return this.host;
-  }
-
-  /**
-  *	Returns grpc client's credentials
-  **/
-  getSecure() {
-    if (this.isSecure) {
-      return grpc.credentials.createSsl();
-    }
-    return grpc.credentials.createInsecure();
-  }
+const development = {
+  evrynet: {
+    DEFAULT_CONTRACT_ADDRESS: '0xC7B9e4b1414d61136B1e777CFBe84802435Fd2C8',
+    GASLIMIT: web3.utils.toHex(50000),
+    GASPRICE: web3.utils.toHex(Number(web3.utils.toWei('1', 'gwei'))),
+  },
+  stellar: {
+    ESCROW_ACCOUNT: 'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ',
+    EVRY_ASSET_NAME: 'EVRY',
+    EVRY_ASSET_ISSUER_PUB:
+      'GATIJFZRBQH6S2BM2M2LPK7NMZWS43VQJQJNMSAR7LHW3XVPBBNV7BE5',
+    STROOP_OF_ONE_STELLAR: Math.pow(10, 7),
+  },
+  grpc: {
+    STELLAR: 'stellar',
+    EVRYNET: 'evrynet',
+    TRANSFER: 'transfer',
+    DEFAULT_HOST: 'localhost:8080',
+  },
+  contract: {
+    ABI: {
+      WARP: 'warpABI',
+    },
+  },
 }
 
+const test = development
+
+const production = {}
+
+const config = {
+  development,
+  production,
+  test,
+}
+
+export default config[env]
