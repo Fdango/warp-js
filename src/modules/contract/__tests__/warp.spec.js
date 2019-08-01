@@ -67,7 +67,7 @@ describe('WarpContract', () => {
     })
   })
 
-  describe('When creating new native lock lumens raw tx', () => {
+  describe('When creating new native lock raw tx', () => {
     it('should be successfully creating a new native lock raw tx', async () => {
       let warp = getWarpContract()
       let tx = await warp.newNativeLockTx(10, senderpriv, 0)
