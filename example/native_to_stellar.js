@@ -1,15 +1,19 @@
-import Warp from '@/warp'
+import Warp from '@/modules/warp'
 
 const warp = new Warp()
 const evry = warp.utils.getEvryAsset()
-let recipient = 'SDRQBLF772WER7UHHJPFVLHTDTRMNURXCVSMKJFUOC4XJCUJC4NA4COH'
-let sender = 'e21b5ec43b500add6a5574b07791944ae8b2d41851f02eefb276305b3d703d49'
+const sender =
+  '190d4b3a49696f14302a70f923aa47d5a81f1a4f3cad94ed47c2572f8704389d'
+const recipient = {
+  secret: 'SADFSJ45OOSLJZMRSN4X3577NBC5NNKTK4JYE4DS5M34UIVILDC7EW3O',
+  address: 'GB6T7Y6DAEYPSLV3NDH5YFJOMJGGNADTNVCYNSUM74SS77NADWM4BHHH',
+}
 
 warp
   .toStellar({
     evrynetPriv: sender,
-    stellarPriv: recipient,
-    amount: '0.01',
+    stellarPriv: recipient.secret,
+    amount: '1.0',
     asset: evry,
   })
   .then(console.log)
