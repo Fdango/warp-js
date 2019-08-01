@@ -68,6 +68,10 @@ export class Evrynet {
     })
   }
 
+  /**
+   * Return a set of whitelist assets
+   * @returns {Array.<Object>} array of whitelisted assets
+   */
   getWhitelistAssets() {
     return new Promise((resolve, reject) => {
       const chan = this.client.GetWhitelistAssets()
