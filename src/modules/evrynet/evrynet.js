@@ -74,7 +74,7 @@ export class Evrynet {
    */
   getWhitelistAssets() {
     return new Promise((resolve, reject) => {
-      const chan = this.client.GetWhitelistAssets()
+      const chan = this.client.GetWhitelistAssets({})
       chan.on('data', (data) => {
         resolve(data)
       })
