@@ -67,7 +67,8 @@ describe('EvryNet', () => {
     })
     describe('When a stream emit an error response', () => {
       it('should throw an error', async () => {
-        var mockedStream = new Stream.Readable()
+        let mockedStream = new Stream.Readable()
+        mockedStream._read = () => {}
         client.client.GetWhitelistAssets = jest
           .fn()
           .mockReturnValue(mockedStream)

@@ -174,7 +174,8 @@ describe('Stellar', () => {
     })
     describe('When a stream emit an error response', () => {
       it('should throw an error', async () => {
-        var mockedStream = new Stream.Readable()
+        let mockedStream = new Stream.Readable()
+        mockedStream._read = () => {}
         client.client.GetBalance = jest.fn().mockReturnValue(mockedStream)
         setInterval(function() {
           mockedStream.emit('error', new Error('this is an error'))

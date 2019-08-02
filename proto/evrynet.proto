@@ -12,7 +12,9 @@ message GetNonceResponse {
 }
 
 message Asset {  
-    string name = 1;  string code = 2;  string issuer = 3;
+    string name = 1;  
+    string code = 2;  
+    string issuer = 3;
 }
 
 message GetWhitelistAssetsResponse {  
