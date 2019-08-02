@@ -115,7 +115,6 @@ export class WarpContract {
   /**
    * Creates a new native (Evry Coin) lock transaction
    * @param {string} amount of the asset to be locked
-   * @param {number} amount of the asset to be locked
    * @param {string} priv key used to sign the tx
    * @param {number} nonce a postitive generated nonce number
    * @return {Transaction|WrapContractException} raw tx

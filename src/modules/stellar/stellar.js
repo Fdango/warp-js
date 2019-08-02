@@ -148,6 +148,23 @@ export class Stellar {
       return new StellarException(null, e.message)
     }
   }
+
+  /**
+   * @param {string} accountAddress - a address of account
+   * @param {Credit} asset - asset of payment
+   * @returns {string|StellarException} balance
+   */
+  async getAccountBalance(accountAddress, asset) {
+    return new Promise((resolve, reject) => {
+      const chan = this.client.GetBalance({ accountAddress, asset })
+      chan.on('data', (data) => {
+        resolve(data)
+      })
+      chan.on('error', (err) => {
+        reject(new StellarException(null, err.message))
+      })
+    })
+  }
 }
 
 export default {

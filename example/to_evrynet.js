@@ -1,14 +1,17 @@
-import Warp from '@/warp'
+import Warp from '@/modules/warp'
 
 const warp = new Warp()
 const xlm = warp.utils.getLumensAsset()
-let recipient = '0xA0C8451FD06e8AdC7acF1cCf15804Fa1a2F185b3'
-let sender = 'SBYOQRUXJEMYTSCSBEXRSPX7EXLD3A6ZFUO5OCOU6D7TTLDO2NPBXL52'
+const recipient = '0xC2bA31993ec1408b6959d2DF7D3a8fc018328EBf'
+const sender = {
+  secret: 'SADFSJ45OOSLJZMRSN4X3577NBC5NNKTK4JYE4DS5M34UIVILDC7EW3O',
+  address: 'GB6T7Y6DAEYPSLV3NDH5YFJOMJGGNADTNVCYNSUM74SS77NADWM4BHHH',
+}
 
 warp
   .toEvrynet({
-    src: sender,
-    amount: '0.01',
+    src: sender.secret,
+    amount: '1.0',
     asset: xlm,
     evrynetAddress: recipient,
   })
