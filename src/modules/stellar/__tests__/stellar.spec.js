@@ -4,6 +4,7 @@ import { createMockServer } from 'grpc-mock'
 import { getStellarClient } from '@/modules/stellar/stellar'
 import { getLumensAsset } from '@/entities/asset'
 import StellarException from '@/exceptions/stellar'
+import Stream from 'stream'
 
 describe('Stellar', () => {
   let client
@@ -14,6 +15,14 @@ describe('Stellar', () => {
   const nextSeq = '2'
   const host = 'localhost:50051'
   const protoPath = `${path.resolve()}/proto/stellar.proto`
+  const expectedBalance = '1'
+  const getBalInput = {
+    accountAddress: 'foo',
+    asset: {
+      code: 'foo',
+      issuer: 'bar',
+    },
+  }
 
   beforeAll(() => {
     client = getStellarClient({
@@ -29,6 +38,12 @@ describe('Stellar', () => {
           streamType: 'server',
           stream: [{ output: { sequenceNumber: currentSeq } }],
           input: { stellarAddress: senderpk },
+        },
+        {
+          method: 'GetBalance',
+          streamType: 'server',
+          stream: [{ output: { balance: expectedBalance } }],
+          input: getBalInput,
         },
       ],
     })
@@ -143,6 +158,33 @@ describe('Stellar', () => {
         expect(signatures.length).toBe(1)
         let kp = StellarSDK.Keypair.fromPublicKey(senderpk)
         expect(kp.verify(tx.hash(), signatures[0].signature())).toBeTruthy()
+      })
+    })
+  })
+
+  describe('When get account balance', () => {
+    describe('When valid input', () => {
+      it('should respond an expected balance', async () => {
+        let res = await client.getAccountBalance(
+          getBalInput.accountAddress,
+          getBalInput.asset,
+        )
+        expect(res.balance).toEqual(expectedBalance)
+      })
+    })
+    describe('When a stream emit an error response', () => {
+      it('should throw an error', async () => {
+        var mockedStream = new Stream.Readable()
+        client.client.GetBalance = jest.fn().mockReturnValue(mockedStream)
+        setInterval(function() {
+          mockedStream.emit('error', new Error('this is an error'))
+        }, 1000)
+        await expect(
+          client.getAccountBalance(
+            getBalInput.accountAddress,
+            getBalInput.asset,
+          ),
+        ).rejects.toThrow(StellarException)
       })
     })
   })
