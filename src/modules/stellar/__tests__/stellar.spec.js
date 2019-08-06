@@ -16,12 +16,12 @@ describe('Stellar', () => {
   const host = 'localhost:50051'
   const protoPath = `${path.resolve()}/proto/stellar.proto`
   const expectedBalance = '1'
-  const mockedCredit = getLumensAsset
+  const mockedCredit = getLumensAsset()
   const getBalInput = {
     accountAddress: 'foo',
     asset: {
-      code: mockedCredit.asset.GetCode(),
-      issuer: mockedCredit.asset.GetIssuer(),
+      code: mockedCredit.asset.getCode(),
+      issuer: mockedCredit.asset.getIssuer(),
     },
   }
 

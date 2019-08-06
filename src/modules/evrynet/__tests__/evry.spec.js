@@ -18,12 +18,13 @@ describe('EvryNet', () => {
   const protoPath = `${path.resolve()}/proto/evrynet.proto`
   const host = 'localhost:50053'
   const expectedBalance = '1'
-  const mockedCredit = getLumensAsset
+  const mockedCredit = getLumensAsset()
   const getBalInput = {
     accountAddress: 'foo',
     asset: {
-      code: mockedCredit.asset.GetCode(),
-      issuer: mockedCredit.asset.GetIssuer(),
+      name: mockedCredit.name,
+      code: mockedCredit.asset.getCode(),
+      issuer: mockedCredit.asset.getIssuer(),
     },
   }
 
