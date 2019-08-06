@@ -3,6 +3,7 @@ import { createMockServer } from 'grpc-mock'
 import { getEvryClient } from '@/modules/evrynet/evrynet'
 import EvrynetException from '@/exceptions/evrynet'
 import Stream from 'stream'
+import { getLumensAsset } from '@/entities/asset'
 
 describe('EvryNet', () => {
   let client
@@ -16,6 +17,16 @@ describe('EvryNet', () => {
   }
   const protoPath = `${path.resolve()}/proto/evrynet.proto`
   const host = 'localhost:50053'
+  const expectedBalance = '1'
+  const mockedCredit = getLumensAsset()
+  const getBalInput = {
+    accountAddress: 'foo',
+    asset: {
+      name: mockedCredit.name,
+      code: mockedCredit.asset.getCode(),
+      issuer: mockedCredit.asset.getIssuer(),
+    },
+  }
 
   beforeAll(() => {
     client = getEvryClient({
@@ -37,6 +48,12 @@ describe('EvryNet', () => {
           streamType: 'server',
           stream: [{ output: { assets: [expectedAsset] } }],
           input: {},
+        },
+        {
+          method: 'GetBalance',
+          streamType: 'server',
+          stream: [{ output: { balance: expectedBalance } }],
+          input: getBalInput,
         },
       ],
     })
@@ -78,6 +95,28 @@ describe('EvryNet', () => {
         await expect(client.getWhitelistAssets({})).rejects.toThrow(
           EvrynetException,
         )
+      })
+    })
+  })
+
+  describe('When get account balance', () => {
+    describe('When valid input', () => {
+      it('should respond an expected balance', async () => {
+        let res = await client.getAccountBalance('foo', mockedCredit)
+        expect(res.balance).toEqual(expectedBalance)
+      })
+    })
+    describe('When a stream emit an error response', () => {
+      it('should throw an error', async () => {
+        let mockedStream = new Stream.Readable()
+        mockedStream._read = () => {}
+        client.client.GetBalance = jest.fn().mockReturnValue(mockedStream)
+        setInterval(function() {
+          mockedStream.emit('error', new Error('this is an error'))
+        }, 1000)
+        await expect(
+          client.getAccountBalance('foo', mockedCredit),
+        ).rejects.toThrow(EvrynetException)
       })
     })
   })
