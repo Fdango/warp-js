@@ -3,6 +3,7 @@ import { createMockServer } from 'grpc-mock'
 import { getEvryClient } from '@/modules/evrynet/evrynet'
 import EvrynetException from '@/exceptions/evrynet'
 import Stream from 'stream'
+import { getLumensAsset } from '@/entities/asset'
 
 describe('EvryNet', () => {
   let client
@@ -17,11 +18,12 @@ describe('EvryNet', () => {
   const protoPath = `${path.resolve()}/proto/evrynet.proto`
   const host = 'localhost:50053'
   const expectedBalance = '1'
+  const mockedCredit = getLumensAsset
   const getBalInput = {
     accountAddress: 'foo',
     asset: {
-      code: 'foo',
-      issuer: 'bar',
+      code: mockedCredit.asset.GetCode(),
+      issuer: mockedCredit.asset.GetIssuer(),
     },
   }
 
@@ -99,10 +101,7 @@ describe('EvryNet', () => {
   describe('When get account balance', () => {
     describe('When valid input', () => {
       it('should respond an expected balance', async () => {
-        let res = await client.getAccountBalance(
-          getBalInput.accountAddress,
-          getBalInput.asset,
-        )
+        let res = await client.getAccountBalance('foo', mockedCredit)
         expect(res.balance).toEqual(expectedBalance)
       })
     })
@@ -115,10 +114,7 @@ describe('EvryNet', () => {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
         await expect(
-          client.getAccountBalance(
-            getBalInput.accountAddress,
-            getBalInput.asset,
-          ),
+          client.getAccountBalance('foo', mockedCredit),
         ).rejects.toThrow(EvrynetException)
       })
     })

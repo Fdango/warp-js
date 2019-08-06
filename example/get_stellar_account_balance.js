@@ -3,10 +3,11 @@ import Warp from '@/modules/warp'
 const warp = new Warp()
 const evry = warp.utils.getEvryAsset()
 const account = {
-  address: '0x757056B6b1Ea179D6b22F6CCF2E1E597D00bF638',
+  secret: 'SADFSJ45OOSLJZMRSN4X3577NBC5NNKTK4JYE4DS5M34UIVILDC7EW3O',
+  address: 'GB6T7Y6DAEYPSLV3NDH5YFJOMJGGNADTNVCYNSUM74SS77NADWM4BHHH',
 }
 
-warp.client.evry
+warp.client.stellar
   .getAccountBalance(account.address, evry)
   .then((res) => {
     console.log(res)

@@ -109,7 +109,15 @@ export class Evrynet {
    */
   async getAccountBalance(accountAddress, asset) {
     return new Promise((resolve, reject) => {
-      const chan = this.client.GetBalance({ accountAddress, asset })
+      console.log(asset.asset)
+      const chan = this.client.GetBalance({
+        accountAddress,
+        asset: {
+          name: asset.name,
+          code: asset.asset.getCode(),
+          issuer: asset.asset.getIssuer(),
+        },
+      })
       chan.on('data', (data) => {
         resolve(data)
       })

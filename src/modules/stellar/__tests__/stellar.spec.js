@@ -16,11 +16,12 @@ describe('Stellar', () => {
   const host = 'localhost:50051'
   const protoPath = `${path.resolve()}/proto/stellar.proto`
   const expectedBalance = '1'
+  const mockedCredit = getLumensAsset
   const getBalInput = {
     accountAddress: 'foo',
     asset: {
-      code: 'foo',
-      issuer: 'bar',
+      code: mockedCredit.asset.GetCode(),
+      issuer: mockedCredit.asset.GetIssuer(),
     },
   }
 
@@ -165,10 +166,7 @@ describe('Stellar', () => {
   describe('When get account balance', () => {
     describe('When valid input', () => {
       it('should respond an expected balance', async () => {
-        let res = await client.getAccountBalance(
-          getBalInput.accountAddress,
-          getBalInput.asset,
-        )
+        let res = await client.getAccountBalance('foo', mockedCredit)
         expect(res.balance).toEqual(expectedBalance)
       })
     })
@@ -181,10 +179,7 @@ describe('Stellar', () => {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
         await expect(
-          client.getAccountBalance(
-            getBalInput.accountAddress,
-            getBalInput.asset,
-          ),
+          client.getAccountBalance('foo', mockedCredit),
         ).rejects.toThrow(StellarException)
       })
     })
