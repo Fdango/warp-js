@@ -15,6 +15,7 @@ message Asset {
     string name = 1;  
     string code = 2;  
     string issuer = 3;
+    uint32 decimal = 4;
 }
 
 message GetWhitelistAssetsResponse {  

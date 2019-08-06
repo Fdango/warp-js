@@ -14,6 +14,7 @@ describe('EvryNet', () => {
     name: 'foo',
     code: 'bar',
     issuer: 'foo',
+    decimal: 3,
   }
   const protoPath = `${path.resolve()}/proto/evrynet.proto`
   const host = 'localhost:50053'
