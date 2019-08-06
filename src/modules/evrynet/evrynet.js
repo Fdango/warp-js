@@ -101,6 +101,23 @@ export class Evrynet {
       })
     })
   }
+
+  /**
+   * @param {string} accountAddress - a address of account
+   * @param {Credit} asset - asset of payment
+   * @returns {string|EvrynetException} balance
+   */
+  async getAccountBalance(accountAddress, asset) {
+    return new Promise((resolve, reject) => {
+      const chan = this.client.GetBalance({ accountAddress, asset })
+      chan.on('data', (data) => {
+        resolve(data)
+      })
+      chan.on('error', (err) => {
+        reject(new EvrynetException(null, err.message))
+      })
+    })
+  }
 }
 
 export default {

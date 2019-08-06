@@ -3,11 +3,11 @@ syntax = "proto3";
 package evrynet;
 import "google/protobuf/empty.proto";
 
-message GetNonceRequest {
+message GetNonceRequest {    
     string evrynetAddress = 1;
 }
 
-message GetNonceResponse {
+message GetNonceResponse {    
     string nonce = 1;
 }
 
@@ -21,7 +21,17 @@ message GetWhitelistAssetsResponse {
     repeated Asset assets = 1;
 }
 
-service EvrynetGRPC {
-    rpc GetNonce(GetNonceRequest) returns (stream GetNonceResponse);
-    rpc GetWhitelistAssets (google.protobuf.Empty) returns (stream GetWhitelistAssetsResponse);
+message GetBalanceRequest {    
+    string accountAddress = 1;    
+    Asset asset = 2;
+}
+
+message GetBalanceResponse {    
+    string balance = 1;
+}
+
+service EvrynetGRPC {    
+    rpc GetNonce (GetNonceRequest) returns (stream GetNonceResponse);    
+    rpc GetWhitelistAssets (google.protobuf.Empty) returns (stream GetWhitelistAssetsResponse);    
+    rpc GetBalance(GetBalanceRequest) returns (stream GetBalanceResponse);
 }
