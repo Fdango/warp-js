@@ -8,7 +8,7 @@ import WrapContractException from '@/exceptions/warp_contract'
 
 const {
   stellar: { STROOP_OF_ONE_STELLAR },
-  evrynet: { DEFAULT_CONTRACT_ADDRESS, GASLIMIT, GASPRICE },
+  evrynet: { DEFAULT_CONTRACT_ADDRESS, GASLIMIT, GASPRICE, CUSTOM_CHAIN },
   contract: {
     ABI: { WARP },
   },
@@ -93,14 +93,19 @@ export class WarpContract {
         .mul(STROOP_OF_ONE_STELLAR)
         .toString()
       const data = this.warp.methods.lock(assetHexName, bnAmount).encodeABI()
-      let tx = new Transaction({
-        nonce,
-        from: account.address,
-        to: this.warp.address,
-        gasLimit: GASLIMIT,
-        gasPrice: GASPRICE,
-        data,
-      })
+      let tx = new Transaction(
+        {
+          nonce,
+          from: account.address,
+          to: this.warp.address,
+          gasLimit: GASLIMIT,
+          gasPrice: GASPRICE,
+          data,
+        },
+        {
+          common: CUSTOM_CHAIN,
+        },
+      )
       tx.sign(Buffer.from(priv, 'hex'))
       return tx
     } catch (e) {
@@ -135,15 +140,20 @@ export class WarpContract {
         )
       }
       const data = this.warp.methods.lockNative().encodeABI()
-      let tx = new Transaction({
-        nonce,
-        from: account.address,
-        to: this.warp.address,
-        value: bnAmount,
-        gasLimit: GASLIMIT,
-        gasPrice: GASPRICE,
-        data,
-      })
+      let tx = new Transaction(
+        {
+          nonce,
+          from: account.address,
+          to: this.warp.address,
+          value: bnAmount,
+          gasLimit: GASLIMIT,
+          gasPrice: GASPRICE,
+          data,
+        },
+        {
+          common: CUSTOM_CHAIN,
+        },
+      )
       tx.sign(Buffer.from(priv, 'hex'))
       return tx
     } catch (e) {
