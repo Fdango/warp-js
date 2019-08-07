@@ -7,7 +7,7 @@ import WarpException from '@/exceptions/warp_sdk'
 
 /**
  *
- * @typedef {import('./entities/asset').Credit} Asset
+ * @typedef {import('./entities/asset').Asset} Asset
  */
 
 /**
@@ -40,12 +40,15 @@ export default class Warp {
    */
   async toEvrynet({ src, amount, asset, evrynetAddress }) {
     try {
+      const whitelistedAsset = await this.client.evry.getWhitelistAssetsByCode(
+        asset,
+      )
       const res = await this.client.stellar.getSequenceNumberBySecret(src)
       const paymentXDR = await this.client.stellar.createDepositTx({
         src,
         seq: res.sequenceNumber,
         amount,
-        asset,
+        asset: whitelistedAsset.toStellarFormat(),
       })
       return await this.client.transfer.toEvrynet(paymentXDR, evrynetAddress)
     } catch (e) {
@@ -67,6 +70,9 @@ export default class Warp {
    */
   async toStellar({ evrynetPriv, stellarPriv, amount, asset }) {
     try {
+      const whitelistedAsset = await this.client.evry.getWhitelistAssetsByCode(
+        asset,
+      )
       // instanciate stellar client
       const res = await this.client.stellar.getSequenceNumberBySecret(
         stellarPriv,
@@ -76,12 +82,12 @@ export default class Warp {
         src: stellarPriv,
         seq: res.sequenceNumber,
         amount,
-        asset,
+        asset: whitelistedAsset.toStellarFormat(),
       })
       const nonceRes = await this.client.evry.getNonceFromPriv(evrynetPriv)
       // make a lock asset msg call
       let tx
-      if (asset.isNative()) {
+      if (whitelistedAsset.isNative()) {
         tx = this.contract.warp.newNativeLockTx(
           amount,
           evrynetPriv,
@@ -89,7 +95,7 @@ export default class Warp {
         )
       } else {
         tx = this.contract.warp.newCreditLockTx(
-          asset,
+          whitelistedAsset,
           amount,
           evrynetPriv,
           Number(nonceRes.nonce),

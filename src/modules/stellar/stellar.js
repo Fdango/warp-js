@@ -12,8 +12,7 @@ const {
 let sc = []
 
 /**
- *
- * @typedef {import('../../entities/asset').Credit} Credit
+ * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
  * @typedef {import('grpc').Client} GRPCClient
  */
 
@@ -94,7 +93,7 @@ export class Stellar {
    * @param {string} payload.src - source address of transaction
    * @param {string} payload.seq - sequence number of transaction
    * @param {string} payload.amount - amount to be sent
-   * @param {Credit} payload.asset - asset type
+   * @param {StellarSDK.Asset} payload.asset - asset type
    */
   async createDepositTx({ src, seq, amount, asset }) {
     return this.newPaymentTx(src, '', ESCROW_ACCOUNT, seq, amount, asset)
@@ -106,7 +105,7 @@ export class Stellar {
    * @param {string} payload - a payload clients send to withdraw a transaction
    * @param {string} payload.src - a sender's stellar secret which will be received the asset
    * @param {string} payload.amount - amount of an asset to be transfered
-   * @param {Object} payload.asset - stellar asset to be transfered
+   * @param {StellarSDK.Asset} payload.asset - stellar asset to be transfered
    */
   async createWithdrawTx({ src, seq, amount, asset }) {
     return this.newPaymentTx(src, ESCROW_ACCOUNT, '', seq, amount, asset)
@@ -119,7 +118,7 @@ export class Stellar {
    * @param {string} opDest - a destination of destination
    * @param {string} seq - sequence number
    * @param {string} amount - amount to do a payment
-   * @param {Credit} asset - asset of payment
+   * @param {StellarSDK.Asset} asset - asset of payment
    * @returns {string|StellarException} xdr or exception
    */
   async newPaymentTx(txSrc, opSrc, opDest, seq, amount, asset) {
@@ -136,7 +135,7 @@ export class Stellar {
           StellarSDK.Operation.payment({
             source: _opSrc,
             destination: _opDest,
-            asset: asset.asset,
+            asset,
             amount: amount,
           }),
         )
@@ -151,17 +150,19 @@ export class Stellar {
 
   /**
    * @param {string} accountAddress - a address of account
-   * @param {Credit} asset - asset of payment
+   * @param {WhitelistedAsset} asset - asset of payment
    * @returns {string|StellarException} balance
    */
   async getAccountBalance(accountAddress, asset) {
+    console.log(asset, ' this is asset bitch!')
+    console.log(accountAddress, 'this is account address woi')
     return new Promise((resolve, reject) => {
       const chan = this.client.GetBalance({
         accountAddress,
         asset: {
-          name: asset.name,
-          code: asset.asset.getCode(),
-          issuer: asset.asset.getIssuer(),
+          code: asset.code,
+          issuer: asset.issuer,
+          decimal: asset.decimal,
         },
       })
       chan.on('data', (data) => {

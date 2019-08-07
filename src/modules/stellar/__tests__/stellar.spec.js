@@ -16,12 +16,16 @@ describe('Stellar', () => {
   const host = 'localhost:50051'
   const protoPath = `${path.resolve()}/proto/stellar.proto`
   const expectedBalance = '1'
-  const mockedCredit = getLumensAsset()
+  const mockedCredit = {
+    ...getLumensAsset(),
+    decimal: 3,
+  }
   const getBalInput = {
     accountAddress: 'foo',
     asset: {
-      code: mockedCredit.asset.getCode(),
-      issuer: mockedCredit.asset.getIssuer(),
+      code: mockedCredit.code,
+      issuer: mockedCredit.issuer,
+      decimal: mockedCredit.decimal,
     },
   }
 
@@ -81,7 +85,7 @@ describe('Stellar', () => {
           src: sender,
           seq: res.sequenceNumber,
           amount,
-          asset: xlm,
+          asset: xlm.toStellarFormat(),
         })
         let tx = new StellarSDK.Transaction(txeB64)
 
@@ -103,8 +107,8 @@ describe('Stellar', () => {
         expect(paymentOp.destination).toBe(
           'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ',
         )
-        expect(paymentOp.asset.code).toBe(xlm.asset.code)
-        expect(paymentOp.asset.issuer).toBe(xlm.asset.issuer)
+        expect(paymentOp.asset.code).toBe(xlm.code)
+        expect(paymentOp.asset.issuer).toBe(xlm.issuer)
         expect(paymentOp.amount).toBe(amount)
 
         // validate signature
@@ -127,7 +131,7 @@ describe('Stellar', () => {
           src: sender,
           seq: res.sequenceNumber,
           amount,
-          asset: xlm,
+          asset: xlm.toStellarFormat(),
         })
         let tx = new StellarSDK.Transaction(txeB64)
 
@@ -149,8 +153,8 @@ describe('Stellar', () => {
           'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ',
         )
         expect(paymentOp.destination).toBe(senderpk)
-        expect(paymentOp.asset.code).toBe(xlm.asset.code)
-        expect(paymentOp.asset.issuer).toBe(xlm.asset.issuer)
+        expect(paymentOp.asset.code).toBe(xlm.code)
+        expect(paymentOp.asset.issuer).toBe(xlm.issuer)
         expect(paymentOp.amount).toBe(amount)
 
         // validate signature
@@ -166,7 +170,11 @@ describe('Stellar', () => {
   describe('When get account balance', () => {
     describe('When valid input', () => {
       it('should respond an expected balance', async () => {
-        let res = await client.getAccountBalance('foo', mockedCredit)
+        console.log(getBalInput)
+        let res = await client.getAccountBalance(
+          getBalInput.accountAddress,
+          getBalInput.asset,
+        )
         expect(res.balance).toEqual(expectedBalance)
       })
     })
@@ -179,7 +187,10 @@ describe('Stellar', () => {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
         await expect(
-          client.getAccountBalance('foo', mockedCredit),
+          client.getAccountBalance(
+            getBalInput.accountAddress,
+            getBalInput.asset,
+          ),
         ).rejects.toThrow(StellarException)
       })
     })

@@ -17,7 +17,7 @@ const {
 let wc = []
 
 /**
- *
+ * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
  * @typedef {import('web3-eth-contract').Contract} Contract
  */
 
@@ -73,7 +73,7 @@ export class WarpContract {
 
   /**
    * Creates a new credit lock transaction
-   * @param {Credit} asset to be locked
+   * @param {WhitelistedAsset} asset to be locked
    * @param {string} amount of the asset to be locked
    * @param {string} priv key used to sign the tx
    * @param {number} nonce a postitive generated nonce number
@@ -88,7 +88,7 @@ export class WarpContract {
       if (amount <= 0) {
         throw new WrapContractException(null, 'Amount should be greater than 0')
       }
-      const assetHexName = asset.getHexName()
+      const assetHexName = asset.getHexKey()
       const bnAmount = new BigNumber(amount)
         .mul(STROOP_OF_ONE_STELLAR)
         .toString()

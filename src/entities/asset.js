@@ -9,51 +9,58 @@ const {
 
 /**
  *	Returns XLM asset.
- *	@return {Credit} - Lumens(XLM).
+ *	@return {Asset} - Lumens(XLM).
  **/
 export function getLumensAsset() {
-  return new Credit('Lumens', StellarSDK.Asset.native())
+  const asset = StellarSDK.Asset.native()
+  return new Asset({
+    code: asset.getCode(),
+    issuer: asset.getIssuer(),
+  })
 }
 
 /**
  *	Returns Evry coin (Native asset).
- *	@return {Credit} - Evry Coin.
+ *	@return {Asset} - Evry Coin.
  **/
 export function getEvryAsset() {
-  return new Credit(
-    'Evry Coin',
-    new StellarSDK.Asset(EVRY_ASSET_NAME, EVRY_ASSET_ISSUER_PUB),
-  )
+  return new Asset({
+    code: EVRY_ASSET_NAME,
+    issuer: EVRY_ASSET_ISSUER_PUB,
+  })
 }
 
 /**
  * Class representing credit.
- * @typedef Credit
+ * @typedef Asset
  * @property {string} name
  * @property {Object} asset
  */
-export class Credit {
-  /**
-   * Constructor for creating Credit.
-   * @class
-   * @param {string} name - credit name.
-   * @param {StellarSDK.Asset} asset - stellar asset.
-   */
-  constructor(name, asset) {
-    this.name = name
-    this.asset = asset
+export class Asset {
+  constructor({ code, issuer }) {
     this.web3 = new Web3()
+    this.code = code
+    this.issuer = issuer
+  }
+
+  /**
+   * Map to stellar asset object
+   * @returns {StellarSDK.Asset} - stellar asset object
+   */
+  toStellarFormat() {
+    return new StellarSDK.Asset(this.code, this.issuer)
   }
 
   /**
    * Get name in hex-encoded format.
    * @returns {string} - hex-encoded of asset name.
    */
-  getHexName() {
-    if (!this.name) {
+  getHexKey() {
+    if (!this.code) {
       throw new AssetEntityException(null, 'cannot read name property')
     }
-    return this.web3.utils.asciiToHex(this.name)
+    const key = `${this.code},${this.issuer || ''}`
+    return this.web3.utils.keccak256(key)
   }
 
   /**
@@ -62,13 +69,33 @@ export class Credit {
    */
   isNative() {
     return (
-      this.asset.getCode() === EVRY_ASSET_NAME &&
-      this.asset.getIssuer() === EVRY_ASSET_ISSUER_PUB
+      this.code === EVRY_ASSET_NAME && this.issuer === EVRY_ASSET_ISSUER_PUB
     )
   }
 }
 
+/**
+ * Class representing credit.
+ * @typedef WhitelistedAsset
+ * @property {string} name
+ * @property {Object} asset
+ */
+export class WhitelistedAsset extends Asset {
+  /**
+   * Constructor for creating Credit.
+   * @class
+   * @param {string} name - credit name.
+   * @param {StellarSDK.Asset} asset - stellar asset.
+   */
+  constructor({ code, issuer, decimal }) {
+    super({ code, issuer })
+    this.decimal = decimal
+  }
+}
+
 export default {
-  getLumensAsset,
+  Asset,
+  WhitelistedAsset,
   getEvryAsset,
+  getLumensAsset,
 }

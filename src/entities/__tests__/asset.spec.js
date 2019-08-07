@@ -8,14 +8,14 @@ describe('Asset', () => {
   describe('When call each asset', () => {
     it('should returns a valid XLM asset', () => {
       let xlm = getLumensAsset()
-      expect(xlm.asset.code).toBe('XLM')
-      expect(xlm.asset.issuer).toBeUndefined()
+      expect(xlm.code).toBe('XLM')
+      expect(xlm.issuer).toBeUndefined()
     })
 
     it('should returns a valid EVRY asset', () => {
       let evry = getEvryAsset()
-      expect(evry.asset.code).toBe(EVRY_ASSET_NAME)
-      expect(evry.asset.issuer).toBe(EVRY_ASSET_ISSUER_PUB)
+      expect(evry.code).toBe(EVRY_ASSET_NAME)
+      expect(evry.issuer).toBe(EVRY_ASSET_ISSUER_PUB)
     })
   })
 })

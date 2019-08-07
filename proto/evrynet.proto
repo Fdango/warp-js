@@ -1,21 +1,19 @@
 syntax = "proto3";
-
 package evrynet;
 import "google/protobuf/empty.proto";
+
+message Asset {  
+    string code = 1;  
+    string issuer = 2;  
+    uint32 decimal = 3;
+}
 
 message GetNonceRequest {    
     string evrynetAddress = 1;
 }
 
-message GetNonceResponse {    
+message GetNonceResponse{    
     string nonce = 1;
-}
-
-message Asset {  
-    string name = 1;  
-    string code = 2;  
-    string issuer = 3;
-    uint32 decimal = 4;
 }
 
 message GetWhitelistAssetsResponse {  
@@ -26,7 +24,7 @@ message GetBalanceRequest {
     string accountAddress = 1;    
     Asset asset = 2;
 }
-
+    
 message GetBalanceResponse {    
     string balance = 1;
 }
