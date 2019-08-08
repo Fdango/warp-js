@@ -7,7 +7,7 @@ import config from '@/config/config'
 import WrapContractException from '@/exceptions/warp_contract'
 
 const {
-  stellar: { STROOP_OF_ONE_STELLAR },
+  stellar: { ATOMIC_STELLAR_DECIMAL_UNIT, ATOMIC_EVRY_UNIT_DECIMAL },
   evrynet: { DEFAULT_CONTRACT_ADDRESS, GASLIMIT, GASPRICE },
   contract: {
     ABI: { WARP },
@@ -73,25 +73,27 @@ export class WarpContract {
 
   /**
    * Creates a new credit lock transaction
-   * @param {WhitelistedAsset} asset to be locked
-   * @param {string} amount of the asset to be locked
-   * @param {string} priv key used to sign the tx
-   * @param {number} nonce a postitive generated nonce number
+   * @param {Object} payload - payload for creating tx
+   * @param {WhitelistedAsset} payload.asset to be locked
+   * @param {string} payload.amount of the asset to be locked
+   * @param {string} payload.priv key used to sign the tx
+   * @param {number} payload.nonce a postitive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newCreditLockTx(asset, amount, priv, nonce) {
+  newCreditLockTx({ asset, amount, priv, nonce }) {
     try {
       const account = this.web3.eth.accounts.privateKeyToAccount(priv)
       if (!asset) {
         throw new WrapContractException(null, 'Invalid Asset')
       }
-      if (amount <= 0) {
-        throw new WrapContractException(null, 'Amount should be greater than 0')
+      if (!this._validateAmount(amount, asset.decimal)) {
+        throw new WrapContractException(
+          null,
+          `Not allow to move evry coin more than ${asset.decimal} decimals`,
+        )
       }
+      const bnAmount = this._parseAmount(amount, asset.decimal).toString()
       const assetHexName = asset.getHexKey()
-      const bnAmount = new BigNumber(amount)
-        .mul(STROOP_OF_ONE_STELLAR)
-        .toString()
       const data = this.warp.methods.lock(assetHexName, bnAmount).encodeABI()
       let tx = new Transaction({
         nonce,
@@ -114,26 +116,24 @@ export class WarpContract {
 
   /**
    * Creates a new native (Evry Coin) lock transaction
-   * @param {string} amount of the asset to be locked
-   * @param {string} priv key used to sign the tx
-   * @param {number} nonce a postitive generated nonce number
+   * @param {Object} payload - payload for creating tx
+   * @param {WhitelistedAsset} payload.asset to be locked
+   * @param {string} payload.amount of the asset to be locked
+   * @param {string} payload.priv key used to sign the tx
+   * @param {number} payload.nonce a postitive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newNativeLockTx(amount, priv, nonce) {
+  newNativeLockTx({ asset, amount, priv, nonce }) {
     try {
       const account = this.web3.eth.accounts.privateKeyToAccount(priv)
-      if (amount <= 0) {
-        throw new WrapContractException(null, 'Amount should be greater than 0')
-      }
-      const bnAmount = new BigNumber(amount)
-        .mul(STROOP_OF_ONE_STELLAR)
-        .toNumber()
-      if (bnAmount <= 0) {
+      const decimal = asset ? asset.decimal : ATOMIC_EVRY_UNIT_DECIMAL
+      if (!this._validateAmount(amount, decimal)) {
         throw new WrapContractException(
           null,
-          'not allow to move evry coin more than 7 decimals',
+          `Invalid amount: decimal is more than ${ATOMIC_STELLAR_DECIMAL_UNIT}`,
         )
       }
+      const bnAmount = this._parseAmount(amount, decimal).toString()
       const data = this.warp.methods.lockNative().encodeABI()
       let tx = new Transaction({
         nonce,
@@ -153,6 +153,25 @@ export class WarpContract {
         e.message,
       )
     }
+  }
+
+  _validateAmount(amount, srcDecimal) {
+    if (!Number(amount) || Number(amount) <= 0) {
+      return false
+    }
+    const moduloer = this._parseAmount(amount, srcDecimal)
+    if (srcDecimal <= ATOMIC_STELLAR_DECIMAL_UNIT) {
+      return moduloer.mod(1).toNumber() === 0
+    }
+    const moduloand = this._parseAmount(
+      1,
+      srcDecimal - ATOMIC_STELLAR_DECIMAL_UNIT,
+    )
+    return moduloer.mod(moduloand).toNumber() === 0
+  }
+
+  _parseAmount(amount, decimal) {
+    return new BigNumber(amount).shiftedBy(decimal)
   }
 
   /**

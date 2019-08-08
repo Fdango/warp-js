@@ -86,22 +86,19 @@ export default class Warp {
       })
       const nonceRes = await this.client.evry.getNonceFromPriv(evrynetPriv)
       // make a lock asset msg call
-      let tx
-      if (whitelistedAsset.isNative()) {
-        tx = this.contract.warp.newNativeLockTx(
-          amount,
-          evrynetPriv,
-          Number(nonceRes.nonce),
-        )
-      } else {
-        tx = this.contract.warp.newCreditLockTx(
-          whitelistedAsset,
-          amount,
-          evrynetPriv,
-          Number(nonceRes.nonce),
-        )
+      const payload = {
+        asset: whitelistedAsset,
+        amount,
+        priv: evrynetPriv,
+        nonce: Number(nonceRes.nonce),
       }
-      let evrynetTx = this.contract.warp.txToHex(tx)
+      const evrynetTx = whitelistedAsset.isNative()
+        ? this.contract.warp.txToHex(
+            this.contract.warp.newNativeLockTx(payload),
+          )
+        : this.contract.warp.txToHex(
+            this.contract.warp.newCreditLockTx(payload),
+          )
       // make a transfer request
       return await this.client.transfer.toStellar(evrynetTx, stellarTx)
     } catch (e) {
