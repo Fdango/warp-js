@@ -155,6 +155,12 @@ export class WarpContract {
     }
   }
 
+  /**
+   * validate amount based on source decimal and stellar atomic decimal unit
+   * @param {string} amount
+   * @param {number} srcDecimal
+   * @return {boolean}
+   */
   _validateAmount(amount, srcDecimal) {
     if (!Number(amount) || Number(amount) <= 0) {
       return false
@@ -170,6 +176,12 @@ export class WarpContract {
     return moduloer.mod(moduloand).toNumber() === 0
   }
 
+  /**
+   * parse amount string to big number format
+   * @param {string} amount
+   * @param {number} srcDecimal
+   * @return {BigNumber}
+   */
   _parseAmount(amount, decimal) {
     return new BigNumber(amount).shiftedBy(decimal)
   }

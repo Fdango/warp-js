@@ -33,10 +33,18 @@ export function getEvryAsset() {
 /**
  * Class representing credit.
  * @typedef Asset
- * @property {string} name
- * @property {Object} asset
+ * @property {Web3} web3 - web3 utils
+ * @property {string} issuer - asset's issuer
+ * @property {string} code - asset's code
  */
 export class Asset {
+  /**
+   * Constructor for creating Credit.
+   * @class
+   * @param {Object} payload - asset fields
+   * @param {string} payload.code - asset's code
+   * @param {string} payload.issuer - asset's issuer
+   */
   constructor({ code, issuer }) {
     this.web3 = new Web3()
     this.code = code
@@ -77,15 +85,17 @@ export class Asset {
 /**
  * Class representing credit.
  * @typedef WhitelistedAsset
- * @property {string} name
- * @property {Object} asset
+ * @augments Asset
+ * @property {string} decimal - decimal of asset
  */
 export class WhitelistedAsset extends Asset {
   /**
    * Constructor for creating Credit.
    * @class
-   * @param {string} name - credit name.
-   * @param {StellarSDK.Asset} asset - stellar asset.
+   * @param {Object} payload - asset fields
+   * @param {string} payload.code - asset's code
+   * @param {string} payload.issuer - asset's issuer
+   * @param {string} payload.decimal - asset's decimal
    */
   constructor({ code, issuer, decimal }) {
     super({ code, issuer })

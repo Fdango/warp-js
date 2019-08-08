@@ -154,8 +154,6 @@ export class Stellar {
    * @returns {string|StellarException} balance
    */
   async getAccountBalance(accountAddress, asset) {
-    console.log(asset, ' this is asset bitch!')
-    console.log(accountAddress, 'this is account address woi')
     return new Promise((resolve, reject) => {
       const chan = this.client.GetBalance({
         accountAddress,

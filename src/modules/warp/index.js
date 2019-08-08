@@ -34,7 +34,7 @@ export default class Warp {
    * @param {Object} payload - a sender's stellar secret which holds the target asset
    * @param {string} payload.src - amount of an asset to be transfered
    * @param {string} payload.amount - amount of an asset to be transfered
-   * @param {Asset} payload.asset - stellar asset to be transfered
+   * @param {Asset}  payload.asset - stellar asset to be transfered
    * @param {string} payload.evrynetAddress - a recipient's Evrynet address
    * @returns {Object|WarpException} - to evrynet response
    */
