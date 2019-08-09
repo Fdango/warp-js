@@ -61,7 +61,7 @@ export class Stellar {
         resolve(data)
       })
       chan.on('error', (err) => {
-        reject(new StellarException(null, err.message))
+        reject(new StellarException(null, err.toString()))
       })
     })
   }
@@ -81,7 +81,7 @@ export class Stellar {
         resolve(data)
       })
       chan.on('error', (err) => {
-        reject(new StellarException(null, err.message))
+        reject(new StellarException(null, err.toString()))
       })
     })
   }
@@ -144,7 +144,7 @@ export class Stellar {
       transaction.sign(kp)
       return transaction.toXDR()
     } catch (e) {
-      return new StellarException(null, e.message)
+      return new StellarException(null, e.toString())
     }
   }
 
@@ -167,7 +167,7 @@ export class Stellar {
         resolve(data)
       })
       chan.on('error', (err) => {
-        reject(new StellarException(null, err.message))
+        reject(new StellarException(null, err.toString()))
       })
     })
   }

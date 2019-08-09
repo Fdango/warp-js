@@ -7,8 +7,13 @@ import config from '@/config/config'
 import WrapContractException from '@/exceptions/warp_contract'
 
 const {
-  stellar: { ATOMIC_STELLAR_DECIMAL_UNIT, ATOMIC_EVRY_UNIT_DECIMAL },
-  evrynet: { DEFAULT_CONTRACT_ADDRESS, GASLIMIT, GASPRICE },
+  evrynet: {
+    DEFAULT_CONTRACT_ADDRESS,
+    GASLIMIT,
+    GASPRICE,
+    ATOMIC_EVRY_DECIMAL_UNIT,
+    ATOMIC_STELLAR_DECIMAL_UNIT,
+  },
   contract: {
     ABI: { WARP },
   },
@@ -66,7 +71,7 @@ export class WarpContract {
       throw new WrapContractException(
         null,
         'Unable to lock a credit',
-        e.message,
+        e.toString(),
       )
     }
   }
@@ -92,7 +97,9 @@ export class WarpContract {
           `Not allow to move evry coin more than ${asset.decimal} decimals`,
         )
       }
-      const bnAmount = this._parseAmount(amount, asset.decimal).toString()
+      const bnAmount = this.web3.utils.toHex(
+        this._parseAmount(amount, asset.decimal),
+      )
       const assetHexName = asset.getHexKey()
       const data = this.warp.methods.lock(assetHexName, bnAmount).encodeABI()
       let tx = new Transaction({
@@ -109,7 +116,7 @@ export class WarpContract {
       throw new WrapContractException(
         null,
         'Unable to lock a credit',
-        e.message,
+        e.toString(),
       )
     }
   }
@@ -126,14 +133,14 @@ export class WarpContract {
   newNativeLockTx({ asset, amount, priv, nonce }) {
     try {
       const account = this.web3.eth.accounts.privateKeyToAccount(priv)
-      const decimal = asset ? asset.decimal : ATOMIC_EVRY_UNIT_DECIMAL
+      const decimal = asset ? asset.decimal : ATOMIC_EVRY_DECIMAL_UNIT
       if (!this._validateAmount(amount, decimal)) {
         throw new WrapContractException(
           null,
           `Invalid amount: decimal is more than ${ATOMIC_STELLAR_DECIMAL_UNIT}`,
         )
       }
-      const bnAmount = this._parseAmount(amount, decimal).toString()
+      const bnAmount = this.web3.utils.toHex(this._parseAmount(amount, decimal))
       const data = this.warp.methods.lockNative().encodeABI()
       let tx = new Transaction({
         nonce,
@@ -150,7 +157,7 @@ export class WarpContract {
       throw new WrapContractException(
         null,
         'Unable to lock a credit',
-        e.message,
+        e.toString(),
       )
     }
   }
@@ -198,7 +205,7 @@ export class WarpContract {
       throw new WrapContractException(
         null,
         'Unable to lock a credit',
-        e.message,
+        e.toString(),
       )
     }
   }

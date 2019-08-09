@@ -40,9 +40,12 @@ export default class Warp {
    */
   async toEvrynet({ src, amount, asset, evrynetAddress }) {
     try {
-      const whitelistedAsset = await this.client.evry.getWhitelistAssetByCode(
-        asset,
-      )
+      const whitelistedAsset = asset.isNative()
+        ? asset
+        : await this.client.evry.getWhitelistAssetByCode(asset)
+      if (!whitelistedAsset) {
+        throw new WarpException(null, 'Whitelisted asset not found')
+      }
       const res = await this.client.stellar.getSequenceNumberBySecret(src)
       const paymentXDR = await this.client.stellar.createDepositTx({
         src,
@@ -54,7 +57,7 @@ export default class Warp {
     } catch (e) {
       throw new WarpException(
         null,
-        e.message,
+        e.toString(),
         'Unable to move the asset to evrynet',
       )
     }
@@ -70,9 +73,12 @@ export default class Warp {
    */
   async toStellar({ evrynetPriv, stellarPriv, amount, asset }) {
     try {
-      const whitelistedAsset = await this.client.evry.getWhitelistAssetByCode(
-        asset,
-      )
+      const whitelistedAsset = asset.isNative()
+        ? asset
+        : await this.client.evry.getWhitelistAssetByCode(asset)
+      if (!whitelistedAsset) {
+        throw new WarpException(null, 'Whitelisted asset not found')
+      }
       // instanciate stellar client
       const res = await this.client.stellar.getSequenceNumberBySecret(
         stellarPriv,
@@ -87,7 +93,6 @@ export default class Warp {
       const nonceRes = await this.client.evry.getNonceFromPriv(evrynetPriv)
       // make a lock asset msg call
       const payload = {
-        asset: whitelistedAsset,
         amount,
         priv: evrynetPriv,
         nonce: Number(nonceRes.nonce),
@@ -97,14 +102,17 @@ export default class Warp {
             this.contract.warp.newNativeLockTx(payload),
           )
         : this.contract.warp.txToHex(
-            this.contract.warp.newCreditLockTx(payload),
+            this.contract.warp.newCreditLockTx({
+              ...payload,
+              asset: whitelistedAsset,
+            }),
           )
       // make a transfer request
       return await this.client.transfer.toStellar(evrynetTx, stellarTx)
     } catch (e) {
       throw new WarpException(
         null,
-        e.message,
+        e.toString(),
         'Unable to move the asset to stellar',
       )
     }

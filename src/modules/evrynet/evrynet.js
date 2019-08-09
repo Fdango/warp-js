@@ -66,7 +66,7 @@ export class Evrynet {
         resolve(data)
       })
       chan.on('error', (err) => {
-        reject(new EvrynetException(null, err.message))
+        reject(new EvrynetException(null, err.toString()))
       })
     })
   }
@@ -85,7 +85,7 @@ export class Evrynet {
         resolve({ assets })
       })
       chan.on('error', (err) => {
-        reject(new EvrynetException(null, err.message))
+        reject(new EvrynetException(null, err.toString()))
       })
     })
   }
@@ -103,7 +103,7 @@ export class Evrynet {
         issuer: asset.getIssuer(),
       })
     } catch (e) {
-      throw new EvrynetException(null, e.message)
+      throw new EvrynetException(null, e.toString())
     }
   }
 
@@ -120,7 +120,7 @@ export class Evrynet {
         resolve(data)
       })
       chan.on('error', (err) => {
-        reject(new EvrynetException(null, err.message))
+        reject(new EvrynetException(null, err.toString()))
       })
     })
   }
@@ -144,7 +144,7 @@ export class Evrynet {
         resolve(data)
       })
       chan.on('error', (err) => {
-        reject(new EvrynetException(null, err.message))
+        reject(new EvrynetException(null, err.toString()))
       })
     })
   }
