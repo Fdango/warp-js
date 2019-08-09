@@ -50,6 +50,21 @@ export class Asset {
     this.code = code
     this.issuer = issuer
   }
+  /**
+   * get formatted asset's issuer
+   * @returns {string}
+   */
+  getIssuer() {
+    return this.issuer || ''
+  }
+
+  /**
+   * get formatted asset's code
+   * @returns {string}
+   */
+  getCode() {
+    return this.code
+  }
 
   /**
    * Map to stellar asset object
@@ -100,6 +115,14 @@ export class WhitelistedAsset extends Asset {
   constructor({ code, issuer, decimal }) {
     super({ code, issuer })
     this.decimal = decimal
+  }
+
+  /**
+   * get decimal of an asset
+   * @returns {number}
+   */
+  getDecimal() {
+    return this.decimal
   }
 }
 

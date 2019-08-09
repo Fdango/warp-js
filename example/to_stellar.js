@@ -13,7 +13,7 @@ warp
   .toStellar({
     evrynetPriv: sender,
     stellarPriv: recipient.secret,
-    amount: '0.01',
+    amount: '10',
     asset: xlm,
   })
   .then(console.log)

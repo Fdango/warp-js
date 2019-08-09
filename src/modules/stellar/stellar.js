@@ -158,9 +158,9 @@ export class Stellar {
       const chan = this.client.GetBalance({
         accountAddress,
         asset: {
-          code: asset.code,
-          issuer: asset.issuer,
-          decimal: asset.decimal,
+          code: asset.getCode(),
+          issuer: asset.getIssuer(),
+          decimal: asset.getDecimal(),
         },
       })
       chan.on('data', (data) => {

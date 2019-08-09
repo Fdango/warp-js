@@ -92,17 +92,15 @@ export class Evrynet {
 
   /**
    * Return an asset of specified code
-   * @param {Object} key - key for indentifying asset
-   * @param {string} key.code - code of the asset
-   * @param {string} key.issuer - issuer of the asset
+   * @param {Asset} asset - asset of to be fetched from whitelisted
    * @returns {WhitelistedAsset} asset
    */
-  async getWhitelistAssetByCode({ code, issuer }) {
+  async getWhitelistAssetByCode(asset) {
     try {
       const data = await this.getWhitelistAssets()
       return find(data.assets, {
-        code,
-        issuer,
+        code: asset.getCode(),
+        issuer: asset.getIssuer(),
       })
     } catch (e) {
       throw new EvrynetException(null, e.message)
@@ -137,9 +135,9 @@ export class Evrynet {
       const chan = this.client.GetBalance({
         accountAddress,
         asset: {
-          decimal: asset.decimal,
-          code: asset.code,
-          issuer: asset.issuer,
+          code: asset.getCode(),
+          issuer: asset.getIssuer(),
+          decimal: asset.getDecimal(),
         },
       })
       chan.on('data', (data) => {

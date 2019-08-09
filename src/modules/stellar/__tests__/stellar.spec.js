@@ -1,8 +1,8 @@
 import path from 'path'
 import StellarSDK from 'stellar-sdk'
 import { createMockServer } from 'grpc-mock'
-import { getStellarClient } from '@/modules/stellar/stellar'
-import { getLumensAsset } from '@/entities/asset'
+import { getStellarClient, Stellar } from '@/modules/stellar/stellar'
+import { WhitelistedAsset, getLumensAsset } from '@/entities/asset'
 import StellarException from '@/exceptions/stellar'
 import Stream from 'stream'
 
@@ -16,17 +16,26 @@ describe('Stellar', () => {
   const host = 'localhost:50051'
   const protoPath = `${path.resolve()}/proto/stellar.proto`
   const expectedBalance = '1'
-  const mockedCredit = {
-    ...getLumensAsset(),
+  const mockedCredit = new WhitelistedAsset({
+    code: 'XLM',
+    issuer: undefined,
     decimal: 3,
+  })
+  const getBalGRPCInput = {
+    accountAddress: 'foo',
+    asset: {
+      code: mockedCredit.getCode(),
+      issuer: mockedCredit.getIssuer(),
+      decimal: mockedCredit.getDecimal(),
+    },
   }
   const getBalInput = {
     accountAddress: 'foo',
-    asset: {
-      code: mockedCredit.code,
-      issuer: mockedCredit.issuer,
-      decimal: mockedCredit.decimal,
-    },
+    asset: mockedCredit,
+  }
+  const getBalInvalidInput = {
+    accountAddress: 'invalid',
+    asset: mockedCredit,
   }
 
   beforeAll(() => {
@@ -48,7 +57,7 @@ describe('Stellar', () => {
           method: 'GetBalance',
           streamType: 'server',
           stream: [{ output: { balance: expectedBalance } }],
-          input: getBalInput,
+          input: getBalGRPCInput,
         },
       ],
     })
@@ -107,7 +116,7 @@ describe('Stellar', () => {
         expect(paymentOp.destination).toBe(
           'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ',
         )
-        expect(paymentOp.asset.code).toBe(xlm.code)
+        expect(paymentOp.asset.code).toBe(xlm.getCode())
         expect(paymentOp.asset.issuer).toBe(xlm.issuer)
         expect(paymentOp.amount).toBe(amount)
 
@@ -153,7 +162,7 @@ describe('Stellar', () => {
           'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ',
         )
         expect(paymentOp.destination).toBe(senderpk)
-        expect(paymentOp.asset.code).toBe(xlm.code)
+        expect(paymentOp.asset.code).toBe(xlm.getCode())
         expect(paymentOp.asset.issuer).toBe(xlm.issuer)
         expect(paymentOp.amount).toBe(amount)
 
@@ -181,14 +190,19 @@ describe('Stellar', () => {
       it('should throw an error', async () => {
         let mockedStream = new Stream.Readable()
         mockedStream._read = () => {}
-        client.client.GetBalance = jest.fn().mockReturnValue(mockedStream)
+        const mockedClient = jest.fn().mockImplementation(() => {
+          return {
+            GetBalance: jest.fn().mockReturnValue(mockedStream),
+          }
+        })
+        const stellar = new Stellar(mockedClient())
         setInterval(function() {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
         await expect(
-          client.getAccountBalance(
-            getBalInput.accountAddress,
-            getBalInput.asset,
+          stellar.getAccountBalance(
+            getBalInvalidInput.accountAddress,
+            getBalInvalidInput.asset,
           ),
         ).rejects.toThrow(StellarException)
       })
