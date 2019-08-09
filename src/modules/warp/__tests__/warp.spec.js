@@ -49,7 +49,7 @@ describe('Warp SDK', () => {
         })
         getEvryClient.mockImplementation(() => {
           return {
-            getWhitelistAssetsByCode: jest.fn().mockResolvedValue({
+            getWhitelistAssetByCode: jest.fn().mockResolvedValue({
               ...input.asset,
               decimal: 1,
             }),
@@ -178,7 +178,7 @@ describe('Warp SDK', () => {
               getNonceFromPriv: jest.fn().mockResolvedValue({
                 nonce: 'foo',
               }),
-              getWhitelistAssetsByCode: jest.fn().mockResolvedValue({
+              getWhitelistAssetByCode: jest.fn().mockResolvedValue({
                 ...input.asset,
                 decimal: 1,
               }),
@@ -228,7 +228,7 @@ describe('Warp SDK', () => {
               getNonceFromPriv: jest.fn().mockResolvedValue({
                 nonce: 'foo',
               }),
-              getWhitelistAssetsByCode: jest.fn().mockResolvedValue({
+              getWhitelistAssetByCode: jest.fn().mockResolvedValue({
                 ...input.asset,
                 decimal: 1,
               }),

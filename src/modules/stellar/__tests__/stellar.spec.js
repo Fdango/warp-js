@@ -170,7 +170,6 @@ describe('Stellar', () => {
   describe('When get account balance', () => {
     describe('When valid input', () => {
       it('should respond an expected balance', async () => {
-        console.log(getBalInput)
         let res = await client.getAccountBalance(
           getBalInput.accountAddress,
           getBalInput.asset,

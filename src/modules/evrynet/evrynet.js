@@ -3,7 +3,7 @@ import config from '@/config/config'
 import Web3 from 'web3'
 import GRPCConnectorEntitiy from '@/entities/grpc'
 import EvrynetException from '@/exceptions/evrynet'
-import find from 'lodash/filter'
+import find from 'lodash/find'
 import map from 'lodash/map'
 import { WhitelistedAsset } from '@/entities/asset'
 
@@ -97,14 +97,13 @@ export class Evrynet {
    * @param {string} key.issuer - issuer of the asset
    * @returns {WhitelistedAsset} asset
    */
-  async getWhitelistAssetsByCode({ code, issuer }) {
+  async getWhitelistAssetByCode({ code, issuer }) {
     try {
       const data = await this.getWhitelistAssets()
-      const matched = find(data.assets, {
+      return find(data.assets, {
         code,
         issuer,
       })
-      return matched ? new WhitelistedAsset(matched) : null
     } catch (e) {
       throw new EvrynetException(null, e.message)
     }

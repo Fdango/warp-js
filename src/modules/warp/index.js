@@ -40,7 +40,7 @@ export default class Warp {
    */
   async toEvrynet({ src, amount, asset, evrynetAddress }) {
     try {
-      const whitelistedAsset = await this.client.evry.getWhitelistAssetsByCode(
+      const whitelistedAsset = await this.client.evry.getWhitelistAssetByCode(
         asset,
       )
       const res = await this.client.stellar.getSequenceNumberBySecret(src)
@@ -70,7 +70,7 @@ export default class Warp {
    */
   async toStellar({ evrynetPriv, stellarPriv, amount, asset }) {
     try {
-      const whitelistedAsset = await this.client.evry.getWhitelistAssetsByCode(
+      const whitelistedAsset = await this.client.evry.getWhitelistAssetByCode(
         asset,
       )
       // instanciate stellar client

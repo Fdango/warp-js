@@ -1,6 +1,6 @@
 import path from 'path'
 import { createMockServer } from 'grpc-mock'
-import { getEvryClient } from '@/modules/evrynet/evrynet'
+import { getEvryClient, Evrynet } from '@/modules/evrynet/evrynet'
 import EvrynetException from '@/exceptions/evrynet'
 import Stream from 'stream'
 import { getLumensAsset } from '@/entities/asset'
@@ -31,6 +31,14 @@ describe('EvryNet', () => {
       decimal: mockedCredit.decimal,
     },
   }
+  const getBalInvalidInput = {
+    accountAddress: 'invalid',
+    asset: {
+      code: 'invalid',
+      issuer: 'invalid',
+      decimal: 'invalid',
+    },
+  }
 
   beforeAll(() => {
     client = getEvryClient({
@@ -54,10 +62,26 @@ describe('EvryNet', () => {
           input: {},
         },
         {
+          method: 'GetWhitelistAssets',
+          streamType: 'server',
+          error: {
+            message: 'this is an error',
+          },
+          input: { err: 1 },
+        },
+        {
           method: 'GetBalance',
           streamType: 'server',
           stream: [{ output: { balance: expectedBalance } }],
           input: getBalInput,
+        },
+        {
+          method: 'GetBalance',
+          streamType: 'server',
+          error: {
+            message: 'this is an error',
+          },
+          input: getBalInvalidInput,
         },
       ],
     })
@@ -95,15 +119,74 @@ describe('EvryNet', () => {
       it('should throw an error', async () => {
         let mockedStream = new Stream.Readable()
         mockedStream._read = () => {}
-        client.client.GetWhitelistAssets = jest
-          .fn()
-          .mockReturnValue(mockedStream)
+        const mockedClient = jest.fn().mockImplementation(() => {
+          return {
+            GetWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+          }
+        })
+        const evry = new Evrynet(mockedClient())
         setInterval(function() {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
-        await expect(client.getWhitelistAssets({})).rejects.toThrow(
+        await expect(evry.getWhitelistAssets({})).rejects.toThrow(
           EvrynetException,
         )
+      })
+    })
+  })
+
+  describe('When get whitelist asset by code', () => {
+    describe('When a stream emit a data response', () => {
+      describe('With whitelist asset response', () => {
+        it('should respond an expected asset', async () => {
+          const actual = await client.getWhitelistAssetByCode({
+            code: expectedAsset.code,
+            issuer: expectedAsset.issuer,
+          })
+          expect({
+            code: actual.code,
+            issuer: actual.issuer,
+            decimal: actual.decimal,
+          }).toEqual(expectedAsset)
+        })
+      })
+      describe('With whitelist undefined response (notfound)', () => {
+        it('should respond an expected array of assets', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          client.client.GetWhitelistAssets = jest
+            .fn()
+            .mockReturnValue(mockedStream)
+          setInterval(function() {
+            mockedStream.emit('data', { asset: undefined })
+          }, 1000)
+          const actual = await client.getWhitelistAssetByCode({
+            code: expectedAsset.code,
+            issuer: expectedAsset.issuer,
+          })
+          expect(actual).toBeUndefined()
+        })
+      })
+    })
+    describe('When a stream emit an error response', () => {
+      it('should throw an error', async () => {
+        let mockedStream = new Stream.Readable()
+        mockedStream._read = () => {}
+        const mockedClient = jest.fn().mockImplementation(() => {
+          return {
+            GetWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+          }
+        })
+        const evry = new Evrynet(mockedClient())
+        setInterval(function() {
+          mockedStream.emit('error', new Error('this is an error'))
+        }, 1000)
+        await expect(
+          evry.getWhitelistAssetByCode({
+            code: null,
+            issuer: 'invalid',
+          }),
+        ).rejects.toThrow(EvrynetException)
       })
     })
   })
@@ -120,16 +203,10 @@ describe('EvryNet', () => {
     })
     describe('When a stream emit an error response', () => {
       it('should throw an error', async () => {
-        let mockedStream = new Stream.Readable()
-        mockedStream._read = () => {}
-        client.client.GetBalance = jest.fn().mockReturnValue(mockedStream)
-        setInterval(function() {
-          mockedStream.emit('error', new Error('this is an error'))
-        }, 1000)
         await expect(
           client.getAccountBalance(
-            getBalInput.accountAddress,
-            getBalInput.asset,
+            getBalInvalidInput.accountAddress,
+            getBalInvalidInput.asset,
           ),
         ).rejects.toThrow(EvrynetException)
       })
