@@ -31,7 +31,7 @@ export function getEvryAsset() {
 }
 
 /**
- * Class representing credit.
+ * Class representing asset.
  * @typedef Asset
  * @property {Web3} web3 - web3 utils
  * @property {string} issuer - asset's issuer
@@ -98,7 +98,9 @@ export class Asset {
 }
 
 /**
- * Class representing credit.
+ * Class representing asset with extended decimal.
+ * After getWhitelistAssets function the decimal in smartcontract whitelist assets will be shown up.
+ * So, we declare its decimal along with former asset in this new entity.
  * @typedef WhitelistedAsset
  * @augments Asset
  * @property {string} decimal - decimal of asset
