@@ -8,9 +8,11 @@ const web3 = new Web3()
 
 const development = {
   evrynet: {
-    DEFAULT_CONTRACT_ADDRESS: '0xd4eCE34f1e8111f15C23F06A12299256e0722Db9',
+    DEFAULT_CONTRACT_ADDRESS: '0x9d0103aEE052e50Da55552CEdeb907ae2f43394f',
     GASLIMIT: web3.utils.toHex(50000),
     GASPRICE: web3.utils.toHex(Number(web3.utils.toWei('1', 'gwei'))),
+    ATOMIC_STELLAR_DECIMAL_UNIT: 7,
+    ATOMIC_EVRY_DECIMAL_UNIT: 18,
     CUSTOM_CHAIN: Common.forCustomChain(
       'mainnet',
       {
@@ -25,7 +27,6 @@ const development = {
     EVRY_ASSET_NAME: 'EVRY',
     EVRY_ASSET_ISSUER_PUB:
       'GATIJFZRBQH6S2BM2M2LPK7NMZWS43VQJQJNMSAR7LHW3XVPBBNV7BE5',
-    STROOP_OF_ONE_STELLAR: Math.pow(10, 7),
   },
   grpc: {
     STELLAR: 'stellar',

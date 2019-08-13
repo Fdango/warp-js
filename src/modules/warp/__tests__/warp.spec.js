@@ -31,6 +31,12 @@ describe('Warp SDK', () => {
         evrynetTxHash: 'bar',
       }
       it('should return data object', async () => {
+        input.asset = {
+          isNative: jest.fn().mockReturnValue(true),
+          code: 'foo',
+          issuer: 'bar',
+          toStellarFormat: jest.fn().mockReturnValue(input.asset),
+        }
         getStellarClient.mockImplementation(() => {
           return {
             async createDepositTx() {
@@ -38,6 +44,14 @@ describe('Warp SDK', () => {
             },
             getSequenceNumberBySecret: jest.fn().mockResolvedValue({
               sequenceNumber: 1,
+            }),
+          }
+        })
+        getEvryClient.mockImplementation(() => {
+          return {
+            getWhitelistAssetByCode: jest.fn().mockResolvedValue({
+              ...input.asset,
+              decimal: 1,
             }),
           }
         })
@@ -132,6 +146,12 @@ describe('Warp SDK', () => {
       }
       describe('When asset is native', () => {
         it('should return data object', async () => {
+          input.asset = {
+            isNative: jest.fn().mockReturnValue(true),
+            code: 'foo',
+            issuer: 'bar',
+            toStellarFormat: jest.fn().mockReturnValue(input.asset),
+          }
           getStellarClient.mockImplementation(() => {
             return {
               async createWithdrawTx() {
@@ -158,11 +178,12 @@ describe('Warp SDK', () => {
               getNonceFromPriv: jest.fn().mockResolvedValue({
                 nonce: 'foo',
               }),
+              getWhitelistAssetByCode: jest.fn().mockResolvedValue({
+                ...input.asset,
+                decimal: 1,
+              }),
             }
           })
-          input.asset = {
-            isNative: jest.fn().mockReturnValue(true),
-          }
           warp = new Warp()
           const res = await warp.toStellar(input)
           const getSequenceNumberBySecretArg =
@@ -173,9 +194,14 @@ describe('Warp SDK', () => {
           expect(res).toEqual(expected)
         })
       })
-
-      describe('When asset is native', () => {
+      describe('When asset is credit', () => {
         it('should return data object', async () => {
+          input.asset = {
+            isNative: jest.fn().mockReturnValue(false),
+            code: 'foo',
+            issuer: 'bar',
+            toStellarFormat: jest.fn().mockReturnValue(input.asset),
+          }
           getStellarClient.mockImplementation(() => {
             return {
               async createWithdrawTx() {
@@ -202,11 +228,12 @@ describe('Warp SDK', () => {
               getNonceFromPriv: jest.fn().mockResolvedValue({
                 nonce: 'foo',
               }),
+              getWhitelistAssetByCode: jest.fn().mockResolvedValue({
+                ...input.asset,
+                decimal: 1,
+              }),
             }
           })
-          input.asset = {
-            isNative: jest.fn().mockReturnValue(false),
-          }
           warp = new Warp()
           const res = await warp.toStellar(input)
           const getSequenceNumberBySecretArg =
