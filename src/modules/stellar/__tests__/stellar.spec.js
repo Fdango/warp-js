@@ -1,8 +1,8 @@
 import path from 'path'
 import StellarSDK from 'stellar-sdk'
 import { createMockServer } from 'grpc-mock'
-import { getStellarClient } from '@/modules/stellar/stellar'
-import { getLumensAsset } from '@/entities/asset'
+import { getStellarClient, Stellar } from '@/modules/stellar/stellar'
+import { WhitelistedAsset, getLumensAsset } from '@/entities/asset'
 import StellarException from '@/exceptions/stellar'
 import Stream from 'stream'
 
@@ -16,13 +16,26 @@ describe('Stellar', () => {
   const host = 'localhost:50051'
   const protoPath = `${path.resolve()}/proto/stellar.proto`
   const expectedBalance = '1'
-  const mockedCredit = getLumensAsset()
-  const getBalInput = {
+  const mockedCredit = new WhitelistedAsset({
+    code: 'XLM',
+    issuer: undefined,
+    decimal: 3,
+  })
+  const getBalGRPCInput = {
     accountAddress: 'foo',
     asset: {
-      code: mockedCredit.asset.getCode(),
-      issuer: mockedCredit.asset.getIssuer(),
+      code: mockedCredit.getCode(),
+      issuer: mockedCredit.getIssuer(),
+      decimal: mockedCredit.getDecimal(),
     },
+  }
+  const getBalInput = {
+    accountAddress: 'foo',
+    asset: mockedCredit,
+  }
+  const getBalInvalidInput = {
+    accountAddress: 'invalid',
+    asset: mockedCredit,
   }
 
   beforeAll(() => {
@@ -44,7 +57,7 @@ describe('Stellar', () => {
           method: 'GetBalance',
           streamType: 'server',
           stream: [{ output: { balance: expectedBalance } }],
-          input: getBalInput,
+          input: getBalGRPCInput,
         },
       ],
     })
@@ -81,7 +94,7 @@ describe('Stellar', () => {
           src: sender,
           seq: res.sequenceNumber,
           amount,
-          asset: xlm,
+          asset: xlm.toStellarFormat(),
         })
         let tx = new StellarSDK.Transaction(txeB64)
 
@@ -103,8 +116,8 @@ describe('Stellar', () => {
         expect(paymentOp.destination).toBe(
           'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ',
         )
-        expect(paymentOp.asset.code).toBe(xlm.asset.code)
-        expect(paymentOp.asset.issuer).toBe(xlm.asset.issuer)
+        expect(paymentOp.asset.code).toBe(xlm.getCode())
+        expect(paymentOp.asset.issuer).toBe(xlm.issuer)
         expect(paymentOp.amount).toBe(amount)
 
         // validate signature
@@ -127,7 +140,7 @@ describe('Stellar', () => {
           src: sender,
           seq: res.sequenceNumber,
           amount,
-          asset: xlm,
+          asset: xlm.toStellarFormat(),
         })
         let tx = new StellarSDK.Transaction(txeB64)
 
@@ -149,8 +162,8 @@ describe('Stellar', () => {
           'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ',
         )
         expect(paymentOp.destination).toBe(senderpk)
-        expect(paymentOp.asset.code).toBe(xlm.asset.code)
-        expect(paymentOp.asset.issuer).toBe(xlm.asset.issuer)
+        expect(paymentOp.asset.code).toBe(xlm.getCode())
+        expect(paymentOp.asset.issuer).toBe(xlm.issuer)
         expect(paymentOp.amount).toBe(amount)
 
         // validate signature
@@ -166,7 +179,10 @@ describe('Stellar', () => {
   describe('When get account balance', () => {
     describe('When valid input', () => {
       it('should respond an expected balance', async () => {
-        let res = await client.getAccountBalance('foo', mockedCredit)
+        let res = await client.getAccountBalance(
+          getBalInput.accountAddress,
+          getBalInput.asset,
+        )
         expect(res.balance).toEqual(expectedBalance)
       })
     })
@@ -174,12 +190,20 @@ describe('Stellar', () => {
       it('should throw an error', async () => {
         let mockedStream = new Stream.Readable()
         mockedStream._read = () => {}
-        client.client.GetBalance = jest.fn().mockReturnValue(mockedStream)
+        const mockedClient = jest.fn().mockImplementation(() => {
+          return {
+            GetBalance: jest.fn().mockReturnValue(mockedStream),
+          }
+        })
+        const stellar = new Stellar(mockedClient())
         setInterval(function() {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
         await expect(
-          client.getAccountBalance('foo', mockedCredit),
+          stellar.getAccountBalance(
+            getBalInvalidInput.accountAddress,
+            getBalInvalidInput.asset,
+          ),
         ).rejects.toThrow(StellarException)
       })
     })

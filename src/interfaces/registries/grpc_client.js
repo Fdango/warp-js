@@ -25,7 +25,7 @@ export default function getClientRegistryIntance(client) {
     } catch (e) {
       throw new GRPCRegistryException(
         null,
-        e.message,
+        e.toString(),
         'Unable to create a grpc client registry',
       )
     }

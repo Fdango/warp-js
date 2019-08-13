@@ -7,7 +7,7 @@ import WarpException from '@/exceptions/warp_sdk'
 
 /**
  *
- * @typedef {import('./entities/asset').Credit} Asset
+ * @typedef {import('./entities/asset').Asset} Asset
  */
 
 /**
@@ -34,24 +34,30 @@ export default class Warp {
    * @param {Object} payload - a sender's stellar secret which holds the target asset
    * @param {string} payload.src - amount of an asset to be transfered
    * @param {string} payload.amount - amount of an asset to be transfered
-   * @param {Asset} payload.asset - stellar asset to be transfered
+   * @param {Asset}  payload.asset - stellar asset to be transfered
    * @param {string} payload.evrynetAddress - a recipient's Evrynet address
    * @returns {Object|WarpException} - to evrynet response
    */
   async toEvrynet({ src, amount, asset, evrynetAddress }) {
     try {
+      const whitelistedAsset = asset.isNative()
+        ? asset
+        : await this.client.evry.getWhitelistAssetByCode(asset)
+      if (!whitelistedAsset) {
+        throw new WarpException(null, 'Whitelisted asset not found')
+      }
       const res = await this.client.stellar.getSequenceNumberBySecret(src)
       const paymentXDR = await this.client.stellar.createDepositTx({
         src,
         seq: res.sequenceNumber,
         amount,
-        asset,
+        asset: whitelistedAsset.toStellarFormat(),
       })
       return await this.client.transfer.toEvrynet(paymentXDR, evrynetAddress)
     } catch (e) {
       throw new WarpException(
         null,
-        e.message,
+        e.toString(),
         'Unable to move the asset to evrynet',
       )
     }
@@ -67,6 +73,12 @@ export default class Warp {
    */
   async toStellar({ evrynetPriv, stellarPriv, amount, asset }) {
     try {
+      const whitelistedAsset = asset.isNative()
+        ? asset
+        : await this.client.evry.getWhitelistAssetByCode(asset)
+      if (!whitelistedAsset) {
+        throw new WarpException(null, 'Whitelisted asset not found')
+      }
       // instanciate stellar client
       const res = await this.client.stellar.getSequenceNumberBySecret(
         stellarPriv,
@@ -76,32 +88,31 @@ export default class Warp {
         src: stellarPriv,
         seq: res.sequenceNumber,
         amount,
-        asset,
+        asset: whitelistedAsset.toStellarFormat(),
       })
       const nonceRes = await this.client.evry.getNonceFromPriv(evrynetPriv)
       // make a lock asset msg call
-      let tx
-      if (asset.isNative()) {
-        tx = this.contract.warp.newNativeLockTx(
-          amount,
-          evrynetPriv,
-          Number(nonceRes.nonce),
-        )
-      } else {
-        tx = this.contract.warp.newCreditLockTx(
-          asset,
-          amount,
-          evrynetPriv,
-          Number(nonceRes.nonce),
-        )
+      const payload = {
+        amount,
+        priv: evrynetPriv,
+        nonce: Number(nonceRes.nonce),
       }
-      let evrynetTx = this.contract.warp.txToHex(tx)
+      const evrynetTx = whitelistedAsset.isNative()
+        ? this.contract.warp.txToHex(
+            this.contract.warp.newNativeLockTx(payload),
+          )
+        : this.contract.warp.txToHex(
+            this.contract.warp.newCreditLockTx({
+              ...payload,
+              asset: whitelistedAsset,
+            }),
+          )
       // make a transfer request
       return await this.client.transfer.toStellar(evrynetTx, stellarTx)
     } catch (e) {
       throw new WarpException(
         null,
-        e.message,
+        e.toString(),
         'Unable to move the asset to stellar',
       )
     }

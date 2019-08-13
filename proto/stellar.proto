@@ -1,30 +1,30 @@
 syntax = "proto3";
-
 package stellar;
 
-message GetSequenceNumberRequest {
+message Asset {  
+    string code = 1;  
+    string issuer = 2;  
+    uint32 decimal = 3;
+}
+
+message GetSequenceNumberRequest {    
     string stellarAddress = 1;
 }
 
-message GetSequenceNumberResponse {
+message GetSequenceNumberResponse {    
     string sequenceNumber = 1;
 }
 
-message Asset {
-    string code = 1;
-    string issuer = 2;
-}
-
-message GetBalanceRequest {
-    string accountAddress = 1;
+message GetBalanceRequest {    
+    string accountAddress = 1;    
     Asset asset = 2;
 }
 
-message GetBalanceResponse {
+message GetBalanceResponse {    
     string balance = 1;
 }
 
-service StellarGRPC {
-    rpc GetSequenceNumber (GetSequenceNumberRequest) returns (stream GetSequenceNumberResponse);
+service StellarGRPC {    
+    rpc GetSequenceNumber (GetSequenceNumberRequest) returns (stream GetSequenceNumberResponse);    
     rpc GetBalance(GetBalanceRequest) returns (stream GetBalanceResponse);
 }
