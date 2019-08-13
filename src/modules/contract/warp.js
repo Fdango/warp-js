@@ -130,18 +130,17 @@ export class WarpContract {
    * @param {number} payload.nonce a postitive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newNativeLockTx({ asset, amount, priv, nonce }) {
+  newNativeLockTx({ amount, priv, nonce }) {
     try {
       const account = this.web3.eth.accounts.privateKeyToAccount(priv)
-      const decimal = asset ? asset.decimal : ATOMIC_EVRY_DECIMAL_UNIT
-      if (!this._validateAmount(amount, decimal)) {
+      if (!this._validateAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT)) {
         throw new WrapContractException(
           null,
           `Invalid amount: decimal is more than ${ATOMIC_STELLAR_DECIMAL_UNIT}`,
         )
       }
       const hexAmount = this.web3.utils.toHex(
-        this._parseAmount(amount, decimal),
+        this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
       )
       const data = this.warp.methods.lockNative().encodeABI()
       let tx = new Transaction({
