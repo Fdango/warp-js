@@ -97,11 +97,11 @@ export class WarpContract {
           `Not allow to move evry coin more than ${asset.decimal} decimals`,
         )
       }
-      const bnAmount = this.web3.utils.toHex(
+      const hexAmount = this.web3.utils.toHex(
         this._parseAmount(amount, asset.decimal),
       )
       const assetHexName = asset.getHexKey()
-      const data = this.warp.methods.lock(assetHexName, bnAmount).encodeABI()
+      const data = this.warp.methods.lock(assetHexName, hexAmount).encodeABI()
       let tx = new Transaction({
         nonce,
         from: account.address,
@@ -140,13 +140,15 @@ export class WarpContract {
           `Invalid amount: decimal is more than ${ATOMIC_STELLAR_DECIMAL_UNIT}`,
         )
       }
-      const bnAmount = this.web3.utils.toHex(this._parseAmount(amount, decimal))
+      const hexAmount = this.web3.utils.toHex(
+        this._parseAmount(amount, decimal),
+      )
       const data = this.warp.methods.lockNative().encodeABI()
       let tx = new Transaction({
         nonce,
         from: account.address,
         to: this.warp.address,
-        value: bnAmount,
+        value: hexAmount,
         gasLimit: GASLIMIT,
         gasPrice: GASPRICE,
         data,
