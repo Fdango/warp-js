@@ -16,8 +16,9 @@ const development = {
     CUSTOM_CHAIN: Common.forCustomChain(
       'mainnet',
       {
-        name: 'warp-network-dev',
+        name: 'evry-dev',
         chainId: 15,
+        networkId: 15,
       },
       'petersburg',
     ),
@@ -50,13 +51,14 @@ const local = {
       {
         name: 'warp-network-local',
         networkId: 5777,
+        chainId: 5777,
       },
       'petersburg',
     ),
   },
 }
 
-const test = development
+const test = local
 
 const production = {}
 

@@ -75,10 +75,10 @@ export class Asset {
   }
 
   /**
-   * Get name in hex-encoded format.
+   * Get asset's id in hex-encoded format.
    * @returns {string} - hex-encoded of asset name.
    */
-  getHexKey() {
+  getID() {
     if (!this.code) {
       throw new AssetEntityException(null, 'cannot read name property')
     }
