@@ -13,6 +13,7 @@ const {
     GASPRICE,
     ATOMIC_EVRY_DECIMAL_UNIT,
     ATOMIC_STELLAR_DECIMAL_UNIT,
+    CUSTOM_CHAIN,
   },
   contract: {
     ABI: { WARP },
@@ -100,16 +101,21 @@ export class WarpContract {
       const hexAmount = this.web3.utils.toHex(
         this._parseAmount(amount, asset.decimal),
       )
-      const assetHexName = asset.getHexKey()
-      const data = this.warp.methods.lock(assetHexName, hexAmount).encodeABI()
-      let tx = new Transaction({
-        nonce,
-        from: account.address,
-        to: this.warp.address,
-        gasLimit: GASLIMIT,
-        gasPrice: GASPRICE,
-        data,
-      })
+      const assetID = asset.getID()
+      const data = this.warp.methods.lock(assetID, hexAmount).encodeABI()
+      let tx = new Transaction(
+        {
+          nonce,
+          from: account.address,
+          to: this.warp.address,
+          gasLimit: GASLIMIT,
+          gasPrice: GASPRICE,
+          data,
+        },
+        {
+          common: CUSTOM_CHAIN,
+        },
+      )
       tx.sign(Buffer.from(priv, 'hex'))
       return tx
     } catch (e) {
@@ -143,15 +149,20 @@ export class WarpContract {
         this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
       )
       const data = this.warp.methods.lockNative().encodeABI()
-      let tx = new Transaction({
-        nonce,
-        from: account.address,
-        to: this.warp.address,
-        value: hexAmount,
-        gasLimit: GASLIMIT,
-        gasPrice: GASPRICE,
-        data,
-      })
+      let tx = new Transaction(
+        {
+          nonce,
+          from: account.address,
+          to: this.warp.address,
+          value: hexAmount,
+          gasLimit: GASLIMIT,
+          gasPrice: GASPRICE,
+          data,
+        },
+        {
+          common: CUSTOM_CHAIN,
+        },
+      )
       tx.sign(Buffer.from(priv, 'hex'))
       return tx
     } catch (e) {

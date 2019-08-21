@@ -1,4 +1,5 @@
 const env = process.env.NODE_ENV
+import Common from 'ethereumjs-common'
 
 // configuration file is used to configure application and interfaces
 // If anything needs to be sucured, save it in an environement variable file (.env) and paste process.env.[#varname] to this config file.
@@ -12,6 +13,15 @@ const development = {
     GASPRICE: web3.utils.toHex(Number(web3.utils.toWei('1', 'gwei'))),
     ATOMIC_STELLAR_DECIMAL_UNIT: 7,
     ATOMIC_EVRY_DECIMAL_UNIT: 18,
+    CUSTOM_CHAIN: Common.forCustomChain(
+      'mainnet',
+      {
+        name: 'evry-dev',
+        chainId: 15,
+        networkId: 15,
+      },
+      'petersburg',
+    ),
   },
   stellar: {
     ESCROW_ACCOUNT: 'GAAQ4EOKRV3O5MC42JPREIUYRCTXUE6JLXWHMETM24AFACXWE54FQATQ',
@@ -32,7 +42,23 @@ const development = {
   },
 }
 
-const test = development
+const local = {
+  ...development,
+  evrynet: {
+    ...development.evrynet,
+    CUSTOM_CHAIN: Common.forCustomChain(
+      'mainnet',
+      {
+        name: 'warp-network-local',
+        networkId: 5777,
+        chainId: 5777,
+      },
+      'petersburg',
+    ),
+  },
+}
+
+const test = local
 
 const production = {}
 
@@ -40,6 +66,7 @@ const config = {
   development,
   production,
   test,
+  local,
 }
 
 export default config[env]
