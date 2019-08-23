@@ -33,7 +33,7 @@ const development = {
     STELLAR: 'stellar',
     EVRYNET: 'evrynet',
     TRANSFER: 'transfer',
-    DEFAULT_HOST: 'localhost:8080',
+    DEFAULT_HOST: 'localhost:9090',
   },
   contract: {
     ABI: {
