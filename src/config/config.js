@@ -1,4 +1,4 @@
-const env = process.env.NODE_ENV
+const env = process.env.NODE_ENV || 'local'
 import Common from 'ethereumjs-common'
 
 // configuration file is used to configure application and interfaces
@@ -8,7 +8,7 @@ const web3 = new Web3()
 
 const development = {
   evrynet: {
-    DEFAULT_CONTRACT_ADDRESS: '0x9d0103aEE052e50Da55552CEdeb907ae2f43394f',
+    DEFAULT_CONTRACT_ADDRESS: '0x991D7Dae8C7B5FB9a6b1a2c6cc9786CFE28BB5dE',
     GASLIMIT: web3.utils.toHex(50000),
     GASPRICE: web3.utils.toHex(Number(web3.utils.toWei('1', 'gwei'))),
     ATOMIC_STELLAR_DECIMAL_UNIT: 7,
@@ -69,4 +69,4 @@ const config = {
   local,
 }
 
-export default config[env]
+export default config['local']

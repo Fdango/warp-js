@@ -1,15 +1,11 @@
-import getClientRegistryIntance from '@/interfaces/registries/grpc_client'
-import config from '@/config/config'
 import Web3 from 'web3'
 import GRPCConnectorEntitiy from '@/entities/grpc'
 import EvrynetException from '@/exceptions/evrynet'
 import find from 'lodash/find'
 import map from 'lodash/map'
 import { WhitelistedAsset } from '@/entities/asset'
-
-const {
-  grpc: { EVRYNET },
-} = config
+import { EvrynetGRPCClient } from 'Protos/evrynet_grpc_web_pb.js'
+import { GetNonceRequest, Asset, GetBalanceRequest } from 'Protos/evrynet_pb'
 
 // ec represent singleton instance
 let ec = []
@@ -27,14 +23,11 @@ let ec = []
 export function getEvryClient(connectionOpts = {}) {
   const key = JSON.stringify(connectionOpts)
   if (!ec[key]) {
-    const evrynetProto = getClientRegistryIntance(EVRYNET)
     const config = new GRPCConnectorEntitiy({
       host: connectionOpts.host,
       isSecure: connectionOpts.isSecure,
     })
-    ec[key] = new Evrynet(
-      new evrynetProto.EvrynetGRPC(config.getHost(), config.getSecure()),
-    )
+    ec[key] = new Evrynet(new EvrynetGRPCClient(`http://${config.host}`))
   }
   return ec[key]
 }
@@ -60,10 +53,12 @@ export class Evrynet {
    * @returns {Object|EvrynetException} nounce object
    */
   getNonce(address) {
+    const request = new GetNonceRequest()
+    request.setEvrynetaddress(address)
     return new Promise((resolve, reject) => {
-      const chan = this.client.GetNonce({ evrynetAddress: address })
+      const chan = this.client.getNonce(request, {})
       chan.on('data', (data) => {
-        resolve(data)
+        resolve({ nonce: data.getNonce() })
       })
       chan.on('error', (err) => {
         reject(new EvrynetException(null, err.toString()))
@@ -77,10 +72,14 @@ export class Evrynet {
    */
   getWhitelistAssets() {
     return new Promise((resolve, reject) => {
-      const chan = this.client.GetWhitelistAssets({})
+      const chan = this.client.getWhitelistAssets({}, {})
       chan.on('data', (data) => {
-        const assets = map(data.assets, (ech) => {
-          return new WhitelistedAsset(ech)
+        const assets = map(data.getAssets(), (ech) => {
+          return new WhitelistedAsset({
+            code: ech.getCode(),
+            issuer: ech.getIssuer(),
+            decimal: ech.getDecimal(),
+          })
         })
         resolve({ assets })
       })
@@ -112,17 +111,14 @@ export class Evrynet {
    * @param {string} priv - evrynet private key to get a nonce
    * @returns {Object|EvrynetException} nounce object
    */
-  getNonceFromPriv(priv) {
-    return new Promise((resolve, reject) => {
-      const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
-      const chan = this.client.GetNonce({ evrynetAddress: account.address })
-      chan.on('data', (data) => {
-        resolve(data)
-      })
-      chan.on('error', (err) => {
-        reject(new EvrynetException(null, err.toString()))
-      })
-    })
+  async getNonceFromPriv(priv) {
+    const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
+    try {
+      const data = await this.getNonce({ evrynetAddress: account.address })
+      return data
+    } catch (e) {
+      throw new EvrynetException(null, e.toString())
+    }
   }
 
   /**
@@ -131,17 +127,17 @@ export class Evrynet {
    * @returns {string|EvrynetException} balance
    */
   async getAccountBalance(accountAddress, asset) {
+    const grpcAsset = new Asset()
+    grpcAsset.setCode(asset.code)
+    grpcAsset.setIssuer(asset.issuer)
+    grpcAsset.setDecimal(asset.decimal)
+    const grpcRequest = new GetBalanceRequest()
+    grpcRequest.setAsset(grpcAsset)
+    grpcRequest.setAccountaddress(accountAddress)
     return new Promise((resolve, reject) => {
-      const chan = this.client.GetBalance({
-        accountAddress,
-        asset: {
-          code: asset.getCode(),
-          issuer: asset.getIssuer(),
-          decimal: asset.getDecimal(),
-        },
-      })
+      const chan = this.client.getBalance(grpcRequest, {})
       chan.on('data', (data) => {
-        resolve(data)
+        resolve({ balance: data.getBalance() })
       })
       chan.on('error', (err) => {
         reject(new EvrynetException(null, err.toString()))

@@ -1,5 +1,4 @@
 import config from '@/config/config'
-import grpc from 'grpc'
 const {
   grpc: { DEFAULT_HOST },
 } = config
@@ -26,16 +25,5 @@ export default class GRPCConnectorEntitiy {
    **/
   getHost() {
     return this.host
-  }
-
-  /**
-   * Returns grpc client's credentials
-   * @returns {grpc.ChannelCredentials} channel credentials
-   **/
-  getSecure() {
-    if (this.isSecure) {
-      return grpc.credentials.createSsl()
-    }
-    return grpc.credentials.createInsecure()
   }
 }

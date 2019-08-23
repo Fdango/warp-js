@@ -1,11 +1,15 @@
-import getClientRegistryIntance from '@/interfaces/registries/grpc_client'
 import config from '@/config/config'
 import StellarSDK from 'stellar-sdk'
 import GRPCConnectorEntitiy from '@/entities/grpc'
 import StellarException from '@/exceptions/stellar'
+import {
+  GetSequenceNumberRequest,
+  GetBalanceRequest,
+  Asset,
+} from 'Protos/stellar_pb.js'
+import { StellarGRPCClient } from 'Protos/stellar_grpc_web_pb.js'
 
 const {
-  grpc: { STELLAR },
   stellar: { ESCROW_ACCOUNT },
 } = config
 
@@ -23,14 +27,11 @@ let sc = []
 export function getStellarClient(connectionOpts = {}) {
   const key = JSON.stringify(connectionOpts)
   if (!sc[key]) {
-    const stellarProto = getClientRegistryIntance(STELLAR)
     const config = new GRPCConnectorEntitiy({
       host: connectionOpts.host,
       isSecure: connectionOpts.isSecure,
     })
-    sc[key] = new Stellar(
-      new stellarProto.StellarGRPC(config.getHost(), config.getSecure()),
-    )
+    sc[key] = new Stellar(new StellarGRPCClient(`http://${config.host}`))
   }
   return sc[key]
 }
@@ -55,12 +56,17 @@ export class Stellar {
    * @returns {Object|StellarException} sequence number
    */
   getSequenceNumber(address) {
+    const request = new GetSequenceNumberRequest()
+    request.setStellaraddress(address)
     return new Promise((resolve, reject) => {
-      const chan = this.client.GetSequenceNumber({ stellarAddress: address })
+      const chan = this.client.getSequenceNumber(request, {})
       chan.on('data', (data) => {
-        resolve(data)
+        resolve({
+          sequenceNumber: data.getSequencenumber(),
+        })
       })
       chan.on('error', (err) => {
+        console.log(err, 'error')
         reject(new StellarException(null, err.toString()))
       })
     })
@@ -71,14 +77,33 @@ export class Stellar {
    * @param {string} seed - stellar seed to get a sequence number
    * @returns {Object|StellarException}  sequence number
    */
-  getSequenceNumberBySecret(seed) {
+  async getSequenceNumberBySecret(seed) {
+    const kp = StellarSDK.Keypair.fromSecret(seed)
+    try {
+      const result = await this.getSequenceNumber(kp.publicKey())
+      return result
+    } catch (e) {
+      new StellarException(null, e.toString())
+    }
+  }
+
+  /**
+   * @param {string} accountAddress - a address of account
+   * @param {WhitelistedAsset} asset - asset of payment
+   * @returns {string|StellarException} balance
+   */
+  getAccountBalance(accountAddress, asset) {
+    const grpcAsset = new Asset()
+    grpcAsset.setCode(asset.code)
+    grpcAsset.setIssuer(asset.issuer)
+    grpcAsset.setDecimal(asset.decimal)
+    const grpcRequest = new GetBalanceRequest()
+    grpcRequest.setAsset(grpcAsset)
+    grpcRequest.setAccountaddress(accountAddress)
     return new Promise((resolve, reject) => {
-      const kp = StellarSDK.Keypair.fromSecret(seed)
-      const chan = this.client.GetSequenceNumber({
-        stellarAddress: kp.publicKey(),
-      })
+      const chan = this.client.getBalance(grpcRequest, {})
       chan.on('data', (data) => {
-        resolve(data)
+        resolve({ balance: data.getBalance() })
       })
       chan.on('error', (err) => {
         reject(new StellarException(null, err.toString()))
@@ -146,30 +171,6 @@ export class Stellar {
     } catch (e) {
       return new StellarException(null, e.toString())
     }
-  }
-
-  /**
-   * @param {string} accountAddress - a address of account
-   * @param {WhitelistedAsset} asset - asset of payment
-   * @returns {string|StellarException} balance
-   */
-  async getAccountBalance(accountAddress, asset) {
-    return new Promise((resolve, reject) => {
-      const chan = this.client.GetBalance({
-        accountAddress,
-        asset: {
-          code: asset.getCode(),
-          issuer: asset.getIssuer(),
-          decimal: asset.getDecimal(),
-        },
-      })
-      chan.on('data', (data) => {
-        resolve(data)
-      })
-      chan.on('error', (err) => {
-        reject(new StellarException(null, err.toString()))
-      })
-    })
   }
 }
 
