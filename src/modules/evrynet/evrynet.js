@@ -12,7 +12,6 @@ let ec = []
 
 /**
  * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
- * @typedef {import('grpc').Client} GRPCClient
  */
 
 /**
@@ -34,13 +33,13 @@ export function getEvryClient(connectionOpts = {}) {
 
 /**
  * @typedef Evrynet
- * @property {GRPCClient} client - grpc client
+ * @property {EvrynetGRPCClient} client - grpc client
  * @property {Web3} web3 - web3 utility module
  */
 export class Evrynet {
   /**
    * @constructor
-   * @param {GRPCClient} client - is a grpc client
+   * @param {EvrynetGRPCClient} client - is a grpc client
    */
   constructor(client) {
     this.client = client
