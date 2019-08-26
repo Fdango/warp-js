@@ -1,4 +1,4 @@
-const env = process.env.NODE_ENV || 'local'
+const env = process.env.NODE_ENV
 import Common from 'ethereumjs-common'
 
 // configuration file is used to configure application and interfaces
@@ -69,4 +69,4 @@ const config = {
   local,
 }
 
-export default config['local']
+export default config[env]
