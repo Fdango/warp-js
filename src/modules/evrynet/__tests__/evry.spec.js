@@ -80,7 +80,7 @@ describe('EvryNet', () => {
         const evry = new Evrynet(mockedClient())
         setInterval(function() {
           mockedStream.emit('data', {
-            getAssets: jest.fn().mockReturnValue([
+            getAssetsList: jest.fn().mockReturnValue([
               {
                 getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
                 getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
@@ -134,7 +134,7 @@ describe('EvryNet', () => {
           const evry = new Evrynet(mockedClient())
           setInterval(function() {
             mockedStream.emit('data', {
-              getAssets: jest.fn().mockReturnValue([
+              getAssetsList: jest.fn().mockReturnValue([
                 {
                   getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
                   getIssuer: jest
@@ -167,7 +167,7 @@ describe('EvryNet', () => {
           const evry = new Evrynet(mockedClient())
           setInterval(function() {
             mockedStream.emit('data', {
-              getAssets: jest.fn().mockReturnValue(undefined),
+              getAssetsList: jest.fn().mockReturnValue(undefined),
             })
           }, 1000)
           const actual = await evry.getWhitelistAssetByCode(InputAsset)

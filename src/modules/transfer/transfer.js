@@ -6,10 +6,6 @@ import { ToEvrynetRequest, ToStellarRequest } from 'Protos/transfer_pb.js'
 let tc = []
 
 /**
- * @typedef {import('grpc').Client} GRPCClient
- */
-
-/**
  * Registry for creating a transter instance if not existed.
  * @param {Object} [connectionOpts={}]
  * @returns {Transfer}
@@ -19,7 +15,6 @@ export function getTransferClient(connectionOpts = {}) {
   if (!tc[key]) {
     const config = new GRPCConnectorEntitiy({
       host: connectionOpts.host,
-      isSecure: connectionOpts.isSecure,
     })
     tc[key] = new Transfer(new TransferGRPCClient(`http://${config.host}`))
   }
@@ -28,12 +23,12 @@ export function getTransferClient(connectionOpts = {}) {
 
 /**
  *  @typedef {Object} Transfer
- *  @property {GRPCClient} client - grpc client
+ *  @property {TransferGRPCClient} client - grpc client
  */
 export class Transfer {
   /**
    * @constructor
-   * @param {GRPCClient} client
+   * @param {TransferGRPCClient} client
    */
   constructor(client) {
     this.client = client

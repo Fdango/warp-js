@@ -14,9 +14,8 @@ export default class GRPCConnectorEntitiy {
    * @param {Object} [options={}] options - is configuration options for grpc entity.
    */
   constructor(options = {}) {
-    const { host, isSecure } = options
+    const { host } = options
     this.host = host || DEFAULT_HOST
-    this.isSecure = isSecure || false
   }
 
   /**

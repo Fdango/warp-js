@@ -4,8 +4,9 @@ import EvrynetException from '@/exceptions/evrynet'
 import find from 'lodash/find'
 import map from 'lodash/map'
 import { WhitelistedAsset } from '@/entities/asset'
-import { EvrynetGRPCClient } from 'Protos/evrynet_grpc_web_pb.js'
+import { EvrynetGRPCClient } from 'Protos/evrynet_grpc_web_pb'
 import { GetNonceRequest, Asset, GetBalanceRequest } from 'Protos/evrynet_pb'
+import { Empty } from 'google-protobuf/google/protobuf/empty_pb.js'
 
 // ec represent singleton instance
 let ec = []
@@ -24,7 +25,6 @@ export function getEvryClient(connectionOpts = {}) {
   if (!ec[key]) {
     const config = new GRPCConnectorEntitiy({
       host: connectionOpts.host,
-      isSecure: connectionOpts.isSecure,
     })
     ec[key] = new Evrynet(new EvrynetGRPCClient(`http://${config.host}`))
   }
@@ -70,10 +70,11 @@ export class Evrynet {
    * @returns {Array.<WhitelistedAsset>} array of whitelisted assets
    */
   getWhitelistAssets() {
+    const empty = new Empty()
     return new Promise((resolve, reject) => {
-      const chan = this.client.getWhitelistAssets({}, {})
+      const chan = this.client.getWhitelistAssets(empty, {})
       chan.on('data', (data) => {
-        const assets = map(data.getAssets(), (ech) => {
+        const assets = map(data.getAssetsList(), (ech) => {
           return new WhitelistedAsset({
             code: ech.getCode(),
             issuer: ech.getIssuer(),

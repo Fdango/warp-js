@@ -17,7 +17,6 @@ let sc = []
 
 /**
  * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
- * @typedef {import('grpc').Client} GRPCClient
  */
 
 /**
@@ -29,7 +28,6 @@ export function getStellarClient(connectionOpts = {}) {
   if (!sc[key]) {
     const config = new GRPCConnectorEntitiy({
       host: connectionOpts.host,
-      isSecure: connectionOpts.isSecure,
     })
     sc[key] = new Stellar(new StellarGRPCClient(`http://${config.host}`))
   }
@@ -38,12 +36,12 @@ export function getStellarClient(connectionOpts = {}) {
 
 /**
  * @typedef Stellar
- * @property {GRPCClient} client - grpc client for stellar integration
+ * @property {StellarGRPCClient} client - grpc client for stellar integration
  */
 export class Stellar {
   /**
    * @constructor
-   * @param {GRPCClient} client
+   * @param {StellarGRPCClient} client
    */
   constructor(client) {
     StellarSDK.Network.useTestNetwork()
@@ -66,7 +64,6 @@ export class Stellar {
         })
       })
       chan.on('error', (err) => {
-        console.log(err, 'error')
         reject(new StellarException(null, err.toString()))
       })
     })
