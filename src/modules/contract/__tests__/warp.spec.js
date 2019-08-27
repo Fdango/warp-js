@@ -235,9 +235,3 @@ describe('WarpContract', () => {
     })
   })
 })
-
-describe('bypass', () => {
-  it('should bypass the test', () => {
-    expect(true).toBeTruthy()
-  })
-})
