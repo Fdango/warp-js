@@ -3,11 +3,12 @@
     [
       "@babel/preset-env",
       {
+        "useBuiltIns": "entry",
         "targets": {
           "node": "current",
-        },
-      },
-    ],
+        }
+      }
+    ]
   ],
   "plugins": [
     [
@@ -22,8 +23,11 @@
         "root": ["."],
         "alias": {
           "@": "./src",
+          "Protos": "./proto",
+          "ABIs": "./abi"
         }
       }
-    ]
+    ],
+    "add-module-exports" 
   ]
 }

@@ -1,10 +1,9 @@
-import fs from 'fs'
-import path from 'path'
 import BigNumber from 'bignumber.js'
 import Web3 from 'web3'
 import { Transaction } from 'ethereumjs-tx'
 import config from '@/config/config'
 import WrapContractException from '@/exceptions/warp_contract'
+import { warpABI } from 'ABIs'
 
 const {
   evrynet: {
@@ -14,9 +13,6 @@ const {
     ATOMIC_EVRY_DECIMAL_UNIT,
     ATOMIC_STELLAR_DECIMAL_UNIT,
     CUSTOM_CHAIN,
-  },
-  contract: {
-    ABI: { WARP },
   },
 } = config
 
@@ -34,10 +30,7 @@ let wc = []
 export function getWarpContract(address) {
   const key = address || DEFAULT_CONTRACT_ADDRESS
   if (!wc[key]) {
-    wc[key] = new WarpContract(
-      key,
-      fs.readFileSync(`${path.resolve()}/abi/${WARP}.json`),
-    )
+    wc[key] = new WarpContract(key, warpABI)
   }
   return wc[key]
 }
@@ -67,7 +60,7 @@ export class WarpContract {
    */
   _newWarpContract(contractAddr, abi) {
     try {
-      return new this.web3.eth.Contract(JSON.parse(abi), contractAddr)
+      return new this.web3.eth.Contract(abi, contractAddr)
     } catch (e) {
       throw new WrapContractException(
         null,

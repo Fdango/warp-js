@@ -29,7 +29,7 @@ describe('WarpContract', () => {
             priv: senderpriv,
             nonce: 0,
           })
-          expect(tx.validate()).toBeTruthy()
+          expect(tx.verifySignature()).toBeTruthy()
           const rwtxHex = warp.txToHex(tx)
           expect(rwtxHex).toBeDefined()
         })
@@ -49,7 +49,7 @@ describe('WarpContract', () => {
             priv: senderpriv,
             nonce: 0,
           })
-          expect(tx.validate()).toBeTruthy()
+          expect(tx.verifySignature()).toBeTruthy()
           const rwtxHex = warp.txToHex(tx)
           expect(rwtxHex).toBeDefined()
         })
@@ -152,7 +152,7 @@ describe('WarpContract', () => {
           priv: senderpriv,
           nonce: 0,
         })
-        expect(tx.validate()).toBeTruthy()
+        expect(tx.verifySignature()).toBeTruthy()
 
         let rwtxHex = warp.txToHex(tx)
         expect(rwtxHex).toBeDefined()

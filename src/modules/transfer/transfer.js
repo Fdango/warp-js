@@ -1,17 +1,9 @@
-import getClientRegistryIntance from '@/interfaces/registries/grpc_client'
-import config from '@/config/config'
 import GRPCConnectorEntitiy from '@/entities/grpc'
 import TransferException from '@/exceptions/transfer'
-
-const {
-  grpc: { TRANSFER },
-} = config
+import { TransferGRPCClient } from 'Protos/transfer_grpc_web_pb.js'
+import { ToEvrynetRequest, ToStellarRequest } from 'Protos/transfer_pb.js'
 
 let tc = []
-
-/**
- * @typedef {import('grpc').Client} GRPCClient
- */
 
 /**
  * Registry for creating a transter instance if not existed.
@@ -21,26 +13,22 @@ let tc = []
 export function getTransferClient(connectionOpts = {}) {
   const key = JSON.stringify(connectionOpts)
   if (!tc[key]) {
-    const transferProto = getClientRegistryIntance(TRANSFER)
     const config = new GRPCConnectorEntitiy({
       host: connectionOpts.host,
-      isSecure: connectionOpts.isSecure,
     })
-    tc[key] = new Transfer(
-      new transferProto.TransferGRPC(config.getHost(), config.getSecure()),
-    )
+    tc[key] = new Transfer(new TransferGRPCClient(`http://${config.host}`))
   }
   return tc[key]
 }
 
 /**
  *  @typedef {Object} Transfer
- *  @property {GRPCClient} client - grpc client
+ *  @property {TransferGRPCClient} client - grpc client
  */
 export class Transfer {
   /**
    * @constructor
-   * @param {GRPCClient} client
+   * @param {TransferGRPCClient} client
    */
   constructor(client) {
     this.client = client
@@ -53,13 +41,16 @@ export class Transfer {
    *  @returns {Object|TransferException} response from API (stellar and evrynet tx hash)
    **/
   toEvrynet(xdr, evrynetAddress) {
+    const request = new ToEvrynetRequest()
+    request.setEvrynetaccount(evrynetAddress)
+    request.setStellarxdr(xdr)
     return new Promise((resolve, reject) => {
-      let chan = this.client.ToEvrynet({
-        stellarXDR: xdr,
-        evrynetAccount: evrynetAddress,
-      })
+      let chan = this.client.toEvrynet(request, {})
       chan.on('data', (data) => {
-        resolve(data)
+        resolve({
+          stellarTxHash: data.getStellartxhash(),
+          evrynetTxHash: data.getEvrynettxhash(),
+        })
       })
       chan.on('error', (err) => {
         reject(new TransferException(null, err.toString()))
@@ -74,13 +65,16 @@ export class Transfer {
    *  @returns {Object|TransferException} response from API (stellar and evrynet tx hash)
    **/
   toStellar(evRawTx, stXDR) {
+    const request = new ToStellarRequest()
+    request.setEvrynetrawtx(evRawTx)
+    request.setStellarxdr(stXDR)
     return new Promise((resolve, reject) => {
-      let chan = this.client.ToStellar({
-        evrynetRawTx: evRawTx,
-        stellarXDR: stXDR,
-      })
+      let chan = this.client.toStellar(request, {})
       chan.on('data', (data) => {
-        resolve(data)
+        resolve({
+          stellarTxHash: data.getStellartxhash(),
+          evrynetTxHash: data.getEvrynettxhash(),
+        })
       })
       chan.on('error', (err) => {
         reject(new TransferException(null, err.toString()))
