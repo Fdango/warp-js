@@ -45,7 +45,7 @@ export class WarpContract {
   /**
    * @constructor
    * @param {string} contractAddr - a contract address
-   * @param {Buffer} abi - abi file contaning interface for the contract
+   * @param {Buffer} abi - abi file containing interface for the contract
    */
   constructor(contractAddr, abi) {
     this.web3 = new Web3()
@@ -126,7 +126,7 @@ export class WarpContract {
    * @param {WhitelistedAsset} payload.asset to be locked
    * @param {string} payload.amount of the asset to be locked
    * @param {string} payload.priv key used to sign the tx
-   * @param {number} payload.nonce a postitive generated nonce number
+   * @param {number} payload.nonce a positive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
   newNativeLockTx({ amount, priv, nonce }) {
@@ -161,7 +161,107 @@ export class WarpContract {
     } catch (e) {
       throw new WrapContractException(
         null,
-        'Unable to lock a credit',
+        'Unable to lock a native asset',
+        e.toString(),
+      )
+    }
+  }
+
+  /**
+   * Creates a new credit lock transaction
+   * @param {Object} payload - payload for creating tx
+   * @param {WhitelistedAsset} payload.asset to be locked
+   * @param {string} payload.amount of the asset to be locked
+   * @param {string} payload.priv key used to sign the tx
+   * @param {number} payload.nonce a positive generated nonce number
+   * @return {Transaction|WrapContractException} raw tx
+   */
+  newCreditUnlockTx({ asset, amount, priv, nonce }) {
+    try {
+      const account = this.web3.eth.accounts.privateKeyToAccount(priv)
+      if (!asset) {
+        throw new WrapContractException(null, 'Invalid Asset')
+      }
+      if (!this._validateAmount(amount, asset.decimal)) {
+        throw new WrapContractException(
+          null,
+          `Not allow to move evrycoin more than ${asset.decimal} decimals`,
+        )
+      }
+      const hexAmount = this.web3.utils.toHex(
+        this._parseAmount(amount, asset.decimal),
+      )
+      const assetID = asset.getID()
+      const data = this.warp.methods
+        .unlock(account.address, assetID, hexAmount)
+        .encodeABI()
+      let tx = new Transaction(
+        {
+          nonce,
+          from: account.address,
+          to: this.warp.address,
+          gasLimit: GASLIMIT,
+          gasPrice: GASPRICE,
+          data,
+        },
+        {
+          common: CUSTOM_CHAIN,
+        },
+      )
+      tx.sign(Buffer.from(priv, 'hex'))
+      return tx
+    } catch (e) {
+      throw new WrapContractException(
+        null,
+        'Unable to unlock a credit',
+        e.toString(),
+      )
+    }
+  }
+
+  /**
+   * Creates a new native (Evry Coin) lock transaction
+   * @param {Object} payload - payload for creating tx
+   * @param {WhitelistedAsset} payload.asset to be locked
+   * @param {string} payload.amount of the asset to be locked
+   * @param {string} payload.priv key used to sign the tx
+   * @param {number} payload.nonce a postitive generated nonce number
+   * @return {Transaction|WrapContractException} raw tx
+   */
+  newNativeUnlockTx({ amount, priv, nonce }) {
+    try {
+      const account = this.web3.eth.accounts.privateKeyToAccount(priv)
+      if (!this._validateAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT)) {
+        throw new WrapContractException(
+          null,
+          `Invalid amount: decimal is more than ${ATOMIC_STELLAR_DECIMAL_UNIT}`,
+        )
+      }
+      const hexAmount = this.web3.utils.toHex(
+        this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
+      )
+      const data = this.warp.methods
+        .unlockNative(account.address, hexAmount)
+        .encodeABI()
+      let tx = new Transaction(
+        {
+          nonce,
+          from: account.address,
+          to: this.warp.address,
+          gasLimit: GASLIMIT,
+          gasPrice: GASPRICE,
+          data,
+        },
+        {
+          common: CUSTOM_CHAIN,
+        },
+      )
+      tx.sign(Buffer.from(priv, 'hex'))
+      return tx
+    } catch (e) {
+      throw new WrapContractException(
+        null,
+        'Unable to unlock a native asset',
         e.toString(),
       )
     }
