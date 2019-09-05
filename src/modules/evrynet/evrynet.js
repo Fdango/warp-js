@@ -1,5 +1,5 @@
 import Web3 from 'web3'
-import GRPCConnectorEntitiy from '@/entities/grpc'
+import GRPCConnectorEntity from '@/entities/grpc'
 import EvrynetException from '@/exceptions/evrynet'
 import find from 'lodash/find'
 import map from 'lodash/map'
@@ -23,7 +23,7 @@ let ec = []
 export function getEvryClient(connectionOpts = {}) {
   const key = JSON.stringify(connectionOpts)
   if (!ec[key]) {
-    const config = new GRPCConnectorEntitiy({
+    const config = new GRPCConnectorEntity({
       host: connectionOpts.host,
     })
     ec[key] = new Evrynet(new EvrynetGRPCClient(`http://${config.host}`))

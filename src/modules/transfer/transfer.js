@@ -1,4 +1,4 @@
-import GRPCConnectorEntitiy from '@/entities/grpc'
+import GRPCConnectorEntity from '@/entities/grpc'
 import TransferException from '@/exceptions/transfer'
 import { TransferGRPCClient } from 'Protos/transfer_grpc_web_pb.js'
 import { ToEvrynetRequest, ToStellarRequest } from 'Protos/transfer_pb.js'
@@ -6,14 +6,14 @@ import { ToEvrynetRequest, ToStellarRequest } from 'Protos/transfer_pb.js'
 let tc = []
 
 /**
- * Registry for creating a transter instance if not existed.
+ * Registry for creating a transfer instance if not existed.
  * @param {Object} [connectionOpts={}]
  * @returns {Transfer}
  */
 export function getTransferClient(connectionOpts = {}) {
   const key = JSON.stringify(connectionOpts)
   if (!tc[key]) {
-    const config = new GRPCConnectorEntitiy({
+    const config = new GRPCConnectorEntity({
       host: connectionOpts.host,
     })
     tc[key] = new Transfer(new TransferGRPCClient(`http://${config.host}`))

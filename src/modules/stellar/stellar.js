@@ -1,6 +1,6 @@
 import config from '@/config/config'
 import StellarSDK from 'stellar-sdk'
-import GRPCConnectorEntitiy from '@/entities/grpc'
+import GRPCConnectorEntity from '@/entities/grpc'
 import StellarException from '@/exceptions/stellar'
 import {
   GetSequenceNumberRequest,
@@ -26,7 +26,7 @@ let sc = []
 export function getStellarClient(connectionOpts = {}) {
   const key = JSON.stringify(connectionOpts)
   if (!sc[key]) {
-    const config = new GRPCConnectorEntitiy({
+    const config = new GRPCConnectorEntity({
       host: connectionOpts.host,
     })
     sc[key] = new Stellar(new StellarGRPCClient(`http://${config.host}`))
