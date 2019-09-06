@@ -1,4 +1,5 @@
 import StellarSDK from 'stellar-sdk'
+import StellarBase from 'stellar-base'
 import { Stellar } from '@/modules/stellar/stellar'
 import { WhitelistedAsset, getLumensAsset } from '@/entities/asset'
 import StellarException from '@/exceptions/stellar'
@@ -89,7 +90,10 @@ describe('Stellar', () => {
           amount,
           asset: xlm.toStellarFormat(),
         })
-        let tx = new StellarSDK.Transaction(txeB64)
+        let tx = new StellarBase.Transaction(
+          txeB64,
+          StellarBase.Networks.TESTNET,
+        )
 
         // validate sender pk
         expect(tx.source).toBe(senderpk)
@@ -148,7 +152,10 @@ describe('Stellar', () => {
           amount,
           asset: xlm.toStellarFormat(),
         })
-        let tx = new StellarSDK.Transaction(txeB64)
+        let tx = new StellarBase.Transaction(
+          txeB64,
+          StellarBase.Networks.TESTNET,
+        )
 
         // validate sender pk
         expect(tx.source).toBe(senderpk)

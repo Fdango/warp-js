@@ -10,7 +10,7 @@ import {
 import { StellarGRPCClient } from 'Protos/stellar_grpc_web_pb.js'
 
 const {
-  stellar: { ESCROW_ACCOUNT },
+  stellar: { ESCROW_ACCOUNT, NETWORK },
 } = config
 
 let sc = []
@@ -44,7 +44,7 @@ export class Stellar {
    * @param {StellarGRPCClient} client
    */
   constructor(client) {
-    StellarSDK.Network.useTestNetwork()
+    NETWORK
     this.client = client
   }
 
@@ -152,6 +152,7 @@ export class Stellar {
       const account = new StellarSDK.Account(txPk, seq)
       const transaction = new StellarSDK.TransactionBuilder(account, {
         fee: StellarSDK.BASE_FEE,
+        networkPassphrase: NETWORK,
       })
         .addOperation(
           StellarSDK.Operation.payment({

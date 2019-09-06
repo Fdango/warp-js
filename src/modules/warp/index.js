@@ -79,7 +79,7 @@ export default class Warp {
       throw new WarpException(
         null,
         e.toString(),
-        'Unable to move the asset to stellar',
+        'Unable to move the asset to Evrynet',
       )
     }
   }
@@ -134,7 +134,7 @@ export default class Warp {
       throw new WarpException(
         null,
         e.toString(),
-        'Unable to move the asset to stellar',
+        'Unable to move the asset to Stellar',
       )
     }
   }

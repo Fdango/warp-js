@@ -2,7 +2,7 @@ import Warp from '@/modules/warp'
 
 const warp = new Warp()
 const xlm = warp.utils.getLumensAsset()
-const recipient = '0x9993B01f1BBAF72f3B8f5fee269f15e483655e43'
+const recipient = '90200A44D0A538B4C886F3B2B835F29CE4C717AA32D0427D8559874E2867C943'
 const sender = {
   secret: 'SADFSJ45OOSLJZMRSN4X3577NBC5NNKTK4JYE4DS5M34UIVILDC7EW3O',
   address: 'GB6T7Y6DAEYPSLV3NDH5YFJOMJGGNADTNVCYNSUM74SS77NADWM4BHHH',
@@ -10,10 +10,10 @@ const sender = {
 
 warp
   .toEvrynet({
-    src: sender.secret,
+    stellarPriv: sender.secret,
     amount: '10.0',
     asset: xlm,
-    evrynetAddress: recipient,
+    evrynetPriv: recipient,
   })
   .then(console.log)
   .catch(console.error)
