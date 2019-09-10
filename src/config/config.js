@@ -21,7 +21,7 @@ const development = {
         chainId: 15,
         networkId: 15,
       },
-      'petersburg',
+      'constantinople',
     ),
   },
   stellar: {
@@ -55,7 +55,7 @@ const local = {
         networkId: 5777,
         chainId: 5777,
       },
-      'petersburg',
+      'constantinople',
     ),
   },
 }

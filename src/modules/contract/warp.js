@@ -100,7 +100,7 @@ export class WarpContract {
         {
           nonce,
           from: account.address,
-          to: this.warp.address,
+          to: this.warp.options.address,
           gasLimit: GASLIMIT,
           gasPrice: GASPRICE,
           data,
@@ -146,7 +146,7 @@ export class WarpContract {
         {
           nonce,
           from: account.address,
-          to: this.warp.address,
+          to: this.warp.options.address,
           value: hexAmount,
           gasLimit: GASLIMIT,
           gasPrice: GASPRICE,
@@ -178,7 +178,7 @@ export class WarpContract {
    */
   newCreditUnlockTx({ asset, amount, priv, nonce }) {
     try {
-      const account = this.web3.eth.accounts.privateKeyToAccount(priv)
+      const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!asset) {
         throw new WrapContractException(null, 'Invalid Asset')
       }
@@ -199,7 +199,7 @@ export class WarpContract {
         {
           nonce,
           from: account.address,
-          to: this.warp.address,
+          to: this.warp.options.address,
           gasLimit: GASLIMIT,
           gasPrice: GASPRICE,
           data,
@@ -230,7 +230,7 @@ export class WarpContract {
    */
   newNativeUnlockTx({ amount, priv, nonce }) {
     try {
-      const account = this.web3.eth.accounts.privateKeyToAccount(priv)
+      const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!this._validateAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT)) {
         throw new WrapContractException(
           null,
@@ -247,7 +247,7 @@ export class WarpContract {
         {
           nonce,
           from: account.address,
-          to: this.warp.address,
+          to: this.warp.options.address,
           gasLimit: GASLIMIT,
           gasPrice: GASPRICE,
           data,

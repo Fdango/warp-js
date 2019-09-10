@@ -8,6 +8,7 @@
     "example:local": "NODE_ENV=local babel-node",
     "example:development": "NODE_ENV=development babel-node",
     "build:local": "webpack --config webpack.local.js --progress --profile --colors --mode=development",
+    "build:development": "webpack --config webpack.dev.js --progress --profile --colors --mode=development",
     "lint": "eslint --fix src/**",
     "check:format": "prettier --check --config .prettierrc \"src/**/*.js\"",
     "format": "prettier --write --config .prettierrc \"src/**/*.js\""

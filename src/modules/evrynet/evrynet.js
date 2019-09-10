@@ -114,7 +114,7 @@ export class Evrynet {
   async getNonceFromPriv(priv) {
     const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
     try {
-      const data = await this.getNonce({ evrynetAddress: account.address })
+      const data = await this.getNonce(account.address)
       return data
     } catch (e) {
       throw new EvrynetException(null, e.toString())
