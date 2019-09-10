@@ -30,11 +30,12 @@ export default class Warp {
   }
 
   /**
-   * Makes a move asset from evrynet to stellar request
-   * @param {string} evrynetPriv - a sender's evrynet secret which will receive the asset
-   * @param {string} stellarPriv - a sender's stellar secret which is holding the asset
-   * @param {string} amount - amount of an asset to be transferred
-   * @param {Asset} asset - stellar asset to be transferred
+   * Makes a move asset from stellar to evrynet request
+   * @param {Object} payload - a sender's input including the transferring asset and both network account
+   * @param {string} payload.evrynetPriv - a sender's evrynet secret which will receive the asset
+   * @param {string} payload.stellarPriv - a sender's stellar secret which is holding the asset
+   * @param {string} payload.amount - amount of an asset to be transferred
+   * @param {Asset}  payload.asset - asset to be transferred
    * @returns {Object|WarpException} - to evrynet response
    */
   async toEvrynet({ evrynetPriv, stellarPriv, amount, asset }) {
@@ -65,10 +66,10 @@ export default class Warp {
       }
       const evrynetTx = whitelistedAsset.isNative()
         ? this.contract.warp.txToHex(
-            this.contract.warp.newNativeUnlockTx(payload),
+            this.contract.warp.newUnlockNativeTx(payload),
           )
         : this.contract.warp.txToHex(
-            this.contract.warp.newCreditUnlockTx({
+            this.contract.warp.newUnlockTx({
               ...payload,
               asset: whitelistedAsset,
             }),
@@ -85,11 +86,12 @@ export default class Warp {
   }
 
   /**
-   * Makes a move asset from stellar to evrynet request
-   * @param {string} evrynetPriv - a sender's evrynet secret which is holding the target asset
-   * @param {string} stellarPriv - a sender's stellar secret which will receive the asset
-   * @param {string} amount - amount of an asset to be transferred
-   * @param {Asset} asset - stellar asset to be transferred
+   * Makes a move asset from evrynet to stellar request
+   * @param {Object} payload - a sender's input including the transferring asset and both network account
+   * @param {string} payload.evrynetPriv - a sender's evrynet secret which will receive the asset
+   * @param {string} payload.stellarPriv - a sender's stellar secret which is holding the asset
+   * @param {string} payload.amount - amount of an asset to be transferred
+   * @param {Asset}  payload.asset - asset to be transferred
    * @returns {Object|WarpException} - to stellar response
    */
   async toStellar({ evrynetPriv, stellarPriv, amount, asset }) {
@@ -120,10 +122,10 @@ export default class Warp {
       }
       const evrynetTx = whitelistedAsset.isNative()
         ? this.contract.warp.txToHex(
-            this.contract.warp.newNativeLockTx(payload),
+            this.contract.warp.newLockNativeTx(payload),
           )
         : this.contract.warp.txToHex(
-            this.contract.warp.newCreditLockTx({
+            this.contract.warp.newLockTx({
               ...payload,
               asset: whitelistedAsset,
             }),

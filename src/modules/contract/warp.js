@@ -73,13 +73,13 @@ export class WarpContract {
   /**
    * Creates a new credit lock transaction
    * @param {Object} payload - payload for creating tx
-   * @param {WhitelistedAsset} payload.asset to be locked
-   * @param {string} payload.amount of the asset to be locked
-   * @param {string} payload.priv key used to sign the tx
-   * @param {number} payload.nonce a postitive generated nonce number
+   * @param {WhitelistedAsset} payload.asset - asset to be locked
+   * @param {string} payload.amount - amount of the asset to be locked
+   * @param {string} payload.priv - destination account private key
+   * @param {number} payload.nonce - positive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newCreditLockTx({ asset, amount, priv, nonce }) {
+  newLockTx({ asset, amount, priv, nonce }) {
     try {
       const account = this.web3.eth.accounts.privateKeyToAccount(priv)
       if (!asset) {
@@ -121,15 +121,14 @@ export class WarpContract {
   }
 
   /**
-   * Creates a new native (Evry Coin) lock transaction
+   * Creates a new native (Evrycoin) lock transaction
    * @param {Object} payload - payload for creating tx
-   * @param {WhitelistedAsset} payload.asset to be locked
-   * @param {string} payload.amount of the asset to be locked
-   * @param {string} payload.priv key used to sign the tx
-   * @param {number} payload.nonce a positive generated nonce number
+   * @param {string} payload.amount - amount of the native asset to be locked
+   * @param {string} payload.priv - destination account private key
+   * @param {number} payload.nonce - positive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newNativeLockTx({ amount, priv, nonce }) {
+  newLockNativeTx({ amount, priv, nonce }) {
     try {
       const account = this.web3.eth.accounts.privateKeyToAccount(priv)
       if (!this._validateAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT)) {
@@ -168,15 +167,15 @@ export class WarpContract {
   }
 
   /**
-   * Creates a new credit lock transaction
+   * Creates a new credit unlock transaction
    * @param {Object} payload - payload for creating tx
-   * @param {WhitelistedAsset} payload.asset to be locked
-   * @param {string} payload.amount of the asset to be locked
-   * @param {string} payload.priv key used to sign the tx
-   * @param {number} payload.nonce a positive generated nonce number
+   * @param {WhitelistedAsset} payload.asset - asset to be unlocked
+   * @param {string} payload.amount - amount of the asset to be unlocked
+   * @param {string} payload.priv - destination account private key
+   * @param {number} payload.nonce - positive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newCreditUnlockTx({ asset, amount, priv, nonce }) {
+  newUnlockTx({ asset, amount, priv, nonce }) {
     try {
       const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!asset) {
@@ -220,15 +219,14 @@ export class WarpContract {
   }
 
   /**
-   * Creates a new native (Evry Coin) lock transaction
+   * Creates a new native (Evrycoin) unlock transaction
    * @param {Object} payload - payload for creating tx
-   * @param {WhitelistedAsset} payload.asset to be locked
-   * @param {string} payload.amount of the asset to be locked
-   * @param {string} payload.priv key used to sign the tx
-   * @param {number} payload.nonce a postitive generated nonce number
+   * @param {string} payload.amount - amount of the native asset to be unlocked
+   * @param {string} payload.priv - destination account private key
+   * @param {number} payload.nonce - positive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newNativeUnlockTx({ amount, priv, nonce }) {
+  newUnlockNativeTx({ amount, priv, nonce }) {
     try {
       const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!this._validateAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT)) {

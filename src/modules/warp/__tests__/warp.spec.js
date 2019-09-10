@@ -56,7 +56,7 @@ describe('Warp SDK', () => {
           })
           getWarpContract.mockImplementation(() => {
             return {
-              newNativeUnlockTx: jest.fn().mockReturnValue('bar'),
+              newUnlockNativeTx: jest.fn().mockReturnValue('bar'),
               txToHex: jest.fn().mockReturnValue('foo'),
             }
           })
@@ -106,7 +106,7 @@ describe('Warp SDK', () => {
           })
           getWarpContract.mockImplementation(() => {
             return {
-              newCreditUnlockTx: jest.fn().mockReturnValue('bar'),
+              newUnlockTx: jest.fn().mockReturnValue('bar'),
               txToHex: jest.fn().mockReturnValue('foo'),
             }
           })
@@ -181,7 +181,7 @@ describe('Warp SDK', () => {
           })
           getWarpContract.mockImplementation(() => {
             return {
-              newCreditUnlockTx: jest.fn().mockReturnValue('bar'),
+              newUnlockTx: jest.fn().mockReturnValue('bar'),
             }
           })
           getEvryClient.mockImplementation(() => {
@@ -199,7 +199,7 @@ describe('Warp SDK', () => {
       })
 
       describe('When asset is native ', () => {
-        describe('With error from newNativeLockTx', () => {
+        describe('With error from newLockNativeTx', () => {
           it('should throw an error', async () => {
             getStellarClient.mockImplementation(() => {
               return {
@@ -213,7 +213,7 @@ describe('Warp SDK', () => {
             })
             getWarpContract.mockImplementation(() => {
               return {
-                newNativeUnlockTx: jest
+                newUnlockNativeTx: jest
                   .fn()
                   .mockRejectedValue(new Error('this is an error')),
               }
@@ -249,7 +249,7 @@ describe('Warp SDK', () => {
             })
             getWarpContract.mockImplementation(() => {
               return {
-                newNativeUnlockTx: jest.fn().mockReturnValue('bar'),
+                newUnlockNativeTx: jest.fn().mockReturnValue('bar'),
                 txToHex: jest
                   .fn()
                   .mockRejectedValue(new Error('this is an error')),
@@ -274,7 +274,7 @@ describe('Warp SDK', () => {
       })
 
       describe('When asset is credit', () => {
-        describe('With error from newNativeLockTx', () => {
+        describe('With error from newLockNativeTx', () => {
           it('should throw an error', async () => {
             getStellarClient.mockImplementation(() => {
               return {
@@ -288,7 +288,7 @@ describe('Warp SDK', () => {
             })
             getWarpContract.mockImplementation(() => {
               return {
-                newCreditUnlockTx: jest
+                newUnlockTx: jest
                   .fn()
                   .mockRejectedValue(new Error('this is an error')),
               }
@@ -324,7 +324,7 @@ describe('Warp SDK', () => {
             })
             getWarpContract.mockImplementation(() => {
               return {
-                newCreditUnlockTx: jest.fn().mockReturnValue('bar'),
+                newUnlockTx: jest.fn().mockReturnValue('bar'),
                 txToHex: jest
                   .fn()
                   .mockRejectedValue(new Error('this is an error')),
@@ -369,7 +369,7 @@ describe('Warp SDK', () => {
           })
           getWarpContract.mockImplementation(() => {
             return {
-              newCreditUnlockTx: jest.fn().mockReturnValue('bar'),
+              newUnlockTx: jest.fn().mockReturnValue('bar'),
               txToHex: jest.fn().mockReturnValue('foo'),
             }
           })
@@ -430,7 +430,7 @@ describe('Warp SDK', () => {
           })
           getWarpContract.mockImplementation(() => {
             return {
-              newNativeLockTx: jest.fn().mockReturnValue('bar'),
+              newLockNativeTx: jest.fn().mockReturnValue('bar'),
               txToHex: jest.fn().mockReturnValue('foo'),
             }
           })
@@ -480,7 +480,7 @@ describe('Warp SDK', () => {
           })
           getWarpContract.mockImplementation(() => {
             return {
-              newCreditLockTx: jest.fn().mockReturnValue('bar'),
+              newLockTx: jest.fn().mockReturnValue('bar'),
               txToHex: jest.fn().mockReturnValue('foo'),
             }
           })
@@ -555,7 +555,7 @@ describe('Warp SDK', () => {
           })
           getWarpContract.mockImplementation(() => {
             return {
-              newCreditLockTx: jest.fn().mockReturnValue('bar'),
+              newLockTx: jest.fn().mockReturnValue('bar'),
             }
           })
           getEvryClient.mockImplementation(() => {
@@ -573,7 +573,7 @@ describe('Warp SDK', () => {
       })
 
       describe('When asset is native ', () => {
-        describe('With error from newNativeLockTx', () => {
+        describe('With error from newLockNativeTx', () => {
           it('should throw an error', async () => {
             getStellarClient.mockImplementation(() => {
               return {
@@ -587,7 +587,7 @@ describe('Warp SDK', () => {
             })
             getWarpContract.mockImplementation(() => {
               return {
-                newNativeLockTx: jest
+                newLockNativeTx: jest
                   .fn()
                   .mockRejectedValue(new Error('this is an error')),
               }
@@ -623,7 +623,7 @@ describe('Warp SDK', () => {
             })
             getWarpContract.mockImplementation(() => {
               return {
-                newNativeLockTx: jest.fn().mockReturnValue('bar'),
+                newLockNativeTx: jest.fn().mockReturnValue('bar'),
                 txToHex: jest
                   .fn()
                   .mockRejectedValue(new Error('this is an error')),
@@ -648,7 +648,7 @@ describe('Warp SDK', () => {
       })
 
       describe('When asset is credit', () => {
-        describe('With error from newNativeLockTx', () => {
+        describe('With error from newLockNativeTx', () => {
           it('should throw an error', async () => {
             getStellarClient.mockImplementation(() => {
               return {
@@ -662,7 +662,7 @@ describe('Warp SDK', () => {
             })
             getWarpContract.mockImplementation(() => {
               return {
-                newCreditLockTx: jest
+                newLockTx: jest
                   .fn()
                   .mockRejectedValue(new Error('this is an error')),
               }
@@ -698,7 +698,7 @@ describe('Warp SDK', () => {
             })
             getWarpContract.mockImplementation(() => {
               return {
-                newCreditLockTx: jest.fn().mockReturnValue('bar'),
+                newLockTx: jest.fn().mockReturnValue('bar'),
                 txToHex: jest
                   .fn()
                   .mockRejectedValue(new Error('this is an error')),
@@ -743,7 +743,7 @@ describe('Warp SDK', () => {
           })
           getWarpContract.mockImplementation(() => {
             return {
-              newCreditLockTx: jest.fn().mockReturnValue('bar'),
+              newLockTx: jest.fn().mockReturnValue('bar'),
               txToHex: jest.fn().mockReturnValue('foo'),
             }
           })
