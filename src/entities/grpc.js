@@ -8,7 +8,7 @@ const {
  *  @property {string} host - grpc host url
  *  @property {boolean} isSecure - grpc secure connection flag
  */
-export default class GRPCConnectorEntitiy {
+export default class GRPCConnectorEntity {
   /**
    * @constructor
    * @param {Object} [options={}] options - is configuration options for grpc entity.

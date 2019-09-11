@@ -1,6 +1,6 @@
 import config from '@/config/config'
 import StellarSDK from 'stellar-sdk'
-import GRPCConnectorEntitiy from '@/entities/grpc'
+import GRPCConnectorEntity from '@/entities/grpc'
 import StellarException from '@/exceptions/stellar'
 import {
   GetSequenceNumberRequest,
@@ -10,7 +10,7 @@ import {
 import { StellarGRPCClient } from 'Protos/stellar_grpc_web_pb.js'
 
 const {
-  stellar: { ESCROW_ACCOUNT },
+  stellar: { ESCROW_ACCOUNT, NETWORK },
 } = config
 
 let sc = []
@@ -26,7 +26,7 @@ let sc = []
 export function getStellarClient(connectionOpts = {}) {
   const key = JSON.stringify(connectionOpts)
   if (!sc[key]) {
-    const config = new GRPCConnectorEntitiy({
+    const config = new GRPCConnectorEntity({
       host: connectionOpts.host,
     })
     sc[key] = new Stellar(new StellarGRPCClient(`http://${config.host}`))
@@ -44,7 +44,7 @@ export class Stellar {
    * @param {StellarGRPCClient} client
    */
   constructor(client) {
-    StellarSDK.Network.useTestNetwork()
+    NETWORK
     this.client = client
   }
 
@@ -152,6 +152,7 @@ export class Stellar {
       const account = new StellarSDK.Account(txPk, seq)
       const transaction = new StellarSDK.TransactionBuilder(account, {
         fee: StellarSDK.BASE_FEE,
+        networkPassphrase: NETWORK,
       })
         .addOperation(
           StellarSDK.Operation.payment({

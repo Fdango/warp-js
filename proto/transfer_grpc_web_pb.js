@@ -89,43 +89,43 @@ proto.transfer.TransferGRPCPromiseClient =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.transfer.ToEvrynetRequest,
- *   !proto.transfer.ToEvrynetResponse>}
+ *   !proto.transfer.TransferRequest,
+ *   !proto.transfer.TransferResponse>}
  */
 const methodDescriptor_TransferGRPC_ToEvrynet = new grpc.web.MethodDescriptor(
   '/transfer.TransferGRPC/ToEvrynet',
   grpc.web.MethodType.SERVER_STREAMING,
-  proto.transfer.ToEvrynetRequest,
-  proto.transfer.ToEvrynetResponse,
-  /** @param {!proto.transfer.ToEvrynetRequest} request */
+  proto.transfer.TransferRequest,
+  proto.transfer.TransferResponse,
+  /** @param {!proto.transfer.TransferRequest} request */
   function(request) {
     return request.serializeBinary();
   },
-  proto.transfer.ToEvrynetResponse.deserializeBinary
+  proto.transfer.TransferResponse.deserializeBinary
 );
 
 
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.transfer.ToEvrynetRequest,
- *   !proto.transfer.ToEvrynetResponse>}
+ *   !proto.transfer.TransferRequest,
+ *   !proto.transfer.TransferResponse>}
  */
 const methodInfo_TransferGRPC_ToEvrynet = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.transfer.ToEvrynetResponse,
-  /** @param {!proto.transfer.ToEvrynetRequest} request */
+  proto.transfer.TransferResponse,
+  /** @param {!proto.transfer.TransferRequest} request */
   function(request) {
     return request.serializeBinary();
   },
-  proto.transfer.ToEvrynetResponse.deserializeBinary
+  proto.transfer.TransferResponse.deserializeBinary
 );
 
 
 /**
- * @param {!proto.transfer.ToEvrynetRequest} request The request proto
+ * @param {!proto.transfer.TransferRequest} request The request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.transfer.ToEvrynetResponse>}
+ * @return {!grpc.web.ClientReadableStream<!proto.transfer.TransferResponse>}
  *     The XHR Node Readable Stream
  */
 proto.transfer.TransferGRPCClient.prototype.toEvrynet =
@@ -139,10 +139,10 @@ proto.transfer.TransferGRPCClient.prototype.toEvrynet =
 
 
 /**
- * @param {!proto.transfer.ToEvrynetRequest} request The request proto
+ * @param {!proto.transfer.TransferRequest} request The request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.transfer.ToEvrynetResponse>}
+ * @return {!grpc.web.ClientReadableStream<!proto.transfer.TransferResponse>}
  *     The XHR Node Readable Stream
  */
 proto.transfer.TransferGRPCPromiseClient.prototype.toEvrynet =
@@ -158,43 +158,43 @@ proto.transfer.TransferGRPCPromiseClient.prototype.toEvrynet =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.transfer.ToStellarRequest,
- *   !proto.transfer.ToStellarResponse>}
+ *   !proto.transfer.TransferRequest,
+ *   !proto.transfer.TransferResponse>}
  */
 const methodDescriptor_TransferGRPC_ToStellar = new grpc.web.MethodDescriptor(
   '/transfer.TransferGRPC/ToStellar',
   grpc.web.MethodType.SERVER_STREAMING,
-  proto.transfer.ToStellarRequest,
-  proto.transfer.ToStellarResponse,
-  /** @param {!proto.transfer.ToStellarRequest} request */
+  proto.transfer.TransferRequest,
+  proto.transfer.TransferResponse,
+  /** @param {!proto.transfer.TransferRequest} request */
   function(request) {
     return request.serializeBinary();
   },
-  proto.transfer.ToStellarResponse.deserializeBinary
+  proto.transfer.TransferResponse.deserializeBinary
 );
 
 
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.transfer.ToStellarRequest,
- *   !proto.transfer.ToStellarResponse>}
+ *   !proto.transfer.TransferRequest,
+ *   !proto.transfer.TransferResponse>}
  */
 const methodInfo_TransferGRPC_ToStellar = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.transfer.ToStellarResponse,
-  /** @param {!proto.transfer.ToStellarRequest} request */
+  proto.transfer.TransferResponse,
+  /** @param {!proto.transfer.TransferRequest} request */
   function(request) {
     return request.serializeBinary();
   },
-  proto.transfer.ToStellarResponse.deserializeBinary
+  proto.transfer.TransferResponse.deserializeBinary
 );
 
 
 /**
- * @param {!proto.transfer.ToStellarRequest} request The request proto
+ * @param {!proto.transfer.TransferRequest} request The request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.transfer.ToStellarResponse>}
+ * @return {!grpc.web.ClientReadableStream<!proto.transfer.TransferResponse>}
  *     The XHR Node Readable Stream
  */
 proto.transfer.TransferGRPCClient.prototype.toStellar =
@@ -208,10 +208,10 @@ proto.transfer.TransferGRPCClient.prototype.toStellar =
 
 
 /**
- * @param {!proto.transfer.ToStellarRequest} request The request proto
+ * @param {!proto.transfer.TransferRequest} request The request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.transfer.ToStellarResponse>}
+ * @return {!grpc.web.ClientReadableStream<!proto.transfer.TransferResponse>}
  *     The XHR Node Readable Stream
  */
 proto.transfer.TransferGRPCPromiseClient.prototype.toStellar =

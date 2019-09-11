@@ -13,7 +13,7 @@ describe('WarpContract', () => {
   const senderpriv =
     'eec741cb4f13d6f4c873834bcce86b4059f32f54744a37042969fb37b5f2b4b0'
 
-  describe('When creating new lock credit raw tx', () => {
+  describe('When creating new lock raw tx', () => {
     describe('When success', () => {
       describe('When credit decimal is less than stellar atomic decimal unit', () => {
         it('should be successfully creating a new lock credit raw tx', () => {
@@ -23,7 +23,7 @@ describe('WarpContract', () => {
             decimal: 6,
           })
           const warp = getWarpContract()
-          const tx = warp.newCreditLockTx({
+          const tx = warp.newLockTx({
             asset,
             amount: '10',
             priv: senderpriv,
@@ -43,7 +43,7 @@ describe('WarpContract', () => {
             decimal: 10,
           })
           const warp = getWarpContract()
-          const tx = warp.newCreditLockTx({
+          const tx = warp.newLockTx({
             asset,
             amount: '10',
             priv: senderpriv,
@@ -75,7 +75,7 @@ describe('WarpContract', () => {
             decimal: 7,
           })
           expect(() => {
-            getWarpContract().newCreditLockTx({
+            getWarpContract().newLockTx({
               asset,
               amount: '10',
               priv: 'badpriv',
@@ -93,7 +93,7 @@ describe('WarpContract', () => {
             decimal: 7,
           })
           expect(() => {
-            getWarpContract().newCreditLockTx({
+            getWarpContract().newLockTx({
               asset,
               amount: '0',
               priv: senderpriv,
@@ -109,7 +109,7 @@ describe('WarpContract', () => {
             decimal: 7,
           })
           expect(() => {
-            getWarpContract().newCreditLockTx({
+            getWarpContract().newLockTx({
               asset,
               amount: '-1',
               priv: senderpriv,
@@ -125,7 +125,7 @@ describe('WarpContract', () => {
             decimal: 8,
           })
           expect(() => {
-            getWarpContract().newCreditLockTx({
+            getWarpContract().newLockTx({
               asset,
               amount: '1.00000001',
               priv: senderpriv,
@@ -137,7 +137,7 @@ describe('WarpContract', () => {
     })
   })
 
-  describe('When creating new native lock raw tx', () => {
+  describe('When creating new lock native raw tx', () => {
     describe('When success', () => {
       it('should be successfully creating a new native lock raw tx', async () => {
         const asset = new WhitelistedAsset({
@@ -146,7 +146,7 @@ describe('WarpContract', () => {
           decimal: 7,
         })
         let warp = getWarpContract()
-        let tx = await warp.newNativeLockTx({
+        let tx = await warp.newLockNativeTx({
           asset,
           amount: 10,
           priv: senderpriv,
@@ -163,7 +163,7 @@ describe('WarpContract', () => {
       describe('With invalid asset', () => {
         it('should throw an error from creating a new lock raw tx', async () => {
           try {
-            await getWarpContract().newCreditLockTx({
+            await getWarpContract().newLockTx({
               asset: null,
               amount: 10,
               priv: senderpriv,
@@ -178,7 +178,7 @@ describe('WarpContract', () => {
       describe('With invalid private key', () => {
         it('should throw an error from creating a new native lock raw tx', async () => {
           try {
-            await getWarpContract().newNativeLockTx(10, 'badpriv', '1')
+            await getWarpContract().newLockNativeTx(10, 'badpriv', '1')
           } catch (e) {
             expect(e).toBeInstanceOf(WrapContractException)
           }
@@ -188,7 +188,7 @@ describe('WarpContract', () => {
       describe('With invalid amount', () => {
         it('should throw an error from creating a new native lock raw tx using zero', async () => {
           try {
-            await getWarpContract().newNativeLockTx(0, senderpriv, '1')
+            await getWarpContract().newLockNativeTx(0, senderpriv, '1')
           } catch (e) {
             expect(e).toBeInstanceOf(WrapContractException)
           }
@@ -197,7 +197,194 @@ describe('WarpContract', () => {
         it('should throw an error from creating a new native lock raw tx using negative', async () => {
           expect.assertions(1)
           try {
-            await getWarpContract().newNativeLockTx(-1, senderpriv, '1')
+            await getWarpContract().newLockNativeTx(-1, senderpriv, '1')
+          } catch (e) {
+            expect(e).toBeInstanceOf(WrapContractException)
+          }
+        })
+      })
+    })
+  })
+
+  describe('When creating new unlock raw tx', () => {
+    describe('When success', () => {
+      describe('When credit decimal is less than stellar atomic decimal unit', () => {
+        it('should be successfully creating a new unlock raw tx', () => {
+          const asset = new WhitelistedAsset({
+            code: 'TEST',
+            isser: '',
+            decimal: 6,
+          })
+          const warp = getWarpContract()
+          const tx = warp.newUnlockTx({
+            asset,
+            amount: '10',
+            priv: senderpriv,
+            nonce: 0,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = warp.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+
+      describe('When credit decimal is more than stellar atomic decimal unit', () => {
+        it('should be successfully creating a new unlock raw tx', () => {
+          const asset = new WhitelistedAsset({
+            code: 'TEST',
+            isser: '',
+            decimal: 10,
+          })
+          const warp = getWarpContract()
+          const tx = warp.newUnlockTx({
+            asset,
+            amount: '10',
+            priv: senderpriv,
+            nonce: 0,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = warp.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+    })
+
+    describe('When error', () => {
+      describe('When contract address not found', () => {
+        it('should throw an error', async () => {
+          try {
+            new WarpContract('foo', WARP)
+          } catch (e) {
+            expect(e).toBeInstanceOf(WrapContractException)
+          }
+        })
+      })
+
+      describe('With invalid private key', () => {
+        it('should throw an error from creating a unlock raw tx', () => {
+          const asset = new WhitelistedAsset({
+            code: 'TEST',
+            isser: '',
+            decimal: 7,
+          })
+          expect(() => {
+            getWarpContract().newUnlockTx({
+              asset,
+              amount: '10',
+              priv: 'badpriv',
+              nonce: '1',
+            })
+          }).toThrow(WrapContractException)
+        })
+      })
+
+      describe('With invalid amount', () => {
+        it('should throw an error from creating a new unlock raw tx from zero', () => {
+          const asset = new WhitelistedAsset({
+            code: 'TEST',
+            isser: '',
+            decimal: 7,
+          })
+          expect(() => {
+            getWarpContract().newUnlockTx({
+              asset,
+              amount: '0',
+              priv: senderpriv,
+              nonce: '1',
+            })
+          }).toThrow(WrapContractException)
+        })
+
+        it('should throw an error from creating a new unlock raw tx from negative', () => {
+          const asset = new WhitelistedAsset({
+            code: 'TEST',
+            isser: '',
+            decimal: 7,
+          })
+          expect(() => {
+            getWarpContract().newUnlockTx({
+              asset,
+              amount: '-1',
+              priv: senderpriv,
+              nonce: '1',
+            })
+          }).toThrow(WrapContractException)
+        })
+
+        it('should throw an error from creating a new unlock raw tx from invalid decimal', () => {
+          const asset = new WhitelistedAsset({
+            code: 'TEST',
+            isser: '',
+            decimal: 8,
+          })
+          expect(() => {
+            getWarpContract().newUnlockTx({
+              asset,
+              amount: '1.00000001',
+              priv: senderpriv,
+              nonce: '1',
+            })
+          }).toThrow(WrapContractException)
+        })
+      })
+    })
+  })
+
+  describe('When creating new unlock native raw tx', () => {
+    describe('When success', () => {
+      it('should be successfully creating a new unlock native raw tx', async () => {
+        let warp = getWarpContract()
+        let tx = await warp.newUnlockNativeTx({
+          amount: 10,
+          priv: senderpriv,
+          nonce: 0,
+        })
+        expect(tx.verifySignature()).toBeTruthy()
+
+        let rwtxHex = warp.txToHex(tx)
+        expect(rwtxHex).toBeDefined()
+      })
+    })
+
+    describe('When error', () => {
+      describe('With invalid asset', () => {
+        it('should throw an error from creating a new unlock native raw tx', async () => {
+          try {
+            await getWarpContract().newUnlockNativeTx({
+              asset: null,
+              amount: 10,
+              priv: senderpriv,
+              nonce: '1',
+            })
+          } catch (e) {
+            expect(e).toBeInstanceOf(WrapContractException)
+          }
+        })
+      })
+
+      describe('With invalid private key', () => {
+        it('should throw an error from creating a new unlock native raw tx', async () => {
+          try {
+            await getWarpContract().newUnlockNativeTx(10, 'badpriv', '1')
+          } catch (e) {
+            expect(e).toBeInstanceOf(WrapContractException)
+          }
+        })
+      })
+
+      describe('With invalid amount', () => {
+        it('should throw an error from creating a new unlock native raw tx using zero', async () => {
+          try {
+            await getWarpContract().newUnlockNativeTx(0, senderpriv, '1')
+          } catch (e) {
+            expect(e).toBeInstanceOf(WrapContractException)
+          }
+        })
+
+        it('should throw an error from creating a new unlock native raw tx using negative', async () => {
+          expect.assertions(1)
+          try {
+            await getWarpContract().newUnlockNativeTx(-1, senderpriv, '1')
           } catch (e) {
             expect(e).toBeInstanceOf(WrapContractException)
           }

@@ -1,5 +1,5 @@
 import Web3 from 'web3'
-import GRPCConnectorEntitiy from '@/entities/grpc'
+import GRPCConnectorEntity from '@/entities/grpc'
 import EvrynetException from '@/exceptions/evrynet'
 import find from 'lodash/find'
 import map from 'lodash/map'
@@ -23,7 +23,7 @@ let ec = []
 export function getEvryClient(connectionOpts = {}) {
   const key = JSON.stringify(connectionOpts)
   if (!ec[key]) {
-    const config = new GRPCConnectorEntitiy({
+    const config = new GRPCConnectorEntity({
       host: connectionOpts.host,
     })
     ec[key] = new Evrynet(new EvrynetGRPCClient(`http://${config.host}`))
@@ -114,7 +114,7 @@ export class Evrynet {
   async getNonceFromPriv(priv) {
     const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
     try {
-      const data = await this.getNonce({ evrynetAddress: account.address })
+      const data = await this.getNonce(account.address)
       return data
     } catch (e) {
       throw new EvrynetException(null, e.toString())
