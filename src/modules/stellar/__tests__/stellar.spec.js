@@ -234,4 +234,14 @@ describe('Stellar', () => {
       })
     })
   })
+
+  describe('when getting public key from private key', () => {
+    it('should response a corerct public key', () => {
+      const privateKey =
+        'SADFSJ45OOSLJZMRSN4X3577NBC5NNKTK4JYE4DS5M34UIVILDC7EW3O'
+      const expected = `GB6T7Y6DAEYPSLV3NDH5YFJOMJGGNADTNVCYNSUM74SS77NADWM4BHHH`
+      const evrynet = new Stellar()
+      expect(evrynet.getPublickeyFromPrivateKey(privateKey)).toEqual(expected)
+    })
+  })
 })

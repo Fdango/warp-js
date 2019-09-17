@@ -144,6 +144,18 @@ export class Evrynet {
       })
     })
   }
+
+  /**
+   *
+   * @param {string} privateKey - private key
+   * @returns {string} public key
+   */
+  getPublickeyFromPrivateKey(privateKey = '') {
+    const account = this.web3.eth.accounts.privateKeyToAccount(
+      `0x${privateKey}`,
+    )
+    return account.address
+  }
 }
 
 export default {

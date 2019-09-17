@@ -243,4 +243,14 @@ describe('EvryNet', () => {
       })
     })
   })
+
+  describe('when getting public key from private key', () => {
+    it('should response a corerct public key', () => {
+      const privateKey =
+        '0a05a1645d8a0a5b8f593c84324ea36194211814ccc51211e81e6b09cf7a5460'
+      const expected = `0x9993B01f1BBAF72f3B8f5fee269f15e483655e43`
+      const evrynet = new Evrynet()
+      expect(evrynet.getPublickeyFromPrivateKey(privateKey)).toEqual(expected)
+    })
+  })
 })
