@@ -170,6 +170,17 @@ export class Stellar {
       return new StellarException(null, e.toString())
     }
   }
+
+  /**
+   *
+   * @param {string} privateKey - private key
+   * @returns {string} public key
+   */
+  getPublickeyFromPrivateKey(privateKey = '') {
+    const kp = StellarSDK.Keypair.fromSecret(privateKey)
+    const publicKey = kp.publicKey()
+    return publicKey
+  }
 }
 
 export default {
