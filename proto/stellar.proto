@@ -1,13 +1,10 @@
 syntax = "proto3";
+
 package stellar;
 
-message Asset {  
-    string code = 1;  
-    string issuer = 2;  
-    uint32 decimal = 3;
-}
+import "proto/common.proto";
 
-message GetSequenceNumberRequest {    
+message GetSequenceNumberRequest {
     string stellarAddress = 1;
 }
 
@@ -16,15 +13,29 @@ message GetSequenceNumberResponse {
 }
 
 message GetBalanceRequest {    
-    string accountAddress = 1;    
-    Asset asset = 2;
+    string accountAddress = 1;
+    common.Asset asset = 2;
 }
 
 message GetBalanceResponse {    
     string balance = 1;
 }
 
-service StellarGRPC {    
+message GetTrustlinesRequest {
+    string stellarAddress = 1;
+}
+
+message StellarAsset {
+    string code = 1;
+    string issuer = 2;
+}
+
+message GetTrustlinesResponse {
+    repeated StellarAsset asset = 1;
+}
+
+service StellarGRPC {
     rpc GetSequenceNumber (GetSequenceNumberRequest) returns (stream GetSequenceNumberResponse);    
     rpc GetBalance(GetBalanceRequest) returns (stream GetBalanceResponse);
+    rpc GetTrustlines(GetTrustlinesRequest) returns (stream GetTrustlinesResponse);
 }

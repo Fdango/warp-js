@@ -13,6 +13,8 @@ grpc.web = require('grpc-web');
 
 
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js')
+
+var proto_common_pb = require('../proto/common_pb.js')
 const proto = {};
 proto.evrynet = require('./evrynet_pb.js');
 
