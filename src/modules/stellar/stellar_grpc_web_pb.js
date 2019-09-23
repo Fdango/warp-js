@@ -6,15 +6,12 @@
 
 // GENERATED CODE -- DO NOT EDIT!
 
+const grpc = {}
+grpc.web = require('grpc-web')
 
-
-const grpc = {};
-grpc.web = require('grpc-web');
-
-
-var proto_common_pb = require('../proto/common_pb.js')
-const proto = {};
-proto.stellar = require('./stellar_pb.js');
+var warp_common_pb = require('../warp/common_pb.js')
+const proto = {}
+proto.stellar = require('./stellar_pb.js')
 
 /**
  * @param {string} hostname
@@ -24,33 +21,31 @@ proto.stellar = require('./stellar_pb.js');
  * @struct
  * @final
  */
-proto.stellar.StellarGRPCClient =
-    function(hostname, credentials, options) {
-  if (!options) options = {};
-  options['format'] = 'text';
+proto.stellar.StellarGRPCClient = function(hostname, credentials, options) {
+  if (!options) options = {}
+  options['format'] = 'text'
 
   /**
    * @private @const {!grpc.web.GrpcWebClientBase} The client
    */
-  this.client_ = new grpc.web.GrpcWebClientBase(options);
+  this.client_ = new grpc.web.GrpcWebClientBase(options)
 
   /**
    * @private @const {string} The hostname
    */
-  this.hostname_ = hostname;
+  this.hostname_ = hostname
 
   /**
    * @private @const {?Object} The credentials to be used to connect
    *    to the server
    */
-  this.credentials_ = credentials;
+  this.credentials_ = credentials
 
   /**
    * @private @const {?Object} Options for the client
    */
-  this.options_ = options;
-};
-
+  this.options_ = options
+}
 
 /**
  * @param {string} hostname
@@ -60,33 +55,35 @@ proto.stellar.StellarGRPCClient =
  * @struct
  * @final
  */
-proto.stellar.StellarGRPCPromiseClient =
-    function(hostname, credentials, options) {
-  if (!options) options = {};
-  options['format'] = 'text';
+proto.stellar.StellarGRPCPromiseClient = function(
+  hostname,
+  credentials,
+  options,
+) {
+  if (!options) options = {}
+  options['format'] = 'text'
 
   /**
    * @private @const {!grpc.web.GrpcWebClientBase} The client
    */
-  this.client_ = new grpc.web.GrpcWebClientBase(options);
+  this.client_ = new grpc.web.GrpcWebClientBase(options)
 
   /**
    * @private @const {string} The hostname
    */
-  this.hostname_ = hostname;
+  this.hostname_ = hostname
 
   /**
    * @private @const {?Object} The credentials to be used to connect
    *    to the server
    */
-  this.credentials_ = credentials;
+  this.credentials_ = credentials
 
   /**
    * @private @const {?Object} Options for the client
    */
-  this.options_ = options;
-};
-
+  this.options_ = options
+}
 
 /**
  * @const
@@ -101,11 +98,10 @@ const methodDescriptor_StellarGRPC_GetSequenceNumber = new grpc.web.MethodDescri
   proto.stellar.GetSequenceNumberResponse,
   /** @param {!proto.stellar.GetSequenceNumberRequest} request */
   function(request) {
-    return request.serializeBinary();
+    return request.serializeBinary()
   },
-  proto.stellar.GetSequenceNumberResponse.deserializeBinary
-);
-
+  proto.stellar.GetSequenceNumberResponse.deserializeBinary,
+)
 
 /**
  * @const
@@ -117,28 +113,10 @@ const methodInfo_StellarGRPC_GetSequenceNumber = new grpc.web.AbstractClientBase
   proto.stellar.GetSequenceNumberResponse,
   /** @param {!proto.stellar.GetSequenceNumberRequest} request */
   function(request) {
-    return request.serializeBinary();
+    return request.serializeBinary()
   },
-  proto.stellar.GetSequenceNumberResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.stellar.GetSequenceNumberRequest} request The request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.stellar.GetSequenceNumberResponse>}
- *     The XHR Node Readable Stream
- */
-proto.stellar.StellarGRPCClient.prototype.getSequenceNumber =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/stellar.StellarGRPC/GetSequenceNumber',
-      request,
-      metadata || {},
-      methodDescriptor_StellarGRPC_GetSequenceNumber);
-};
-
+  proto.stellar.GetSequenceNumberResponse.deserializeBinary,
+)
 
 /**
  * @param {!proto.stellar.GetSequenceNumberRequest} request The request proto
@@ -147,15 +125,36 @@ proto.stellar.StellarGRPCClient.prototype.getSequenceNumber =
  * @return {!grpc.web.ClientReadableStream<!proto.stellar.GetSequenceNumberResponse>}
  *     The XHR Node Readable Stream
  */
-proto.stellar.StellarGRPCPromiseClient.prototype.getSequenceNumber =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/stellar.StellarGRPC/GetSequenceNumber',
-      request,
-      metadata || {},
-      methodDescriptor_StellarGRPC_GetSequenceNumber);
-};
+proto.stellar.StellarGRPCClient.prototype.getSequenceNumber = function(
+  request,
+  metadata,
+) {
+  return this.client_.serverStreaming(
+    this.hostname_ + '/stellar.StellarGRPC/GetSequenceNumber',
+    request,
+    metadata || {},
+    methodDescriptor_StellarGRPC_GetSequenceNumber,
+  )
+}
 
+/**
+ * @param {!proto.stellar.GetSequenceNumberRequest} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.stellar.GetSequenceNumberResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.stellar.StellarGRPCPromiseClient.prototype.getSequenceNumber = function(
+  request,
+  metadata,
+) {
+  return this.client_.serverStreaming(
+    this.hostname_ + '/stellar.StellarGRPC/GetSequenceNumber',
+    request,
+    metadata || {},
+    methodDescriptor_StellarGRPC_GetSequenceNumber,
+  )
+}
 
 /**
  * @const
@@ -170,11 +169,10 @@ const methodDescriptor_StellarGRPC_GetBalance = new grpc.web.MethodDescriptor(
   proto.stellar.GetBalanceResponse,
   /** @param {!proto.stellar.GetBalanceRequest} request */
   function(request) {
-    return request.serializeBinary();
+    return request.serializeBinary()
   },
-  proto.stellar.GetBalanceResponse.deserializeBinary
-);
-
+  proto.stellar.GetBalanceResponse.deserializeBinary,
+)
 
 /**
  * @const
@@ -186,28 +184,10 @@ const methodInfo_StellarGRPC_GetBalance = new grpc.web.AbstractClientBase.Method
   proto.stellar.GetBalanceResponse,
   /** @param {!proto.stellar.GetBalanceRequest} request */
   function(request) {
-    return request.serializeBinary();
+    return request.serializeBinary()
   },
-  proto.stellar.GetBalanceResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.stellar.GetBalanceRequest} request The request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.stellar.GetBalanceResponse>}
- *     The XHR Node Readable Stream
- */
-proto.stellar.StellarGRPCClient.prototype.getBalance =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/stellar.StellarGRPC/GetBalance',
-      request,
-      metadata || {},
-      methodDescriptor_StellarGRPC_GetBalance);
-};
-
+  proto.stellar.GetBalanceResponse.deserializeBinary,
+)
 
 /**
  * @param {!proto.stellar.GetBalanceRequest} request The request proto
@@ -216,15 +196,36 @@ proto.stellar.StellarGRPCClient.prototype.getBalance =
  * @return {!grpc.web.ClientReadableStream<!proto.stellar.GetBalanceResponse>}
  *     The XHR Node Readable Stream
  */
-proto.stellar.StellarGRPCPromiseClient.prototype.getBalance =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/stellar.StellarGRPC/GetBalance',
-      request,
-      metadata || {},
-      methodDescriptor_StellarGRPC_GetBalance);
-};
+proto.stellar.StellarGRPCClient.prototype.getBalance = function(
+  request,
+  metadata,
+) {
+  return this.client_.serverStreaming(
+    this.hostname_ + '/stellar.StellarGRPC/GetBalance',
+    request,
+    metadata || {},
+    methodDescriptor_StellarGRPC_GetBalance,
+  )
+}
 
+/**
+ * @param {!proto.stellar.GetBalanceRequest} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.stellar.GetBalanceResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.stellar.StellarGRPCPromiseClient.prototype.getBalance = function(
+  request,
+  metadata,
+) {
+  return this.client_.serverStreaming(
+    this.hostname_ + '/stellar.StellarGRPC/GetBalance',
+    request,
+    metadata || {},
+    methodDescriptor_StellarGRPC_GetBalance,
+  )
+}
 
 /**
  * @const
@@ -239,11 +240,10 @@ const methodDescriptor_StellarGRPC_GetTrustlines = new grpc.web.MethodDescriptor
   proto.stellar.GetTrustlinesResponse,
   /** @param {!proto.stellar.GetTrustlinesRequest} request */
   function(request) {
-    return request.serializeBinary();
+    return request.serializeBinary()
   },
-  proto.stellar.GetTrustlinesResponse.deserializeBinary
-);
-
+  proto.stellar.GetTrustlinesResponse.deserializeBinary,
+)
 
 /**
  * @const
@@ -255,28 +255,10 @@ const methodInfo_StellarGRPC_GetTrustlines = new grpc.web.AbstractClientBase.Met
   proto.stellar.GetTrustlinesResponse,
   /** @param {!proto.stellar.GetTrustlinesRequest} request */
   function(request) {
-    return request.serializeBinary();
+    return request.serializeBinary()
   },
-  proto.stellar.GetTrustlinesResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.stellar.GetTrustlinesRequest} request The request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.stellar.GetTrustlinesResponse>}
- *     The XHR Node Readable Stream
- */
-proto.stellar.StellarGRPCClient.prototype.getTrustlines =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/stellar.StellarGRPC/GetTrustlines',
-      request,
-      metadata || {},
-      methodDescriptor_StellarGRPC_GetTrustlines);
-};
-
+  proto.stellar.GetTrustlinesResponse.deserializeBinary,
+)
 
 /**
  * @param {!proto.stellar.GetTrustlinesRequest} request The request proto
@@ -285,15 +267,35 @@ proto.stellar.StellarGRPCClient.prototype.getTrustlines =
  * @return {!grpc.web.ClientReadableStream<!proto.stellar.GetTrustlinesResponse>}
  *     The XHR Node Readable Stream
  */
-proto.stellar.StellarGRPCPromiseClient.prototype.getTrustlines =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/stellar.StellarGRPC/GetTrustlines',
-      request,
-      metadata || {},
-      methodDescriptor_StellarGRPC_GetTrustlines);
-};
+proto.stellar.StellarGRPCClient.prototype.getTrustlines = function(
+  request,
+  metadata,
+) {
+  return this.client_.serverStreaming(
+    this.hostname_ + '/stellar.StellarGRPC/GetTrustlines',
+    request,
+    metadata || {},
+    methodDescriptor_StellarGRPC_GetTrustlines,
+  )
+}
 
+/**
+ * @param {!proto.stellar.GetTrustlinesRequest} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.stellar.GetTrustlinesResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.stellar.StellarGRPCPromiseClient.prototype.getTrustlines = function(
+  request,
+  metadata,
+) {
+  return this.client_.serverStreaming(
+    this.hostname_ + '/stellar.StellarGRPC/GetTrustlines',
+    request,
+    metadata || {},
+    methodDescriptor_StellarGRPC_GetTrustlines,
+  )
+}
 
-module.exports = proto.stellar;
-
+module.exports = proto.stellar

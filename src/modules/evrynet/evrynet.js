@@ -4,8 +4,9 @@ import EvrynetException from '@/exceptions/evrynet'
 import find from 'lodash/find'
 import map from 'lodash/map'
 import { WhitelistedAsset } from '@/entities/asset'
-import { EvrynetGRPCClient } from 'Protos/evrynet_grpc_web_pb'
-import { GetNonceRequest, Asset, GetBalanceRequest } from 'Protos/evrynet_pb'
+import { EvrynetGRPCClient } from './evrynet_grpc_web_pb'
+import { GetNonceRequest, GetBalanceRequest } from './evrynet_pb'
+import { Asset } from '../warp/common_pb.js'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb.js'
 
 // ec represent singleton instance

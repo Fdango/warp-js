@@ -2,12 +2,9 @@ import config from '@/config/config'
 import StellarSDK from 'stellar-sdk'
 import GRPCConnectorEntity from '@/entities/grpc'
 import StellarException from '@/exceptions/stellar'
-import {
-  GetSequenceNumberRequest,
-  GetBalanceRequest,
-  Asset,
-} from 'Protos/stellar_pb.js'
-import { StellarGRPCClient } from 'Protos/stellar_grpc_web_pb.js'
+import { GetSequenceNumberRequest, GetBalanceRequest } from './stellar_pb.js'
+import { Asset } from '../warp/common_pb.js'
+import { StellarGRPCClient } from './stellar_grpc_web_pb.js'
 
 const {
   stellar: { ESCROW_ACCOUNT, NETWORK },

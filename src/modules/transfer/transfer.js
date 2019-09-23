@@ -1,7 +1,7 @@
 import GRPCConnectorEntity from '@/entities/grpc'
 import TransferException from '@/exceptions/transfer'
-import { TransferGRPCClient } from 'Protos/transfer_grpc_web_pb.js'
-import { TransferRequest } from 'Protos/transfer_pb.js'
+import { TransferGRPCClient } from './transfer_grpc_web_pb.js'
+import { TransferRequest } from './transfer_pb.js'
 
 let tc = []
 

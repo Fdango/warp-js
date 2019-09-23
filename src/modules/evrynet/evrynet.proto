@@ -3,7 +3,7 @@ syntax = "proto3";
 package evrynet;
 
 import "google/protobuf/empty.proto";
-import "proto/common.proto";
+import "warp/common.proto";
 
 message GetNonceRequest {
     string evrynetAddress = 1;
