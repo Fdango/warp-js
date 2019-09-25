@@ -2,9 +2,14 @@ import config from '@/config/config'
 import StellarSDK from 'stellar-sdk'
 import GRPCConnectorEntity from '@/entities/grpc'
 import StellarException from '@/exceptions/stellar'
-import { GetSequenceNumberRequest, GetBalanceRequest } from './stellar_pb.js'
+import {
+  GetSequenceNumberRequest,
+  GetBalanceRequest,
+  GetTrustlinesRequest,
+} from './stellar_pb.js'
 import { Asset } from '../warp/common_pb.js'
 import { StellarGRPCClient } from './stellar_grpc_web_pb.js'
+import map from 'lodash/map'
 
 const {
   stellar: { ESCROW_ACCOUNT, NETWORK },
@@ -98,6 +103,31 @@ export class Stellar {
       const chan = this.client.getBalance(grpcRequest, {})
       chan.on('data', (data) => {
         resolve({ balance: data.getBalance() })
+      })
+      chan.on('error', (err) => {
+        reject(new StellarException(null, err.toString()))
+      })
+    })
+  }
+
+  /**
+   * @param {string} accountAddress - a address of account
+   * @returns {Array.<StellarAsset>} array of trusted assets
+   */
+  getTrustlines(accountAddress) {
+    const grpcRequest = new GetTrustlinesRequest()
+    grpcRequest.setStellaraddress(accountAddress)
+    return new Promise((resolve, reject) => {
+      const chan = this.client.getTrustlines(grpcRequest, {})
+      chan.on('data', (data) => {
+        const assets = map(data.getAssetList(), (stellarAsset) => {
+          console.log(stellarAsset)
+          return {
+            code: stellarAsset.getCode(),
+            issuer: stellarAsset.getIssuer(),
+          }
+        })
+        resolve({ assets })
       })
       chan.on('error', (err) => {
         reject(new StellarException(null, err.toString()))
