@@ -94,16 +94,17 @@ export class WarpContract {
         this._parseAmount(amount, asset.decimal),
       )
       const assetID = asset.getID()
-      const gasAmount = await this.warp.methods
-        .lock(assetID, hexAmount)
-        .estimateGas()
+      const gasLimit = await this.web3.eth.estimateGas({
+        from: account.address,
+      })
+      console.log('estimate gas : ', gasLimit)
       const data = this.warp.methods.lock(assetID, hexAmount).encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: this.web3.utils.toHex(gasAmount + 1000),
+          gasLimit: this.web3.utils.toHex(gasLimit + 1000),
           gasPrice: GASPRICE,
           data,
         },
@@ -142,7 +143,10 @@ export class WarpContract {
       const hexAmount = this.web3.utils.toHex(
         this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
       )
-      const gasAmount = await this.warp.methods.lockNative().estimateGas()
+      const gasLimit = await this.web3.eth.estimateGas({
+        from: account.address,
+      })
+      console.log('estimate gas : ', gasLimit)
       const data = this.warp.methods.lockNative().encodeABI()
       let tx = new Transaction(
         {
@@ -150,7 +154,7 @@ export class WarpContract {
           from: account.address,
           to: this.warp.options.address,
           value: hexAmount,
-          gasLimit: this.web3.utils.toHex(gasAmount) + 1000,
+          gasLimit: this.web3.utils.toHex(gasLimit + 1000),
           gasPrice: GASPRICE,
           data,
         },
@@ -194,18 +198,19 @@ export class WarpContract {
         this._parseAmount(amount, asset.decimal),
       )
       const assetID = asset.getID()
-      const gasAmount = await this.warp.methods
-        .unlock(account.address, assetID, hexAmount)
-        .estimateGas()
+      const gasLimit = await this.web3.eth.estimateGas({
+        from: account.address,
+      })
       const data = this.warp.methods
         .unlock(account.address, assetID, hexAmount)
         .encodeABI()
+
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: this.web3.utils.toHex(gasAmount + 1000),
+          gasLimit: this.web3.utils.toHex(gasLimit + 1000),
           gasPrice: GASPRICE,
           data,
         },
@@ -244,9 +249,9 @@ export class WarpContract {
       const hexAmount = this.web3.utils.toHex(
         this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
       )
-      const gasAmount = await this.warp.methods
-        .unlockNative(account.address, hexAmount)
-        .estimateGas()
+      const gasLimit = await this.web3.eth.estimateGas({
+        from: account.address,
+      })
       const data = this.warp.methods
         .unlockNative(account.address, hexAmount)
         .encodeABI()
@@ -255,7 +260,7 @@ export class WarpContract {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: this.web3.utils.toHex(gasAmount) + 1000,
+          gasLimit: this.web3.utils.toHex(gasLimit + 1000),
           gasPrice: GASPRICE,
           data,
         },
