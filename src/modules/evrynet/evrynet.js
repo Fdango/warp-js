@@ -57,7 +57,9 @@ export class Evrynet {
     return new Promise((resolve, reject) => {
       const chan = this.client.getNonce(request, {})
       chan.on('data', (data) => {
-        resolve({ nonce: data.getNonce() })
+        resolve({
+          nonce: data.getNonce(),
+        })
       })
       chan.on('error', (err) => {
         reject(new EvrynetException(null, err.toString()))
@@ -81,7 +83,9 @@ export class Evrynet {
             decimal: ech.getDecimal(),
           })
         })
-        resolve({ assets })
+        resolve({
+          assets,
+        })
       })
       chan.on('error', (err) => {
         reject(new EvrynetException(null, err.toString()))
@@ -137,7 +141,9 @@ export class Evrynet {
     return new Promise((resolve, reject) => {
       const chan = this.client.getBalance(grpcRequest, {})
       chan.on('data', (data) => {
-        resolve({ balance: data.getBalance() })
+        resolve({
+          balance: data.getBalance(),
+        })
       })
       chan.on('error', (err) => {
         reject(new EvrynetException(null, err.toString()))

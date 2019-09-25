@@ -9,8 +9,7 @@ const web3 = new Web3()
 
 const development = {
   evrynet: {
-    DEFAULT_CONTRACT_ADDRESS: '0xe541f0b327eab600063df2d4de9b6e7b92480c82',
-    GASLIMIT: web3.utils.toHex(50000),
+    DEFAULT_CONTRACT_ADDRESS: '0x81e37ac7D0deD9cbc262F9fA0f9637Ced19cfa07',
     GASPRICE: web3.utils.toHex(Number(web3.utils.toWei('1', 'gwei'))),
     ATOMIC_STELLAR_DECIMAL_UNIT: 7,
     ATOMIC_EVRY_DECIMAL_UNIT: 18,
