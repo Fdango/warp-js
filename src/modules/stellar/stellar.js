@@ -121,7 +121,6 @@ export class Stellar {
       const chan = this.client.getTrustlines(grpcRequest, {})
       chan.on('data', (data) => {
         const assets = map(data.getAssetList(), (stellarAsset) => {
-          console.log(stellarAsset)
           return {
             code: stellarAsset.getCode(),
             issuer: stellarAsset.getIssuer(),
