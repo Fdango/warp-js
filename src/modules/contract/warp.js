@@ -97,7 +97,6 @@ export class WarpContract {
       const gasLimit = await this.web3.eth.estimateGas({
         from: account.address,
       })
-      console.log('estimate gas : ', gasLimit)
       const data = this.warp.methods.lock(assetID, hexAmount).encodeABI()
       let tx = new Transaction(
         {
@@ -146,7 +145,6 @@ export class WarpContract {
       const gasLimit = await this.web3.eth.estimateGas({
         from: account.address,
       })
-      console.log('estimate gas : ', gasLimit)
       const data = this.warp.methods.lockNative().encodeABI()
       let tx = new Transaction(
         {
@@ -204,7 +202,6 @@ export class WarpContract {
       const data = this.warp.methods
         .unlock(account.address, assetID, hexAmount)
         .encodeABI()
-
       let tx = new Transaction(
         {
           nonce,
