@@ -39,7 +39,8 @@
     "lodash": "^4.17.15",
     "stellar-base": "^2.0.1",
     "stellar-sdk": "^3.0.0",
-    "web3": "^1.0.0-beta.55"
+    "web3": "^1.0.0-beta.55",
+    "web3-fake-provider": "^0.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",

@@ -25,11 +25,13 @@ let wc = []
 /**
  * A registry for creating warp contract based on abi file and contract address
  * @param {string} address - is a contract address for ethereum
+ * @param {string} provider - is a provider for web3
  */
-export function getWarpContract(address) {
+export function getWarpContract(provider, address) {
   const key = address || DEFAULT_CONTRACT_ADDRESS
+  const web3Provider = provider || Web3.givenProvider
   if (!wc[key]) {
-    wc[key] = new WarpContract(key, warpABI)
+    wc[key] = new WarpContract(key, warpABI, web3Provider)
   }
   return wc[key]
 }
@@ -46,8 +48,8 @@ export class WarpContract {
    * @param {string} contractAddr - a contract address
    * @param {Buffer} abi - abi file containing interface for the contract
    */
-  constructor(contractAddr, abi) {
-    this.web3 = new Web3(Web3.givenProvider)
+  constructor(contractAddr, abi, provider) {
+    this._setProvider(provider)
     this.warp = this._newWarpContract(contractAddr, abi)
   }
 
@@ -67,6 +69,10 @@ export class WarpContract {
         e.toString(),
       )
     }
+  }
+
+  _setProvider(provider) {
+    return (this.web3 = new Web3(provider))
   }
 
   /**
