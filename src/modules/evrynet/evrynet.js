@@ -60,7 +60,7 @@ export class Evrynet {
         resolve({ nonce: data.getNonce() })
       })
       chan.on('error', (err) => {
-        reject(new EvrynetException(null, err.toString()))
+        reject(new EvrynetException(null, err.message))
       })
     })
   }
@@ -84,7 +84,7 @@ export class Evrynet {
         resolve({ assets })
       })
       chan.on('error', (err) => {
-        reject(new EvrynetException(null, err.toString()))
+        reject(new EvrynetException(null, err.message))
       })
     })
   }
@@ -140,7 +140,7 @@ export class Evrynet {
         resolve({ balance: data.getBalance() })
       })
       chan.on('error', (err) => {
-        reject(new EvrynetException(null, err.toString()))
+        reject(new EvrynetException(null, err.message))
       })
     })
   }

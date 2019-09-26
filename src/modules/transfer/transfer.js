@@ -53,7 +53,7 @@ export class Transfer {
         })
       })
       chan.on('error', (err) => {
-        reject(new TransferException(null, err.toString()))
+        reject(new TransferException(null, err.message))
       })
     })
   }
@@ -77,7 +77,7 @@ export class Transfer {
         })
       })
       chan.on('error', (err) => {
-        reject(new TransferException(null, err.toString()))
+        reject(new TransferException(null, err.message))
       })
     })
   }
