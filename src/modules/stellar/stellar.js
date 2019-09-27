@@ -64,7 +64,7 @@ export class Stellar {
         })
       })
       chan.on('error', (err) => {
-        reject(new StellarException(null, err.toString()))
+        reject(new StellarException(null, err.message))
       })
     })
   }
@@ -103,7 +103,7 @@ export class Stellar {
         resolve({ balance: data.getBalance() })
       })
       chan.on('error', (err) => {
-        reject(new StellarException(null, err.toString()))
+        reject(new StellarException(null, err.message))
       })
     })
   }
