@@ -6,7 +6,7 @@ import map from 'lodash/map'
 import { WhitelistedAsset } from '@/entities/asset'
 import { EvrynetGRPCClient } from './evrynet_grpc_web_pb'
 import { GetNonceRequest, GetBalanceRequest } from './evrynet_pb'
-import { Asset } from '../warp/common_pb.js'
+import { Asset } from '@/modules/warp/common_pb.js'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb.js'
 
 // ec represent singleton instance
