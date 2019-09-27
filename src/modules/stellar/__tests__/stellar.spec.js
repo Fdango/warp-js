@@ -24,6 +24,9 @@ describe('Stellar', () => {
     accountAddress: 'invalid',
     asset: mockedCredit,
   }
+  const getTrustlinesRequest = {
+    stellarAddress: 'GC2MYX74RVVNVZYE3JR3WDFW6GT6O2W7OGBBAERCM53ED66NXKFZEYTB',
+  }
 
   describe('When get a stellar sequence number', () => {
     describe('With invalid input', () => {
@@ -230,6 +233,55 @@ describe('Stellar', () => {
             getBalInvalidInput.accountAddress,
             getBalInvalidInput.asset,
           ),
+        ).rejects.toThrow(StellarException)
+      })
+    })
+  })
+
+  describe('When get account trustlines', () => {
+    describe('When success', () => {
+      it('should respond an expected asset list', async () => {
+        const expectedAsset = {
+          code: 'XLM',
+          issuer: 'GATIJFZRBQH6S2BM2M2LPK7NMZWS43VQJQJNMSAR7LHW3XVPBBNV7BE5',
+        }
+        let mockedStream = new Stream.Readable()
+        mockedStream._read = () => {}
+        const mockedClient = jest.fn().mockImplementation(() => {
+          return {
+            getTrustlines: jest.fn().mockReturnValue(mockedStream),
+          }
+        })
+        const stellar = new Stellar(mockedClient())
+        setInterval(function() {
+          mockedStream.emit('data', {
+            getAssetList: jest.fn().mockReturnValue([
+              {
+                getCode: jest.fn().mockReturnValue(expectedAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedAsset.issuer),
+              },
+            ]),
+          })
+        }, 1000)
+        let res = await stellar.getTrustlines(getTrustlinesRequest.address)
+        expect(res.assets[0]).toEqual(expectedAsset)
+      })
+    })
+    describe('When a stream emit an error response', () => {
+      it('should throw an error', async () => {
+        let mockedStream = new Stream.Readable()
+        mockedStream._read = () => {}
+        const mockedClient = jest.fn().mockImplementation(() => {
+          return {
+            getTrustlines: jest.fn().mockReturnValue(mockedStream),
+          }
+        })
+        const stellar = new Stellar(mockedClient())
+        setInterval(function() {
+          mockedStream.emit('error', new Error('this is an error'))
+        }, 1000)
+        await expect(
+          stellar.getTrustlines(getTrustlinesRequest.address),
         ).rejects.toThrow(StellarException)
       })
     })

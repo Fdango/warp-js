@@ -5,9 +5,11 @@ import StellarException from '@/exceptions/stellar'
 import {
   GetSequenceNumberRequest,
   GetBalanceRequest,
-  Asset,
-} from 'Protos/stellar_pb.js'
-import { StellarGRPCClient } from 'Protos/stellar_grpc_web_pb.js'
+  GetTrustlinesRequest,
+} from './stellar_pb.js'
+import { Asset } from '@/modules/warp/common_pb.js'
+import { StellarGRPCClient } from './stellar_grpc_web_pb.js'
+import map from 'lodash/map'
 
 const {
   stellar: { ESCROW_ACCOUNT, NETWORK },
@@ -104,6 +106,30 @@ export class Stellar {
       })
       chan.on('error', (err) => {
         reject(new StellarException(null, err.message))
+      })
+    })
+  }
+
+  /**
+   * @param {string} accountAddress - a address of account
+   * @returns {Array.<StellarAsset>} array of trusted assets
+   */
+  getTrustlines(accountAddress) {
+    const grpcRequest = new GetTrustlinesRequest()
+    grpcRequest.setStellaraddress(accountAddress)
+    return new Promise((resolve, reject) => {
+      const chan = this.client.getTrustlines(grpcRequest, {})
+      chan.on('data', (data) => {
+        const assets = map(data.getAssetList(), (stellarAsset) => {
+          return {
+            code: stellarAsset.getCode(),
+            issuer: stellarAsset.getIssuer(),
+          }
+        })
+        resolve({ assets })
+      })
+      chan.on('error', (err) => {
+        reject(new StellarException(null, err.toString()))
       })
     })
   }

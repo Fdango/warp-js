@@ -6,13 +6,11 @@
 
 // GENERATED CODE -- DO NOT EDIT!
 
+const grpc = {}
+grpc.web = require('grpc-web')
 
-
-const grpc = {};
-grpc.web = require('grpc-web');
-
-const proto = {};
-proto.transfer = require('./transfer_pb.js');
+const proto = {}
+proto.transfer = require('./transfer_pb.js')
 
 /**
  * @param {string} hostname
@@ -22,33 +20,31 @@ proto.transfer = require('./transfer_pb.js');
  * @struct
  * @final
  */
-proto.transfer.TransferGRPCClient =
-    function(hostname, credentials, options) {
-  if (!options) options = {};
-  options['format'] = 'text';
+proto.transfer.TransferGRPCClient = function(hostname, credentials, options) {
+  if (!options) options = {}
+  options['format'] = 'text'
 
   /**
    * @private @const {!grpc.web.GrpcWebClientBase} The client
    */
-  this.client_ = new grpc.web.GrpcWebClientBase(options);
+  this.client_ = new grpc.web.GrpcWebClientBase(options)
 
   /**
    * @private @const {string} The hostname
    */
-  this.hostname_ = hostname;
+  this.hostname_ = hostname
 
   /**
    * @private @const {?Object} The credentials to be used to connect
    *    to the server
    */
-  this.credentials_ = credentials;
+  this.credentials_ = credentials
 
   /**
    * @private @const {?Object} Options for the client
    */
-  this.options_ = options;
-};
-
+  this.options_ = options
+}
 
 /**
  * @param {string} hostname
@@ -58,33 +54,35 @@ proto.transfer.TransferGRPCClient =
  * @struct
  * @final
  */
-proto.transfer.TransferGRPCPromiseClient =
-    function(hostname, credentials, options) {
-  if (!options) options = {};
-  options['format'] = 'text';
+proto.transfer.TransferGRPCPromiseClient = function(
+  hostname,
+  credentials,
+  options,
+) {
+  if (!options) options = {}
+  options['format'] = 'text'
 
   /**
    * @private @const {!grpc.web.GrpcWebClientBase} The client
    */
-  this.client_ = new grpc.web.GrpcWebClientBase(options);
+  this.client_ = new grpc.web.GrpcWebClientBase(options)
 
   /**
    * @private @const {string} The hostname
    */
-  this.hostname_ = hostname;
+  this.hostname_ = hostname
 
   /**
    * @private @const {?Object} The credentials to be used to connect
    *    to the server
    */
-  this.credentials_ = credentials;
+  this.credentials_ = credentials
 
   /**
    * @private @const {?Object} Options for the client
    */
-  this.options_ = options;
-};
-
+  this.options_ = options
+}
 
 /**
  * @const
@@ -99,11 +97,10 @@ const methodDescriptor_TransferGRPC_ToEvrynet = new grpc.web.MethodDescriptor(
   proto.transfer.TransferResponse,
   /** @param {!proto.transfer.TransferRequest} request */
   function(request) {
-    return request.serializeBinary();
+    return request.serializeBinary()
   },
-  proto.transfer.TransferResponse.deserializeBinary
-);
-
+  proto.transfer.TransferResponse.deserializeBinary,
+)
 
 /**
  * @const
@@ -115,28 +112,10 @@ const methodInfo_TransferGRPC_ToEvrynet = new grpc.web.AbstractClientBase.Method
   proto.transfer.TransferResponse,
   /** @param {!proto.transfer.TransferRequest} request */
   function(request) {
-    return request.serializeBinary();
+    return request.serializeBinary()
   },
-  proto.transfer.TransferResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.transfer.TransferRequest} request The request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.transfer.TransferResponse>}
- *     The XHR Node Readable Stream
- */
-proto.transfer.TransferGRPCClient.prototype.toEvrynet =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/transfer.TransferGRPC/ToEvrynet',
-      request,
-      metadata || {},
-      methodDescriptor_TransferGRPC_ToEvrynet);
-};
-
+  proto.transfer.TransferResponse.deserializeBinary,
+)
 
 /**
  * @param {!proto.transfer.TransferRequest} request The request proto
@@ -145,15 +124,36 @@ proto.transfer.TransferGRPCClient.prototype.toEvrynet =
  * @return {!grpc.web.ClientReadableStream<!proto.transfer.TransferResponse>}
  *     The XHR Node Readable Stream
  */
-proto.transfer.TransferGRPCPromiseClient.prototype.toEvrynet =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/transfer.TransferGRPC/ToEvrynet',
-      request,
-      metadata || {},
-      methodDescriptor_TransferGRPC_ToEvrynet);
-};
+proto.transfer.TransferGRPCClient.prototype.toEvrynet = function(
+  request,
+  metadata,
+) {
+  return this.client_.serverStreaming(
+    this.hostname_ + '/transfer.TransferGRPC/ToEvrynet',
+    request,
+    metadata || {},
+    methodDescriptor_TransferGRPC_ToEvrynet,
+  )
+}
 
+/**
+ * @param {!proto.transfer.TransferRequest} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.transfer.TransferResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.transfer.TransferGRPCPromiseClient.prototype.toEvrynet = function(
+  request,
+  metadata,
+) {
+  return this.client_.serverStreaming(
+    this.hostname_ + '/transfer.TransferGRPC/ToEvrynet',
+    request,
+    metadata || {},
+    methodDescriptor_TransferGRPC_ToEvrynet,
+  )
+}
 
 /**
  * @const
@@ -168,11 +168,10 @@ const methodDescriptor_TransferGRPC_ToStellar = new grpc.web.MethodDescriptor(
   proto.transfer.TransferResponse,
   /** @param {!proto.transfer.TransferRequest} request */
   function(request) {
-    return request.serializeBinary();
+    return request.serializeBinary()
   },
-  proto.transfer.TransferResponse.deserializeBinary
-);
-
+  proto.transfer.TransferResponse.deserializeBinary,
+)
 
 /**
  * @const
@@ -184,28 +183,10 @@ const methodInfo_TransferGRPC_ToStellar = new grpc.web.AbstractClientBase.Method
   proto.transfer.TransferResponse,
   /** @param {!proto.transfer.TransferRequest} request */
   function(request) {
-    return request.serializeBinary();
+    return request.serializeBinary()
   },
-  proto.transfer.TransferResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.transfer.TransferRequest} request The request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.transfer.TransferResponse>}
- *     The XHR Node Readable Stream
- */
-proto.transfer.TransferGRPCClient.prototype.toStellar =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/transfer.TransferGRPC/ToStellar',
-      request,
-      metadata || {},
-      methodDescriptor_TransferGRPC_ToStellar);
-};
-
+  proto.transfer.TransferResponse.deserializeBinary,
+)
 
 /**
  * @param {!proto.transfer.TransferRequest} request The request proto
@@ -214,15 +195,35 @@ proto.transfer.TransferGRPCClient.prototype.toStellar =
  * @return {!grpc.web.ClientReadableStream<!proto.transfer.TransferResponse>}
  *     The XHR Node Readable Stream
  */
-proto.transfer.TransferGRPCPromiseClient.prototype.toStellar =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/transfer.TransferGRPC/ToStellar',
-      request,
-      metadata || {},
-      methodDescriptor_TransferGRPC_ToStellar);
-};
+proto.transfer.TransferGRPCClient.prototype.toStellar = function(
+  request,
+  metadata,
+) {
+  return this.client_.serverStreaming(
+    this.hostname_ + '/transfer.TransferGRPC/ToStellar',
+    request,
+    metadata || {},
+    methodDescriptor_TransferGRPC_ToStellar,
+  )
+}
 
+/**
+ * @param {!proto.transfer.TransferRequest} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.transfer.TransferResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.transfer.TransferGRPCPromiseClient.prototype.toStellar = function(
+  request,
+  metadata,
+) {
+  return this.client_.serverStreaming(
+    this.hostname_ + '/transfer.TransferGRPC/ToStellar',
+    request,
+    metadata || {},
+    methodDescriptor_TransferGRPC_ToStellar,
+  )
+}
 
-module.exports = proto.transfer;
-
+module.exports = proto.transfer
