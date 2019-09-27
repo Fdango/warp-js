@@ -72,7 +72,7 @@ export class WarpContract {
   }
 
   _setProvider(provider) {
-    return (this.web3 = new Web3(provider))
+    this.web3 = new Web3(provider)
   }
 
   /**
