@@ -2,14 +2,14 @@ import { getWarpContract, WarpContract } from '@/modules/contract/warp'
 import { WhitelistedAsset } from '@/entities/asset'
 import WrapContractException from '@/exceptions/warp_contract'
 import config from '@/config/config'
-import FakeProvider from 'web3-fake-provider'
+import Ganache from 'ganache-cli'
 
 const {
   contract: {
     ABI: { WARP },
   },
 } = config
-const provider = new FakeProvider()
+const provider = Ganache.provider()
 
 describe('WarpContract', () => {
   const senderpriv =

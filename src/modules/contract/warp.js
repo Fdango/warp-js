@@ -86,7 +86,7 @@ export class WarpContract {
    */
   async newLockTx({ asset, amount, priv, nonce }) {
     try {
-      const account = this.web3.eth.accounts.privateKeyToAccount(priv)
+      const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!asset) {
         throw new WrapContractException(null, 'Invalid Asset')
       }
@@ -100,16 +100,17 @@ export class WarpContract {
         this._parseAmount(amount, asset.decimal),
       )
       const assetID = asset.getID()
-      const gasLimit = await this.web3.eth.estimateGas({
+      const method = this.warp.methods.lock(assetID, hexAmount)
+      const data = method.encodeABI()
+      const gasAmount = await method.estimateGas({
         from: account.address,
       })
-      const data = this.warp.methods.lock(assetID, hexAmount).encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: this.web3.utils.toHex(gasLimit + 1000),
+          gasLimit: this.web3.utils.toHex(gasAmount + 1000),
           gasPrice: GASPRICE,
           data,
         },
@@ -138,7 +139,7 @@ export class WarpContract {
    */
   async newLockNativeTx({ amount, priv, nonce }) {
     try {
-      const account = this.web3.eth.accounts.privateKeyToAccount(priv)
+      const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!this._validateAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT)) {
         throw new WrapContractException(
           null,
@@ -148,17 +149,19 @@ export class WarpContract {
       const hexAmount = this.web3.utils.toHex(
         this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
       )
-      const gasLimit = await this.web3.eth.estimateGas({
+      const method = this.warp.methods.lockNative()
+      const data = method.encodeABI()
+      const gasAmount = await method.estimateGas({
         from: account.address,
+        value: hexAmount,
       })
-      const data = this.warp.methods.lockNative().encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
           value: hexAmount,
-          gasLimit: this.web3.utils.toHex(gasLimit + 1000),
+          gasLimit: this.web3.utils.toHex(gasAmount + 1000),
           gasPrice: GASPRICE,
           data,
         },
@@ -202,18 +205,21 @@ export class WarpContract {
         this._parseAmount(amount, asset.decimal),
       )
       const assetID = asset.getID()
-      const gasLimit = await this.web3.eth.estimateGas({
+      const method = this.warp.methods.unlock(
+        account.address,
+        assetID,
+        hexAmount,
+      )
+      const data = method.encodeABI()
+      const gasAmount = method.estimateGas({
         from: account.address,
       })
-      const data = this.warp.methods
-        .unlock(account.address, assetID, hexAmount)
-        .encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: this.web3.utils.toHex(gasLimit + 1000),
+          gasLimit: this.web3.utils.toHex(gasAmount + 1000),
           gasPrice: GASPRICE,
           data,
         },
@@ -252,18 +258,17 @@ export class WarpContract {
       const hexAmount = this.web3.utils.toHex(
         this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
       )
-      const gasLimit = await this.web3.eth.estimateGas({
+      const method = this.warp.methods.unlockNative(account.address, hexAmount)
+      const data = method.encodeABI()
+      const gasAmount = method.estimateGas({
         from: account.address,
       })
-      const data = this.warp.methods
-        .unlockNative(account.address, hexAmount)
-        .encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: this.web3.utils.toHex(gasLimit + 1000),
+          gasLimit: this.web3.utils.toHex(gasAmount + 1000),
           gasPrice: GASPRICE,
           data,
         },

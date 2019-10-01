@@ -36,11 +36,11 @@
     "chai": "^4.2.0",
     "ethereumjs-common": "^1.3.0",
     "ethereumjs-tx": "^2.0.0",
+    "ganache-cli": "^6.7.0",
     "lodash": "^4.17.15",
     "stellar-base": "^2.0.1",
     "stellar-sdk": "^3.0.0",
-    "web3": "^1.0.0-beta.55",
-    "web3-fake-provider": "^0.1.0"
+    "web3": "^1.0.0-beta.55"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
