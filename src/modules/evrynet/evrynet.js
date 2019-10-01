@@ -1,4 +1,3 @@
-import Web3 from 'web3'
 import GRPCConnectorEntity from '@/entities/grpc'
 import EvrynetException from '@/exceptions/evrynet'
 import find from 'lodash/find'
@@ -8,12 +7,14 @@ import { EvrynetGRPCClient } from './evrynet_grpc_web_pb'
 import { GetNonceRequest, GetBalanceRequest } from './evrynet_pb'
 import { Asset } from '@/modules/warp/common_pb.js'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb.js'
+import { web3Instance } from '@/utils'
 
 // ec represent singleton instance
 let ec = []
 
 /**
  * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
+ * @typedef {import('web3')} Web3
  */
 
 /**
@@ -44,7 +45,6 @@ export class Evrynet {
    */
   constructor(client) {
     this.client = client
-    this.web3 = new Web3()
   }
 
   /**
@@ -113,7 +113,7 @@ export class Evrynet {
    * @returns {Object|EvrynetException} nounce object
    */
   async getNonceFromPriv(priv) {
-    const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
+    const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
     try {
       const data = await this.getNonce(account.address)
       return data
@@ -152,7 +152,7 @@ export class Evrynet {
    * @returns {string} public key
    */
   getPublickeyFromPrivateKey(privateKey = '') {
-    const account = this.web3.eth.accounts.privateKeyToAccount(
+    const account = web3Instance.eth.accounts.privateKeyToAccount(
       `0x${privateKey}`,
     )
     return account.address

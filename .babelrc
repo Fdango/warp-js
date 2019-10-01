@@ -23,7 +23,6 @@
         "root": ["."],
         "alias": {
           "@": "./src",
-          "Protos": "./proto",
           "ABIs": "./abi"
         }
       }
