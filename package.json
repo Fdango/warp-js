@@ -68,8 +68,10 @@
   "jest": {
     "verbose": true,
     "rootDir": ".",
+    "modulePaths": [],
     "moduleNameMapper": {
-      "@/(.*)$": "<rootDir>/src/$1"
+      "@/(.*)$": "<rootDir>/src/$1",
+      "ABIs/(.*)$": "<rootDir>/abi/$1"
     },
     "transform": {
       "^.+\\.js$": "babel-jest"

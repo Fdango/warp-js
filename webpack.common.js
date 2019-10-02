@@ -24,8 +24,7 @@ module.exports = {
   resolve: {
     alias: {
       '@': path.resolve('./src'),
-      Protos: path.resolve('./proto'),
-      ABIs: path.resolve('./abi'),
+      ABIs: path.join('.', 'abi'),
     },
   },
   plugins: [

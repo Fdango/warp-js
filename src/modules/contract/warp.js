@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js'
-import Web3 from 'web3'
 import { Transaction } from 'ethereumjs-tx'
 import config from '@/config/config'
 import WrapContractException from '@/exceptions/warp_contract'
 import { warpABI } from 'ABIs'
+import { web3Instance } from '@/utils'
 
 const {
   evrynet: {
@@ -21,6 +21,7 @@ let wc = []
 /**
  * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
  * @typedef {import('web3-eth-contract').Contract} Contract
+ * @typedef {import('web3')} Web3
  */
 
 /**
@@ -48,7 +49,6 @@ export class WarpContract {
    * @param {Buffer} abi - abi file containing interface for the contract
    */
   constructor(contractAddr, abi) {
-    this.web3 = new Web3()
     this.warp = this._newWarpContract(contractAddr, abi)
   }
 
@@ -60,7 +60,7 @@ export class WarpContract {
    */
   _newWarpContract(contractAddr, abi) {
     try {
-      return new this.web3.eth.Contract(abi, contractAddr)
+      return new web3Instance.eth.Contract(abi, contractAddr)
     } catch (e) {
       throw new WrapContractException(
         null,
@@ -81,7 +81,7 @@ export class WarpContract {
    */
   newLockTx({ asset, amount, priv, nonce }) {
     try {
-      const account = this.web3.eth.accounts.privateKeyToAccount(priv)
+      const account = web3Instance.eth.accounts.privateKeyToAccount(priv)
       if (!asset) {
         throw new WrapContractException(null, 'Invalid Asset')
       }
@@ -91,7 +91,7 @@ export class WarpContract {
           `Not allow to move evry coin more than ${asset.decimal} decimals`,
         )
       }
-      const hexAmount = this.web3.utils.toHex(
+      const hexAmount = web3Instance.utils.toHex(
         this._parseAmount(amount, asset.decimal),
       )
       const assetID = asset.getID()
@@ -130,14 +130,14 @@ export class WarpContract {
    */
   newLockNativeTx({ amount, priv, nonce }) {
     try {
-      const account = this.web3.eth.accounts.privateKeyToAccount(priv)
+      const account = web3Instance.eth.accounts.privateKeyToAccount(priv)
       if (!this._validateAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT)) {
         throw new WrapContractException(
           null,
           `Invalid amount: decimal is more than ${ATOMIC_STELLAR_DECIMAL_UNIT}`,
         )
       }
-      const hexAmount = this.web3.utils.toHex(
+      const hexAmount = web3Instance.utils.toHex(
         this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
       )
       const data = this.warp.methods.lockNative().encodeABI()
@@ -177,7 +177,7 @@ export class WarpContract {
    */
   newUnlockTx({ asset, amount, priv, nonce }) {
     try {
-      const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
+      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!asset) {
         throw new WrapContractException(null, 'Invalid Asset')
       }
@@ -187,7 +187,7 @@ export class WarpContract {
           `Not allow to move evrycoin more than ${asset.decimal} decimals`,
         )
       }
-      const hexAmount = this.web3.utils.toHex(
+      const hexAmount = web3Instance.utils.toHex(
         this._parseAmount(amount, asset.decimal),
       )
       const assetID = asset.getID()
@@ -228,14 +228,14 @@ export class WarpContract {
    */
   newUnlockNativeTx({ amount, priv, nonce }) {
     try {
-      const account = this.web3.eth.accounts.privateKeyToAccount(`0x${priv}`)
+      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!this._validateAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT)) {
         throw new WrapContractException(
           null,
           `Invalid amount: decimal is more than ${ATOMIC_STELLAR_DECIMAL_UNIT}`,
         )
       }
-      const hexAmount = this.web3.utils.toHex(
+      const hexAmount = web3Instance.utils.toHex(
         this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
       )
       const data = this.warp.methods

@@ -1,17 +1,18 @@
 const env = process.env.NODE_ENV
 import Common from 'ethereumjs-common'
 import Stellar from 'stellar-base'
+import { web3Instance } from '@/utils'
 
 // configuration file is used to configure application and interfaces
 // If anything needs to be sucured, save it in an environement variable file (.env) and paste process.env.[#varname] to this config file.
-import Web3 from 'web3'
-const web3 = new Web3()
 
 const development = {
   evrynet: {
     DEFAULT_CONTRACT_ADDRESS: '0x81e37ac7D0deD9cbc262F9fA0f9637Ced19cfa07',
-    GASLIMIT: web3.utils.toHex(2000000),
-    GASPRICE: web3.utils.toHex(Number(web3.utils.toWei('1', 'gwei'))),
+    GASLIMIT: web3Instance.utils.toHex(2000000),
+    GASPRICE: web3Instance.utils.toHex(
+      Number(web3Instance.utils.toWei('1', 'gwei')),
+    ),
     ATOMIC_STELLAR_DECIMAL_UNIT: 7,
     ATOMIC_EVRY_DECIMAL_UNIT: 18,
     CUSTOM_CHAIN: Common.forCustomChain(

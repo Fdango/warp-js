@@ -1,11 +1,15 @@
 import StellarSDK from 'stellar-sdk'
-import Web3 from 'web3'
 import config from '@/config/config'
 import AssetEntityException from '@/exceptions/asset_entity'
+import { web3Instance } from '@/utils'
 
 const {
   stellar: { EVRY_ASSET_NAME, EVRY_ASSET_ISSUER_PUB },
 } = config
+
+/**
+ * @typedef {import('web3')} Web3
+ */
 
 /**
  *	Returns XLM asset.
@@ -46,7 +50,6 @@ export class Asset {
    * @param {string} payload.issuer - asset's issuer
    */
   constructor({ code, issuer }) {
-    this.web3 = new Web3()
     this.code = code
     this.issuer = issuer
   }
@@ -83,7 +86,7 @@ export class Asset {
       throw new AssetEntityException(null, 'cannot read name property')
     }
     const key = `${this.code},${this.issuer || ''}`
-    return this.web3.utils.keccak256(key)
+    return web3Instance.utils.keccak256(key)
   }
 
   /**
