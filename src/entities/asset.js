@@ -1,11 +1,7 @@
 import StellarSDK from 'stellar-sdk'
-import config from '@/config/config'
+import { rootConfigInstance } from '@/config'
 import AssetEntityException from '@/exceptions/asset_entity'
 import { web3Instance } from '@/utils'
-
-const {
-  stellar: { EVRY_ASSET_NAME, EVRY_ASSET_ISSUER_PUB },
-} = config
 
 /**
  * @typedef {import('web3')} Web3
@@ -29,8 +25,8 @@ export function getLumensAsset() {
  **/
 export function getEvryAsset() {
   return new Asset({
-    code: EVRY_ASSET_NAME,
-    issuer: EVRY_ASSET_ISSUER_PUB,
+    code: rootConfigInstance.stellar.asset.evry.name,
+    issuer: rootConfigInstance.stellar.issuer,
   })
 }
 
@@ -95,7 +91,8 @@ export class Asset {
    */
   isNative() {
     return (
-      this.code === EVRY_ASSET_NAME && this.issuer === EVRY_ASSET_ISSUER_PUB
+      this.code === rootConfigInstance.stellar.asset.evry.name &&
+      this.issuer === rootConfigInstance.stellar.issuer
     )
   }
 }

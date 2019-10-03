@@ -1,6 +1,4 @@
 import '@babel/polyfill'
+export { initRootConfig as initWarpConfig, rootConfigInstance } from '@/config'
 import Warp from '@/modules/warp'
-import { initWeb3Instance } from '@/utils'
-
-initWeb3Instance(null)
 export default Warp

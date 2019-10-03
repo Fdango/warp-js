@@ -1,20 +1,8 @@
 import BigNumber from 'bignumber.js'
 import { Transaction } from 'ethereumjs-tx'
-import config from '@/config/config'
 import WrapContractException from '@/exceptions/warp_contract'
 import { warpABI } from 'ABIs'
 import { web3Instance } from '@/utils'
-
-const {
-  evrynet: {
-    DEFAULT_CONTRACT_ADDRESS,
-    GASLIMIT,
-    GASPRICE,
-    ATOMIC_EVRY_DECIMAL_UNIT,
-    ATOMIC_STELLAR_DECIMAL_UNIT,
-    CUSTOM_CHAIN,
-  },
-} = config
 
 let wc = []
 
@@ -28,10 +16,10 @@ let wc = []
  * A registry for creating warp contract based on abi file and contract address
  * @param {string} address - is a contract address for ethereum
  */
-export function getWarpContract(address) {
-  const key = address || DEFAULT_CONTRACT_ADDRESS
+export function getWarpContract(config) {
+  const key = config.evrynet.contractAddress
   if (!wc[key]) {
-    wc[key] = new WarpContract(key, warpABI)
+    wc[key] = new WarpContract(config.evrynet)
   }
   return wc[key]
 }
@@ -45,11 +33,11 @@ export function getWarpContract(address) {
 export class WarpContract {
   /**
    * @constructor
-   * @param {string} contractAddr - a contract address
-   * @param {Buffer} abi - abi file containing interface for the contract
+   * @param {object} config - evrynet config
    */
-  constructor(contractAddr, abi) {
-    this.warp = this._newWarpContract(contractAddr, abi)
+  constructor(config) {
+    this.config = config
+    this.warp = this._newWarpContract(this.config.contractAddress, warpABI)
   }
 
   /**
@@ -101,12 +89,12 @@ export class WarpContract {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: GASLIMIT,
-          gasPrice: GASPRICE,
+          gasLimit: this.config.gasLimit,
+          gasPrice: this.config.gasPrice,
           data,
         },
         {
-          common: CUSTOM_CHAIN,
+          common: this.config.customChain,
         },
       )
       tx.sign(Buffer.from(priv, 'hex'))
@@ -131,14 +119,14 @@ export class WarpContract {
   newLockNativeTx({ amount, priv, nonce }) {
     try {
       const account = web3Instance.eth.accounts.privateKeyToAccount(priv)
-      if (!this._validateAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT)) {
+      if (!this._validateAmount(amount, this.config.atomicEvryDecimalUnit)) {
         throw new WrapContractException(
           null,
-          `Invalid amount: decimal is more than ${ATOMIC_STELLAR_DECIMAL_UNIT}`,
+          `Invalid amount: decimal is more than ${this.config.atomicStellarDecimalUnit}`,
         )
       }
       const hexAmount = web3Instance.utils.toHex(
-        this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
+        this._parseAmount(amount, this.config.atomicEvryDecimalUnit),
       )
       const data = this.warp.methods.lockNative().encodeABI()
       let tx = new Transaction(
@@ -147,12 +135,12 @@ export class WarpContract {
           from: account.address,
           to: this.warp.options.address,
           value: hexAmount,
-          gasLimit: GASLIMIT,
-          gasPrice: GASPRICE,
+          gasLimit: this.config.gaslimit,
+          gasPrice: this.config.gasPrice,
           data,
         },
         {
-          common: CUSTOM_CHAIN,
+          common: this.config.customChain,
         },
       )
       tx.sign(Buffer.from(priv, 'hex'))
@@ -199,12 +187,12 @@ export class WarpContract {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: GASLIMIT,
-          gasPrice: GASPRICE,
+          gasLimit: this.config.gaslimit,
+          gasPrice: this.config.gasPrice,
           data,
         },
         {
-          common: CUSTOM_CHAIN,
+          common: this.config.customChain,
         },
       )
       tx.sign(Buffer.from(priv, 'hex'))
@@ -229,14 +217,14 @@ export class WarpContract {
   newUnlockNativeTx({ amount, priv, nonce }) {
     try {
       const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
-      if (!this._validateAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT)) {
+      if (!this._validateAmount(amount, this.config.atomicEvryDecimalUnit)) {
         throw new WrapContractException(
           null,
-          `Invalid amount: decimal is more than ${ATOMIC_STELLAR_DECIMAL_UNIT}`,
+          `Invalid amount: decimal is more than ${this.config.atomicStellarDecimalUnit}`,
         )
       }
       const hexAmount = web3Instance.utils.toHex(
-        this._parseAmount(amount, ATOMIC_EVRY_DECIMAL_UNIT),
+        this._parseAmount(amount, this.config.atomicEvryDecimalUnit),
       )
       const data = this.warp.methods
         .unlockNative(account.address, hexAmount)
@@ -246,12 +234,12 @@ export class WarpContract {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: GASLIMIT,
-          gasPrice: GASPRICE,
+          gasLimit: this.config.gaslimit,
+          gasPrice: this.config.gasPrice,
           data,
         },
         {
-          common: CUSTOM_CHAIN,
+          common: this.config.customChain,
         },
       )
       tx.sign(Buffer.from(priv, 'hex'))
@@ -276,12 +264,12 @@ export class WarpContract {
       return false
     }
     const moduloer = this._parseAmount(amount, srcDecimal)
-    if (srcDecimal <= ATOMIC_STELLAR_DECIMAL_UNIT) {
+    if (srcDecimal <= this.config.atomicStellarDecimalUnit) {
       return moduloer.mod(1).toNumber() === 0
     }
     const moduloand = this._parseAmount(
       1,
-      srcDecimal - ATOMIC_STELLAR_DECIMAL_UNIT,
+      srcDecimal - this.config.atomicStellarDecimalUnit,
     )
     return moduloer.mod(moduloand).toNumber() === 0
   }
