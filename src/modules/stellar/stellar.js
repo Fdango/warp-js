@@ -8,9 +8,9 @@ import {
 import { Asset } from '@/modules/warp/common_pb.js'
 import { StellarGRPCClient } from './stellar_grpc_web_pb.js'
 import map from 'lodash/map'
-import { web3Instance } from '@/utils'
+//import { web3Instance } from '@/utils'
 
-let sc = []
+let sc
 
 /**
  * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
@@ -21,14 +21,13 @@ let sc = []
  * @return {Stellar}
  */
 export function getStellarClient(config) {
-  const key = web3Instance.utils.toHex(`${JSON.stringify(config)}`)
-  if (!sc[key]) {
-    sc[key] = new Stellar(
+  if (!sc) {
+    sc = new Stellar(
       new StellarGRPCClient(`http://${config.grpc.host}`),
       config.stellar,
     )
   }
-  return sc[key]
+  return sc
 }
 
 /**

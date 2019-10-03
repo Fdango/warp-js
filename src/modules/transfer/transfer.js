@@ -1,9 +1,9 @@
 import TransferException from '@/exceptions/transfer'
 import { TransferGRPCClient } from './transfer_grpc_web_pb.js'
 import { TransferRequest } from './transfer_pb.js'
-import { web3Instance } from '@/utils'
+//import { web3Instance } from '@/utils'
 
-let tc = []
+let tc
 
 /**
  * Registry for creating a transfer instance if not existed.
@@ -11,11 +11,10 @@ let tc = []
  * @returns {Transfer}
  */
 export function getTransferClient(config) {
-  const key = web3Instance.utils.toHex(`${JSON.stringify(config)}`)
-  if (!tc[key]) {
-    tc[key] = new Transfer(new TransferGRPCClient(`http://${config.grpc.host}`))
+  if (!tc) {
+    tc = new Transfer(new TransferGRPCClient(`http://${config.grpc.host}`))
   }
-  return tc[key]
+  return tc
 }
 
 /**

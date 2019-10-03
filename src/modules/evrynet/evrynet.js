@@ -9,7 +9,7 @@ import { Empty } from 'google-protobuf/google/protobuf/empty_pb.js'
 import { web3Instance } from '@/utils'
 
 // ec represent singleton instance
-let ec = []
+let ec
 
 /**
  * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
@@ -22,11 +22,10 @@ let ec = []
  * @return {Evrynet}
  */
 export function getEvryClient(config) {
-  const key = web3Instance.utils.toHex(`${JSON.stringify(config)}`)
-  if (!ec[key]) {
-    ec[key] = new Evrynet(new EvrynetGRPCClient(`http://${config.grpc.host}`))
+  if (!ec) {
+    ec = new Evrynet(new EvrynetGRPCClient(`http://${config.grpc.host}`))
   }
-  return ec[key]
+  return ec
 }
 
 /**

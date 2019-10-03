@@ -4,7 +4,7 @@ import WrapContractException from '@/exceptions/warp_contract'
 import { warpABI } from 'ABIs'
 import { web3Instance } from '@/utils'
 
-let wc = []
+let wc
 
 /**
  * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
@@ -17,11 +17,10 @@ let wc = []
  * @param {string} address - is a contract address for ethereum
  */
 export function getWarpContract(config) {
-  const key = config.evrynet.contractAddress
-  if (!wc[key]) {
-    wc[key] = new WarpContract(config.evrynet)
+  if (!wc) {
+    wc = new WarpContract(config.evrynet)
   }
-  return wc[key]
+  return wc
 }
 
 /**
