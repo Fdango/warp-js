@@ -1,7 +1,7 @@
 import { getWarpContract } from '@/modules/contract/warp'
 import { WhitelistedAsset } from '@/entities/asset'
 import WrapContractException from '@/exceptions/warp_contract'
-import { rootConfigInstance } from '@/config'
+import { warpConfigInstance } from '@/config'
 
 describe('WarpContract', () => {
   const senderpriv =
@@ -16,7 +16,7 @@ describe('WarpContract', () => {
             isser: '',
             decimal: 6,
           })
-          const warp = getWarpContract(rootConfigInstance)
+          const warp = getWarpContract(warpConfigInstance)
           const tx = warp.newLockTx({
             asset,
             amount: '10',
@@ -36,7 +36,7 @@ describe('WarpContract', () => {
             isser: '',
             decimal: 10,
           })
-          const warp = getWarpContract(rootConfigInstance)
+          const warp = getWarpContract(warpConfigInstance)
           const tx = warp.newLockTx({
             asset,
             amount: '10',
@@ -59,7 +59,7 @@ describe('WarpContract', () => {
             decimal: 7,
           })
           expect(() => {
-            getWarpContract(rootConfigInstance).newLockTx({
+            getWarpContract(warpConfigInstance).newLockTx({
               asset,
               amount: '10',
               priv: 'badpriv',
@@ -77,7 +77,7 @@ describe('WarpContract', () => {
             decimal: 7,
           })
           expect(() => {
-            getWarpContract(rootConfigInstance).newLockTx({
+            getWarpContract(warpConfigInstance).newLockTx({
               asset,
               amount: '0',
               priv: senderpriv,
@@ -93,7 +93,7 @@ describe('WarpContract', () => {
             decimal: 7,
           })
           expect(() => {
-            getWarpContract(rootConfigInstance).newLockTx({
+            getWarpContract(warpConfigInstance).newLockTx({
               asset,
               amount: '-1',
               priv: senderpriv,
@@ -109,7 +109,7 @@ describe('WarpContract', () => {
             decimal: 8,
           })
           expect(() => {
-            getWarpContract(rootConfigInstance).newLockTx({
+            getWarpContract(warpConfigInstance).newLockTx({
               asset,
               amount: '1.00000001',
               priv: senderpriv,
@@ -129,7 +129,7 @@ describe('WarpContract', () => {
           isser: '',
           decimal: 7,
         })
-        let warp = getWarpContract(rootConfigInstance)
+        let warp = getWarpContract(warpConfigInstance)
         let tx = await warp.newLockNativeTx({
           asset,
           amount: 10,
@@ -147,7 +147,7 @@ describe('WarpContract', () => {
       describe('With invalid asset', () => {
         it('should throw an error from creating a new lock raw tx', async () => {
           try {
-            await getWarpContract(rootConfigInstance).newLockTx({
+            await getWarpContract(warpConfigInstance).newLockTx({
               asset: null,
               amount: 10,
               priv: senderpriv,
@@ -162,7 +162,7 @@ describe('WarpContract', () => {
       describe('With invalid private key', () => {
         it('should throw an error from creating a new native lock raw tx', async () => {
           try {
-            await getWarpContract(rootConfigInstance).newLockNativeTx(
+            await getWarpContract(warpConfigInstance).newLockNativeTx(
               10,
               'badpriv',
               '1',
@@ -176,7 +176,7 @@ describe('WarpContract', () => {
       describe('With invalid amount', () => {
         it('should throw an error from creating a new native lock raw tx using zero', async () => {
           try {
-            await getWarpContract(rootConfigInstance).newLockNativeTx(
+            await getWarpContract(warpConfigInstance).newLockNativeTx(
               0,
               senderpriv,
               '1',
@@ -189,7 +189,7 @@ describe('WarpContract', () => {
         it('should throw an error from creating a new native lock raw tx using negative', async () => {
           expect.assertions(1)
           try {
-            await getWarpContract(rootConfigInstance).newLockNativeTx(
+            await getWarpContract(warpConfigInstance).newLockNativeTx(
               -1,
               senderpriv,
               '1',
@@ -211,7 +211,7 @@ describe('WarpContract', () => {
             isser: '',
             decimal: 6,
           })
-          const warp = getWarpContract(rootConfigInstance)
+          const warp = getWarpContract(warpConfigInstance)
           const tx = warp.newUnlockTx({
             asset,
             amount: '10',
@@ -231,7 +231,7 @@ describe('WarpContract', () => {
             isser: '',
             decimal: 10,
           })
-          const warp = getWarpContract(rootConfigInstance)
+          const warp = getWarpContract(warpConfigInstance)
           const tx = warp.newUnlockTx({
             asset,
             amount: '10',
@@ -254,7 +254,7 @@ describe('WarpContract', () => {
             decimal: 7,
           })
           expect(() => {
-            getWarpContract(rootConfigInstance).newUnlockTx({
+            getWarpContract(warpConfigInstance).newUnlockTx({
               asset,
               amount: '10',
               priv: 'badpriv',
@@ -272,7 +272,7 @@ describe('WarpContract', () => {
             decimal: 7,
           })
           expect(() => {
-            getWarpContract(rootConfigInstance).newUnlockTx({
+            getWarpContract(warpConfigInstance).newUnlockTx({
               asset,
               amount: '0',
               priv: senderpriv,
@@ -288,7 +288,7 @@ describe('WarpContract', () => {
             decimal: 7,
           })
           expect(() => {
-            getWarpContract(rootConfigInstance).newUnlockTx({
+            getWarpContract(warpConfigInstance).newUnlockTx({
               asset,
               amount: '-1',
               priv: senderpriv,
@@ -304,7 +304,7 @@ describe('WarpContract', () => {
             decimal: 8,
           })
           expect(() => {
-            getWarpContract(rootConfigInstance).newUnlockTx({
+            getWarpContract(warpConfigInstance).newUnlockTx({
               asset,
               amount: '1.00000001',
               priv: senderpriv,
@@ -319,7 +319,7 @@ describe('WarpContract', () => {
   describe('When creating new unlock native raw tx', () => {
     describe('When success', () => {
       it('should be successfully creating a new unlock native raw tx', async () => {
-        let warp = getWarpContract(rootConfigInstance)
+        let warp = getWarpContract(warpConfigInstance)
         let tx = await warp.newUnlockNativeTx({
           amount: 10,
           priv: senderpriv,
@@ -336,7 +336,7 @@ describe('WarpContract', () => {
       describe('With invalid asset', () => {
         it('should throw an error from creating a new unlock native raw tx', async () => {
           try {
-            await getWarpContract(rootConfigInstance).newUnlockNativeTx({
+            await getWarpContract(warpConfigInstance).newUnlockNativeTx({
               asset: null,
               amount: 10,
               priv: senderpriv,
@@ -351,7 +351,7 @@ describe('WarpContract', () => {
       describe('With invalid private key', () => {
         it('should throw an error from creating a new unlock native raw tx', async () => {
           try {
-            await getWarpContract(rootConfigInstance).newUnlockNativeTx(
+            await getWarpContract(warpConfigInstance).newUnlockNativeTx(
               10,
               'badpriv',
               '1',
@@ -365,7 +365,7 @@ describe('WarpContract', () => {
       describe('With invalid amount', () => {
         it('should throw an error from creating a new unlock native raw tx using zero', async () => {
           try {
-            await getWarpContract(rootConfigInstance).newUnlockNativeTx(
+            await getWarpContract(warpConfigInstance).newUnlockNativeTx(
               0,
               senderpriv,
               '1',
@@ -378,7 +378,7 @@ describe('WarpContract', () => {
         it('should throw an error from creating a new unlock native raw tx using negative', async () => {
           expect.assertions(1)
           try {
-            await getWarpContract(rootConfigInstance).newUnlockNativeTx(
+            await getWarpContract(warpConfigInstance).newUnlockNativeTx(
               -1,
               senderpriv,
               '1',
@@ -396,7 +396,7 @@ describe('WarpContract', () => {
       describe('When decimal is less than stellar decimal unit', () => {
         it('Should return true on validation', () => {
           expect(
-            getWarpContract(rootConfigInstance)._validateAmount(
+            getWarpContract(warpConfigInstance)._validateAmount(
               '10.0000001',
               10,
             ),
@@ -406,7 +406,7 @@ describe('WarpContract', () => {
       describe('When decimal is less than stellar decimal unit', () => {
         it('Should return true on validation', () => {
           expect(
-            getWarpContract(rootConfigInstance)._validateAmount(
+            getWarpContract(warpConfigInstance)._validateAmount(
               '10.0000010',
               6,
             ),
@@ -418,7 +418,7 @@ describe('WarpContract', () => {
       describe('When decimal is less than stellar decimal unit', () => {
         it('Should return true on validation', () => {
           expect(
-            getWarpContract(rootConfigInstance)._validateAmount(
+            getWarpContract(warpConfigInstance)._validateAmount(
               '10.00000001',
               10,
             ),
@@ -428,7 +428,7 @@ describe('WarpContract', () => {
       describe('When decimal is less than stellar decimal unit', () => {
         it('Should return true on validation', () => {
           expect(
-            getWarpContract(rootConfigInstance)._validateAmount(
+            getWarpContract(warpConfigInstance)._validateAmount(
               '10.0000011',
               6,
             ),

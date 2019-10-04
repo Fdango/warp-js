@@ -1,5 +1,5 @@
 import { getEvryAsset, getLumensAsset } from '@/entities/asset'
-import { rootConfigInstance } from '@/config'
+import { warpConfigInstance } from '@/config'
 
 describe('Asset', () => {
   describe('When call each asset', () => {
@@ -11,8 +11,8 @@ describe('Asset', () => {
 
     it('should returns a valid EVRY asset', () => {
       let evry = getEvryAsset()
-      expect(evry.getCode()).toBe(rootConfigInstance.stellar.asset.evry.name)
-      expect(evry.getIssuer()).toBe(rootConfigInstance.stellar.issuer)
+      expect(evry.getCode()).toBe(warpConfigInstance.stellar.asset.evry.name)
+      expect(evry.getIssuer()).toBe(warpConfigInstance.stellar.issuer)
     })
   })
 })

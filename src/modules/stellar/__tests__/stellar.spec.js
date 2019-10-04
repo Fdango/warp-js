@@ -4,7 +4,7 @@ import { Stellar } from '@/modules/stellar/stellar'
 import { WhitelistedAsset, getLumensAsset } from '@/entities/asset'
 import StellarException from '@/exceptions/stellar'
 import Stream from 'stream'
-import { rootConfigInstance } from '@/config'
+import { warpConfigInstance } from '@/config'
 
 describe('Stellar', () => {
   const sender = 'SBYOQRUXJEMYTSCSBEXRSPX7EXLD3A6ZFUO5OCOU6D7TTLDO2NPBXL52'
@@ -39,7 +39,7 @@ describe('Stellar', () => {
             getSequenceNumber: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const stellar = new Stellar(mockedClient(), rootConfigInstance.stellar)
+        const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
         setInterval(function() {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
@@ -57,7 +57,7 @@ describe('Stellar', () => {
             getSequenceNumber: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const stellar = new Stellar(mockedClient(), rootConfigInstance.stellar)
+        const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
         setInterval(function() {
           mockedStream.emit('data', {
             getSequencenumber: jest.fn().mockReturnValue(currentSeq),
@@ -80,7 +80,7 @@ describe('Stellar', () => {
             getSequenceNumber: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const stellar = new Stellar(mockedClient(), rootConfigInstance.stellar)
+        const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
         setInterval(function() {
           mockedStream.emit('data', {
             getSequencenumber: jest.fn().mockReturnValue(currentSeq),
@@ -142,7 +142,7 @@ describe('Stellar', () => {
             getSequenceNumber: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const stellar = new Stellar(mockedClient(), rootConfigInstance.stellar)
+        const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
         setInterval(function() {
           mockedStream.emit('data', {
             getSequencenumber: jest.fn().mockReturnValue(currentSeq),
@@ -203,7 +203,7 @@ describe('Stellar', () => {
             getBalance: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const stellar = new Stellar(mockedClient(), rootConfigInstance.stellar)
+        const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
         setInterval(function() {
           mockedStream.emit('data', {
             getBalance: jest.fn().mockReturnValue(expectedBalance),
@@ -225,7 +225,7 @@ describe('Stellar', () => {
             getBalance: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const stellar = new Stellar(mockedClient(), rootConfigInstance.stellar)
+        const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
         setInterval(function() {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
@@ -253,7 +253,7 @@ describe('Stellar', () => {
             getTrustlines: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const stellar = new Stellar(mockedClient(), rootConfigInstance.stellar)
+        const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
         setInterval(function() {
           mockedStream.emit('data', {
             getAssetList: jest.fn().mockReturnValue([
@@ -277,7 +277,7 @@ describe('Stellar', () => {
             getTrustlines: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const stellar = new Stellar(mockedClient(), rootConfigInstance.stellar)
+        const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
         setInterval(function() {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
@@ -293,7 +293,7 @@ describe('Stellar', () => {
       const privateKey =
         'SADFSJ45OOSLJZMRSN4X3577NBC5NNKTK4JYE4DS5M34UIVILDC7EW3O'
       const expected = `GB6T7Y6DAEYPSLV3NDH5YFJOMJGGNADTNVCYNSUM74SS77NADWM4BHHH`
-      const evrynet = new Stellar(null, rootConfigInstance.stellar)
+      const evrynet = new Stellar(null, warpConfigInstance.stellar)
       expect(evrynet.getPublickeyFromPrivateKey(privateKey)).toEqual(expected)
     })
   })

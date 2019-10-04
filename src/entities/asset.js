@@ -1,5 +1,5 @@
 import StellarSDK from 'stellar-sdk'
-import { rootConfigInstance } from '@/config'
+import { warpConfigInstance } from '@/config'
 import AssetEntityException from '@/exceptions/asset_entity'
 import { web3Instance } from '@/utils'
 
@@ -25,8 +25,8 @@ export function getLumensAsset() {
  **/
 export function getEvryAsset() {
   return new Asset({
-    code: rootConfigInstance.stellar.asset.evry.name,
-    issuer: rootConfigInstance.stellar.issuer,
+    code: warpConfigInstance.stellar.asset.evry.name,
+    issuer: warpConfigInstance.stellar.issuer,
   })
 }
 
@@ -91,8 +91,8 @@ export class Asset {
    */
   isNative() {
     return (
-      this.code === rootConfigInstance.stellar.asset.evry.name &&
-      this.issuer === rootConfigInstance.stellar.issuer
+      this.code === warpConfigInstance.stellar.asset.evry.name &&
+      this.issuer === warpConfigInstance.stellar.issuer
     )
   }
 }

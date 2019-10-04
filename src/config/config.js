@@ -1,7 +1,7 @@
 import { StellarConfig, GRPCConfig, EvrynetConfig } from '@/config'
 import { mergeObject, initWeb3Instance } from '@/utils'
 
-export default class RootConfig {
+class WarpConfig {
   constructor() {
     this.stellar = new StellarConfig()
     this.grpc = new GRPCConfig()
@@ -10,9 +10,11 @@ export default class RootConfig {
   }
 }
 
-export let rootConfigInstance = new RootConfig()
+export let warpConfigInstance = new WarpConfig()
 
-export const initRootConfig = (configuration) => {
-  rootConfigInstance = mergeObject(rootConfigInstance, configuration)
-  initWeb3Instance(rootConfigInstance.evrynet.provider)
+export const initWarpConfig = (configuration) => {
+  warpConfigInstance = mergeObject(warpConfigInstance, configuration)
+  initWeb3Instance(warpConfigInstance.evrynet.provider)
 }
+
+export default WarpConfig
