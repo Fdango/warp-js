@@ -8,7 +8,6 @@ import {
 import { Asset } from '@/modules/warp/common_pb.js'
 import { StellarGRPCClient } from './stellar_grpc_web_pb.js'
 import map from 'lodash/map'
-//import { web3Instance } from '@/utils'
 
 let sc
 

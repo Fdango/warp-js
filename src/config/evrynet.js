@@ -2,7 +2,7 @@ import { web3Instance } from '@/utils'
 import Common from 'ethereumjs-common'
 export default class EvrynetConfig {
   constructor() {
-    this.contractAddress = '0x81e37ac7D0deD9cbc262F9fA0f9637Ced19cfa07'
+    this.contractAddress = '0xf582b66AC081253B67eA7ABB76919B27F75D361d'
     this.gasLimit = web3Instance.utils.toHex(2000000)
     this.gasPrice = web3Instance.utils.toHex(
       Number(web3Instance.utils.toWei('1', 'gwei')),

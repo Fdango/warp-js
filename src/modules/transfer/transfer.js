@@ -1,7 +1,6 @@
 import TransferException from '@/exceptions/transfer'
 import { TransferGRPCClient } from './transfer_grpc_web_pb.js'
 import { TransferRequest } from './transfer_pb.js'
-//import { web3Instance } from '@/utils'
 
 let tc
 

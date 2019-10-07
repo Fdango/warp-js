@@ -1,5 +1,6 @@
 import { StellarConfig, GRPCConfig, EvrynetConfig } from '@/config'
-import { mergeObject, initWeb3Instance } from '@/utils'
+import { initWeb3Instance } from '@/utils'
+import merge from 'lodash/merge'
 
 class WarpConfig {
   constructor() {
@@ -13,7 +14,7 @@ class WarpConfig {
 export let warpConfigInstance = new WarpConfig()
 
 export const initWarpConfig = (configuration) => {
-  warpConfigInstance = mergeObject(warpConfigInstance, configuration)
+  warpConfigInstance = merge(warpConfigInstance, configuration)
   initWeb3Instance(warpConfigInstance.evrynet.provider)
 }
 
