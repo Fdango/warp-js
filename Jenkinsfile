@@ -26,13 +26,15 @@ pipeline {
             }
         }
 
-        stage('Unit Test') {
+        stage('NPM run Lint') {
             steps {
                 sh '''
                     echo "Run Lint -> ${branchName}"
                     docker-compose up lint
                 '''
             }
+        }
+        stage('NPM run test') {
             steps {
                 sh '''
                     echo "Run Test -> ${branchName}"
