@@ -1,6 +1,4 @@
-import config from '@/config/config'
 import StellarSDK from 'stellar-sdk'
-import GRPCConnectorEntity from '@/entities/grpc'
 import StellarException from '@/exceptions/stellar'
 import {
   GetSequenceNumberRequest,
@@ -11,11 +9,7 @@ import { Asset } from '@/modules/warp/common_pb.js'
 import { StellarGRPCClient } from './stellar_grpc_web_pb.js'
 import map from 'lodash/map'
 
-const {
-  stellar: { ESCROW_ACCOUNT, NETWORK },
-} = config
-
-let sc = []
+let sc
 
 /**
  * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
@@ -25,15 +19,14 @@ let sc = []
  * Returns a Stellar client
  * @return {Stellar}
  */
-export function getStellarClient(connectionOpts = {}) {
-  const key = JSON.stringify(connectionOpts)
-  if (!sc[key]) {
-    const config = new GRPCConnectorEntity({
-      host: connectionOpts.host,
-    })
-    sc[key] = new Stellar(new StellarGRPCClient(`http://${config.host}`))
+export function getStellarClient(config) {
+  if (!sc) {
+    sc = new Stellar(
+      new StellarGRPCClient(`http://${config.grpc.host}`),
+      config.stellar,
+    )
   }
-  return sc[key]
+  return sc
 }
 
 /**
@@ -45,9 +38,9 @@ export class Stellar {
    * @constructor
    * @param {StellarGRPCClient} client
    */
-  constructor(client) {
-    NETWORK
+  constructor(client, config) {
     this.client = client
+    this.config = config
   }
 
   /**
@@ -144,7 +137,14 @@ export class Stellar {
    * @param {StellarSDK.Asset} payload.asset - asset type
    */
   async createDepositTx({ src, seq, amount, asset }) {
-    return this.newPaymentTx(src, '', ESCROW_ACCOUNT, seq, amount, asset)
+    return this.newPaymentTx(
+      src,
+      '',
+      this.config.escrowAccount,
+      seq,
+      amount,
+      asset,
+    )
   }
 
   /**
@@ -156,7 +156,14 @@ export class Stellar {
    * @param {StellarSDK.Asset} payload.asset - stellar asset to be transfered
    */
   async createWithdrawTx({ src, seq, amount, asset }) {
-    return this.newPaymentTx(src, ESCROW_ACCOUNT, '', seq, amount, asset)
+    return this.newPaymentTx(
+      src,
+      this.config.escrowAccount,
+      '',
+      seq,
+      amount,
+      asset,
+    )
   }
 
   /**
@@ -178,7 +185,7 @@ export class Stellar {
       const account = new StellarSDK.Account(txPk, seq)
       const transaction = new StellarSDK.TransactionBuilder(account, {
         fee: StellarSDK.BASE_FEE,
-        networkPassphrase: NETWORK,
+        networkPassphrase: this.config.network,
       })
         .addOperation(
           StellarSDK.Operation.payment({

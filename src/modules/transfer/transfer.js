@@ -1,24 +1,19 @@
-import GRPCConnectorEntity from '@/entities/grpc'
 import TransferException from '@/exceptions/transfer'
 import { TransferGRPCClient } from './transfer_grpc_web_pb.js'
 import { TransferRequest } from './transfer_pb.js'
 
-let tc = []
+let tc
 
 /**
  * Registry for creating a transfer instance if not existed.
- * @param {Object} [connectionOpts={}]
+ * @param {Object}
  * @returns {Transfer}
  */
-export function getTransferClient(connectionOpts = {}) {
-  const key = JSON.stringify(connectionOpts)
-  if (!tc[key]) {
-    const config = new GRPCConnectorEntity({
-      host: connectionOpts.host,
-    })
-    tc[key] = new Transfer(new TransferGRPCClient(`http://${config.host}`))
+export function getTransferClient(config) {
+  if (!tc) {
+    tc = new Transfer(new TransferGRPCClient(`http://${config.grpc.host}`))
   }
-  return tc[key]
+  return tc
 }
 
 /**

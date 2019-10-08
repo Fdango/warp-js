@@ -4,6 +4,7 @@ import { getWarpContract } from '@/modules/contract/warp'
 import { getTransferClient } from '@/modules/transfer/transfer'
 import assetEntity from '@/entities/asset'
 import WarpException from '@/exceptions/warp_sdk'
+import { warpConfigInstance } from '@/config'
 
 /**
  *
@@ -14,18 +15,17 @@ import WarpException from '@/exceptions/warp_sdk'
  * @typedef Warp
  */
 export default class Warp {
-  constructor(connectionOpts = {}) {
+  constructor() {
     this.utils = {
       ...assetEntity,
     }
-    this.config = connectionOpts
     this.client = {
-      stellar: getStellarClient(this.config),
-      evry: getEvryClient(this.config),
-      transfer: getTransferClient(this.config),
+      stellar: getStellarClient(warpConfigInstance),
+      evry: getEvryClient(warpConfigInstance),
+      transfer: getTransferClient(warpConfigInstance),
     }
     this.contract = {
-      warp: getWarpContract(),
+      warp: getWarpContract(warpConfigInstance),
     }
   }
 

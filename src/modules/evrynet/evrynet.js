@@ -1,4 +1,3 @@
-import GRPCConnectorEntity from '@/entities/grpc'
 import EvrynetException from '@/exceptions/evrynet'
 import find from 'lodash/find'
 import map from 'lodash/map'
@@ -10,7 +9,7 @@ import { Empty } from 'google-protobuf/google/protobuf/empty_pb.js'
 import { web3Instance } from '@/utils'
 
 // ec represent singleton instance
-let ec = []
+let ec
 
 /**
  * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
@@ -19,18 +18,14 @@ let ec = []
 
 /**
  * Returns a Stellar client
- * @param {Object} [connectionOpts={}] - is options for connection
+ * @param {Object} - is options for connection
  * @return {Evrynet}
  */
-export function getEvryClient(connectionOpts = {}) {
-  const key = JSON.stringify(connectionOpts)
-  if (!ec[key]) {
-    const config = new GRPCConnectorEntity({
-      host: connectionOpts.host,
-    })
-    ec[key] = new Evrynet(new EvrynetGRPCClient(`http://${config.host}`))
+export function getEvryClient(config) {
+  if (!ec) {
+    ec = new Evrynet(new EvrynetGRPCClient(`http://${config.grpc.host}`))
   }
-  return ec[key]
+  return ec
 }
 
 /**
