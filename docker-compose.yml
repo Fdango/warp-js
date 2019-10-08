@@ -1,18 +1,10 @@
 version: "2"
 
 services:
-  base:
+  sdk:
     build:
       context: docker/
     image: warp-sdk
     volumes:
       - .:/usr/src/service/
     working_dir: /usr/src/service/
-  lint:
-    extends:
-      service: base
-    command: npm run lint
-  test:
-    extends:
-      service: base
-    command: npm run test
