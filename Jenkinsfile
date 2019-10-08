@@ -21,7 +21,6 @@ pipeline {
                     echo "Build Image"
                     docker-compose build --pull
                 '''
-                }
             }
         }
 
