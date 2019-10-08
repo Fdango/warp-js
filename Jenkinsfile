@@ -17,11 +17,10 @@ pipeline {
 
         stage('Build Image Test') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'devopsautomate', passwordVariable: 'gitlabPassword', usernameVariable: 'gitlabUsername')]) {
-                    sh '''
-                        echo "Build Image"
-                        docker-compose build --pull
-                    '''
+                sh '''
+                    echo "Build Image"
+                    docker-compose build --pull
+                '''
                 }
             }
         }
