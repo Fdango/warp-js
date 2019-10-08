@@ -28,7 +28,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Run Lint -> ${branchName}"
-                    docker-compose up lint
+                    docker-compose run sdk npm run lint
                 '''
             }
         }
@@ -36,7 +36,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Run Test -> ${branchName}"
-                    docker-compose up test
+                    docker-compose run sdk npm run test
                 '''
             }
         }
