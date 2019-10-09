@@ -66,10 +66,10 @@ export default class Warp {
       }
       const evrynetTx = whitelistedAsset.isNative()
         ? this.contract.warp.txToHex(
-            this.contract.warp.newUnlockNativeTx(payload),
+            await this.contract.warp.newUnlockNativeTx(payload),
           )
         : this.contract.warp.txToHex(
-            this.contract.warp.newUnlockTx({
+            await this.contract.warp.newUnlockTx({
               ...payload,
               asset: whitelistedAsset,
             }),
@@ -122,10 +122,10 @@ export default class Warp {
       }
       const evrynetTx = whitelistedAsset.isNative()
         ? this.contract.warp.txToHex(
-            this.contract.warp.newLockNativeTx(payload),
+            await this.contract.warp.newLockNativeTx(payload),
           )
         : this.contract.warp.txToHex(
-            this.contract.warp.newLockTx({
+            await this.contract.warp.newLockTx({
               ...payload,
               asset: whitelistedAsset,
             }),

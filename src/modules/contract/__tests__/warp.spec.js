@@ -1,7 +1,13 @@
 import { getWarpContract } from '@/modules/contract/warp'
 import { WhitelistedAsset } from '@/entities/asset'
 import WrapContractException from '@/exceptions/warp_contract'
-import { warpConfigInstance } from '@/config'
+import { warpConfigInstance, WarpConfig, initWarpConfig } from '@/config'
+import Ganache from 'ganache-cli'
+
+const warpConfig = new WarpConfig()
+warpConfig.evrynet.provider = Ganache.provider()
+warpConfig.evrynet.isEstimateGas = true
+initWarpConfig(warpConfig)
 
 describe('WarpContract', () => {
   const senderpriv =
@@ -10,14 +16,14 @@ describe('WarpContract', () => {
   describe('When creating new lock raw tx', () => {
     describe('When success', () => {
       describe('When credit decimal is less than stellar atomic decimal unit', () => {
-        it('should be successfully creating a new lock credit raw tx', () => {
+        it('should be successfully creating a new lock credit raw tx', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 6,
           })
           const warp = getWarpContract(warpConfigInstance)
-          const tx = warp.newLockTx({
+          const tx = await warp.newLockTx({
             asset,
             amount: '10',
             priv: senderpriv,
@@ -30,14 +36,14 @@ describe('WarpContract', () => {
       })
 
       describe('When credit decimal is more than stellar atomic decimal unit', () => {
-        it('should be successfully creating a new lock credit raw tx', () => {
+        it('should be successfully creating a new lock credit raw tx', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 10,
           })
           const warp = getWarpContract(warpConfigInstance)
-          const tx = warp.newLockTx({
+          const tx = await warp.newLockTx({
             asset,
             amount: '10',
             priv: senderpriv,
@@ -52,70 +58,70 @@ describe('WarpContract', () => {
 
     describe('When error', () => {
       describe('With invalid private key', () => {
-        it('should throw an error from creating a new lock raw tx', () => {
+        it('should throw an error from creating a new lock raw tx', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 7,
           })
-          expect(() => {
+          await expect(
             getWarpContract(warpConfigInstance).newLockTx({
               asset,
               amount: '10',
               priv: 'badpriv',
               nonce: '1',
-            })
-          }).toThrow(WrapContractException)
+            }),
+          ).rejects.toThrow(WrapContractException)
         })
       })
 
       describe('With invalid amount', () => {
-        it('should throw an error from creating a new lock raw tx from zero', () => {
+        it('should throw an error from creating a new lock raw tx from zero', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 7,
           })
-          expect(() => {
+          await expect(
             getWarpContract(warpConfigInstance).newLockTx({
               asset,
               amount: '0',
               priv: senderpriv,
               nonce: '1',
-            })
-          }).toThrow(WrapContractException)
+            }),
+          ).rejects.toThrow(WrapContractException)
         })
 
-        it('should throw an error from creating a new lock raw tx from negative', () => {
+        it('should throw an error from creating a new lock raw tx from negative', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 7,
           })
-          expect(() => {
+          await expect(
             getWarpContract(warpConfigInstance).newLockTx({
               asset,
               amount: '-1',
               priv: senderpriv,
               nonce: '1',
-            })
-          }).toThrow(WrapContractException)
+            }),
+          ).rejects.toThrow(WrapContractException)
         })
 
-        it('should throw an error from creating a new lock raw tx from invalid decimal', () => {
+        it('should throw an error from creating a new lock raw tx from invalid decimal', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 8,
           })
-          expect(() => {
+          await expect(
             getWarpContract(warpConfigInstance).newLockTx({
               asset,
               amount: '1.00000001',
               priv: senderpriv,
               nonce: '1',
-            })
-          }).toThrow(WrapContractException)
+            }),
+          ).rejects.toThrow(WrapContractException)
         })
       })
     })
@@ -205,14 +211,14 @@ describe('WarpContract', () => {
   describe('When creating new unlock raw tx', () => {
     describe('When success', () => {
       describe('When credit decimal is less than stellar atomic decimal unit', () => {
-        it('should be successfully creating a new unlock raw tx', () => {
+        it('should be successfully creating a new unlock raw tx', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 6,
           })
           const warp = getWarpContract(warpConfigInstance)
-          const tx = warp.newUnlockTx({
+          const tx = await warp.newUnlockTx({
             asset,
             amount: '10',
             priv: senderpriv,
@@ -225,14 +231,14 @@ describe('WarpContract', () => {
       })
 
       describe('When credit decimal is more than stellar atomic decimal unit', () => {
-        it('should be successfully creating a new unlock raw tx', () => {
+        it('should be successfully creating a new unlock raw tx', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 10,
           })
           const warp = getWarpContract(warpConfigInstance)
-          const tx = warp.newUnlockTx({
+          const tx = await warp.newUnlockTx({
             asset,
             amount: '10',
             priv: senderpriv,
@@ -247,70 +253,70 @@ describe('WarpContract', () => {
 
     describe('When error', () => {
       describe('With invalid private key', () => {
-        it('should throw an error from creating a unlock raw tx', () => {
+        it('should throw an error from creating a unlock raw tx', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 7,
           })
-          expect(() => {
+          await expect(
             getWarpContract(warpConfigInstance).newUnlockTx({
               asset,
               amount: '10',
               priv: 'badpriv',
               nonce: '1',
-            })
-          }).toThrow(WrapContractException)
+            }),
+          ).rejects.toThrow(WrapContractException)
         })
       })
 
       describe('With invalid amount', () => {
-        it('should throw an error from creating a new unlock raw tx from zero', () => {
+        it('should throw an error from creating a new unlock raw tx from zero', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 7,
           })
-          expect(() => {
+          await expect(
             getWarpContract(warpConfigInstance).newUnlockTx({
               asset,
               amount: '0',
               priv: senderpriv,
               nonce: '1',
-            })
-          }).toThrow(WrapContractException)
+            }),
+          ).rejects.toThrow(WrapContractException)
         })
 
-        it('should throw an error from creating a new unlock raw tx from negative', () => {
+        it('should throw an error from creating a new unlock raw tx from negative', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 7,
           })
-          expect(() => {
+          await expect(
             getWarpContract(warpConfigInstance).newUnlockTx({
               asset,
               amount: '-1',
               priv: senderpriv,
               nonce: '1',
-            })
-          }).toThrow(WrapContractException)
+            }),
+          ).rejects.toThrow(WrapContractException)
         })
 
-        it('should throw an error from creating a new unlock raw tx from invalid decimal', () => {
+        it('should throw an error from creating a new unlock raw tx from invalid decimal', async () => {
           const asset = new WhitelistedAsset({
             code: 'TEST',
             isser: '',
             decimal: 8,
           })
-          expect(() => {
+          await expect(
             getWarpContract(warpConfigInstance).newUnlockTx({
               asset,
               amount: '1.00000001',
               priv: senderpriv,
               nonce: '1',
-            })
-          }).toThrow(WrapContractException)
+            }),
+          ).rejects.toThrow(WrapContractException)
         })
       })
     })
