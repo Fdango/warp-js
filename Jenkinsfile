@@ -43,6 +43,7 @@ pipeline {
     }
    post {
            always {
+               docker-compose down --rmi all
                deleteDir()
            }
    }
