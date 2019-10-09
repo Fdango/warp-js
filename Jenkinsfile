@@ -41,10 +41,12 @@ pipeline {
             }
         }
     }
-   post {
-           always {
+    post {
+        always {
+            sh '''
                docker-compose down --rmi all
-               deleteDir()
-           }
-   }
+            '''
+            deleteDir()
+        }
+    }
 }
