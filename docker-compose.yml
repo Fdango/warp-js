@@ -3,8 +3,7 @@ version: "2"
 services:
   sdk:
     build:
-      context: docker/
+      context: ./
+      dockerfile: docker/Dockerfile
     image: warp-sdk
-    volumes:
-      - .:/usr/src/service/
     working_dir: /usr/src/service/
