@@ -4,7 +4,7 @@ pipeline {
         branchName = sh(
             script: "echo ${env.GIT_BRANCH} | sed -e 's|/|-|g'",
             returnStdout: true
-        )
+        ).trim()
     }
     stages {
         stage ('Cleanup') {
