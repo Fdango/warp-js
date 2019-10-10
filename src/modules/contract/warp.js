@@ -3,7 +3,6 @@ import { Transaction } from 'ethereumjs-tx'
 import WrapContractException from '@/exceptions/warp_contract'
 import { warpABI } from 'ABIs'
 import { web3Instance } from '@/utils'
-import { initWarpConfig } from '@/config'
 
 let wc
 
@@ -36,7 +35,6 @@ export class WarpContract {
    * @param {object} config - evrynet config
    */
   constructor(config) {
-    initWarpConfig(config)
     this.config = config
     this.warp = this._newWarpContract(this.config.contractAddress, warpABI)
   }
@@ -85,18 +83,18 @@ export class WarpContract {
       )
       const assetID = asset.getID()
       const method = this.warp.methods.lock(assetID, hexAmount)
-      const gasAmount = this.config.isEstimateGas
-        ? await method.estimateGas({
-            from: account.address,
-          })
-        : this.config.gasLimit
+      const gasLimit = await this.getGasLimit(
+        method,
+        account.address,
+        hexAmount,
+      )
       const data = method.encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: web3Instance.utils.toHex(gasAmount),
+          gasLimit: web3Instance.utils.toHex(gasLimit),
           gasPrice: this.config.gasPrice,
           data,
         },
@@ -136,12 +134,11 @@ export class WarpContract {
         this._parseAmount(amount, this.config.atomicEvryDecimalUnit),
       )
       const method = this.warp.methods.lockNative()
-      const gasAmount = this.config.isEstimateGas
-        ? await method.estimateGas({
-            from: account.address,
-            value: hexAmount,
-          })
-        : this.config.gasLimit
+      const gasLimit = await this.getGasLimit(
+        method,
+        account.address,
+        hexAmount,
+      )
       const data = method.encodeABI()
       let tx = new Transaction(
         {
@@ -149,7 +146,7 @@ export class WarpContract {
           from: account.address,
           to: this.warp.options.address,
           value: hexAmount,
-          gasLimit: web3Instance.utils.toHex(gasAmount),
+          gasLimit: web3Instance.utils.toHex(gasLimit),
           gasPrice: this.config.gasPrice,
           data,
         },
@@ -198,18 +195,18 @@ export class WarpContract {
         assetID,
         hexAmount,
       )
-      const gasAmount = this.config.isEstimateGas
-        ? await method.estimateGas({
-            from: account.address,
-          })
-        : this.config.gasLimit
+      const gasLimit = await this.getGasLimit(
+        method,
+        account.address,
+        hexAmount,
+      )
       const data = method.encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: web3Instance.utils.toHex(gasAmount),
+          gasLimit: web3Instance.utils.toHex(gasLimit),
           gasPrice: this.config.gasPrice,
           data,
         },
@@ -249,18 +246,18 @@ export class WarpContract {
         this._parseAmount(amount, this.config.atomicEvryDecimalUnit),
       )
       const method = this.warp.methods.unlockNative(account.address, hexAmount)
-      const gasAmount = this.config.isEstimateGas
-        ? await method.estimateGas({
-            from: account.address,
-          })
-        : this.config.gasLimit
+      const gasLimit = await this.getGasLimit(
+        method,
+        account.address,
+        hexAmount,
+      )
       const data = method.encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: web3Instance.utils.toHex(gasAmount),
+          gasLimit: web3Instance.utils.toHex(gasLimit),
           gasPrice: this.config.gasPrice,
           data,
         },
@@ -325,6 +322,23 @@ export class WarpContract {
         e.toString(),
       )
     }
+  }
+
+  /**
+   * Calculates gas limit
+   * @param {Object} method
+   * @param {String} sourceAddress
+   * @param {String} value
+   * @returns {Number}
+   */
+  async getGasLimit(method, sourceAddress, value) {
+    let gasAmount = this.config.shouldUseEstimatedGas
+      ? (await method.estimateGas({
+          from: sourceAddress,
+          value: value,
+        })) + 1000
+      : this.config.gasLimit
+    return gasAmount
   }
 }
 

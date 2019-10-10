@@ -6,7 +6,7 @@ import Ganache from 'ganache-cli'
 
 const warpConfig = new WarpConfig()
 warpConfig.evrynet.provider = Ganache.provider()
-warpConfig.evrynet.isEstimateGas = true
+warpConfig.evrynet.shouldUseEstimatedGas = true
 initWarpConfig(warpConfig)
 
 describe('WarpContract', () => {

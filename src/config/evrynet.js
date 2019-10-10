@@ -8,8 +8,8 @@ export default class EvrynetConfig {
       Number(web3Instance.utils.toWei('1', 'gwei')),
     )
     // Tendermint node doesn't work with estimate gas because cors origin.
-    // TODO: Remove isEstimateGas before lunch.
-    this.isEstimateGas = false
+    // TODO: Remove shouldUseEstimatedGas before launch.
+    this.shouldUseEstimatedGas = false
     this.atomicStellarDecimalUnit = 7
     this.atomicEvryDecimalUnit = 18
     this.customChain = Common.forCustomChain(
