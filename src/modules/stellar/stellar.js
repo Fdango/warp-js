@@ -22,7 +22,7 @@ let sc
 export function getStellarClient(config) {
   if (!sc) {
     sc = new Stellar(
-      new StellarGRPCClient(`http://${config.grpc.host}`),
+      new StellarGRPCClient(config.grpc.host),
       config.stellar,
     )
   }
