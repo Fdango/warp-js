@@ -11,7 +11,7 @@ let tc
  */
 export function getTransferClient(config) {
   if (!tc) {
-    tc = new Transfer(new TransferGRPCClient(`http://${config.grpc.host}`))
+    tc = new Transfer(new TransferGRPCClient(config.grpc.host))
   }
   return tc
 }

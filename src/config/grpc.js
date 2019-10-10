@@ -11,7 +11,7 @@ export default class GRPCConfig {
         name: 'transfer',
       },
     }
-    this.host = 'localhost:9090'
+    this.host = 'http://localhost:9090'
     Object.seal(this)
   }
 }

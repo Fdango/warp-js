@@ -23,7 +23,7 @@ let ec
  */
 export function getEvryClient(config) {
   if (!ec) {
-    ec = new Evrynet(new EvrynetGRPCClient(`http://${config.grpc.host}`))
+    ec = new Evrynet(new EvrynetGRPCClient(config.grpc.host))
   }
   return ec
 }
