@@ -2,12 +2,6 @@
   "presets": [
     [
       "@babel/preset-env",
-      {
-        "useBuiltIns": "entry",
-        "targets": {
-          "node": "current",
-        }
-      }
     ]
   ],
   "plugins": [
@@ -27,6 +21,8 @@
         }
       }
     ],
-    "add-module-exports" 
+    [
+      "add-module-exports"
+    ]
   ]
 }
