@@ -66,9 +66,9 @@ export class WarpContract {
    * @param {number} payload.nonce - positive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newLockTx({ asset, amount, priv, nonce }) {
+  async newLockTx({ asset, amount, priv, nonce }) {
     try {
-      const account = web3Instance.eth.accounts.privateKeyToAccount(priv)
+      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!asset) {
         throw new WrapContractException(null, 'Invalid Asset')
       }
@@ -82,13 +82,19 @@ export class WarpContract {
         this._parseAmount(amount, asset.decimal),
       )
       const assetID = asset.getID()
-      const data = this.warp.methods.lock(assetID, hexAmount).encodeABI()
+      const method = this.warp.methods.lock(assetID, hexAmount)
+      const gasLimit = await this.getGasLimit(
+        method,
+        account.address,
+        hexAmount,
+      )
+      const data = method.encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: this.config.gasLimit,
+          gasLimit: web3Instance.utils.toHex(gasLimit),
           gasPrice: this.config.gasPrice,
           data,
         },
@@ -115,9 +121,9 @@ export class WarpContract {
    * @param {number} payload.nonce - positive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newLockNativeTx({ amount, priv, nonce }) {
+  async newLockNativeTx({ amount, priv, nonce }) {
     try {
-      const account = web3Instance.eth.accounts.privateKeyToAccount(priv)
+      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!this._validateAmount(amount, this.config.atomicEvryDecimalUnit)) {
         throw new WrapContractException(
           null,
@@ -127,14 +133,20 @@ export class WarpContract {
       const hexAmount = web3Instance.utils.toHex(
         this._parseAmount(amount, this.config.atomicEvryDecimalUnit),
       )
-      const data = this.warp.methods.lockNative().encodeABI()
+      const method = this.warp.methods.lockNative()
+      const gasLimit = await this.getGasLimit(
+        method,
+        account.address,
+        hexAmount,
+      )
+      const data = method.encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
           value: hexAmount,
-          gasLimit: this.config.gasLimit,
+          gasLimit: web3Instance.utils.toHex(gasLimit),
           gasPrice: this.config.gasPrice,
           data,
         },
@@ -162,7 +174,7 @@ export class WarpContract {
    * @param {number} payload.nonce - positive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newUnlockTx({ asset, amount, priv, nonce }) {
+  async newUnlockTx({ asset, amount, priv, nonce }) {
     try {
       const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!asset) {
@@ -178,15 +190,23 @@ export class WarpContract {
         this._parseAmount(amount, asset.decimal),
       )
       const assetID = asset.getID()
-      const data = this.warp.methods
-        .unlock(account.address, assetID, hexAmount)
-        .encodeABI()
+      const method = this.warp.methods.unlock(
+        account.address,
+        assetID,
+        hexAmount,
+      )
+      const gasLimit = await this.getGasLimit(
+        method,
+        account.address,
+        hexAmount,
+      )
+      const data = method.encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: this.config.gasLimit,
+          gasLimit: web3Instance.utils.toHex(gasLimit),
           gasPrice: this.config.gasPrice,
           data,
         },
@@ -213,7 +233,7 @@ export class WarpContract {
    * @param {number} payload.nonce - positive generated nonce number
    * @return {Transaction|WrapContractException} raw tx
    */
-  newUnlockNativeTx({ amount, priv, nonce }) {
+  async newUnlockNativeTx({ amount, priv, nonce }) {
     try {
       const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
       if (!this._validateAmount(amount, this.config.atomicEvryDecimalUnit)) {
@@ -225,15 +245,19 @@ export class WarpContract {
       const hexAmount = web3Instance.utils.toHex(
         this._parseAmount(amount, this.config.atomicEvryDecimalUnit),
       )
-      const data = this.warp.methods
-        .unlockNative(account.address, hexAmount)
-        .encodeABI()
+      const method = this.warp.methods.unlockNative(account.address, hexAmount)
+      const gasLimit = await this.getGasLimit(
+        method,
+        account.address,
+        hexAmount,
+      )
+      const data = method.encodeABI()
       let tx = new Transaction(
         {
           nonce,
           from: account.address,
           to: this.warp.options.address,
-          gasLimit: this.config.gasLimit,
+          gasLimit: web3Instance.utils.toHex(gasLimit),
           gasPrice: this.config.gasPrice,
           data,
         },
@@ -298,6 +322,23 @@ export class WarpContract {
         e.toString(),
       )
     }
+  }
+
+  /**
+   * Calculates gas limit
+   * @param {Object} method
+   * @param {String} sourceAddress
+   * @param {String} value
+   * @returns {Number}
+   */
+  async getGasLimit(method, sourceAddress, value) {
+    let gasAmount = this.config.shouldUseEstimatedGas
+      ? (await method.estimateGas({
+          from: sourceAddress,
+          value: value,
+        })) + 1000
+      : this.config.gasLimit
+    return gasAmount
   }
 }
 
