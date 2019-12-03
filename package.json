@@ -5,6 +5,7 @@
   "main": "lib/warp.js",
   "scripts": {
     "test": "jest",
+    "test-coverage": "jest --coverage",
     "example:local": "NODE_ENV=local babel-node",
     "example:development": "NODE_ENV=development babel-node",
     "build:local": "webpack --config webpack.local.js --progress --profile --colors --mode=development",
@@ -79,6 +80,19 @@
     },
     "globals": {
       "NODE_ENV": "test"
-    }
+    },
+    "coveragePathIgnorePatterns": [
+      "_pb.js",
+      ".proto"
+    ],
+    "testPathIgnorePatterns": [
+      "_pb.js",
+      ".proto"
+    ],
+    "coverageReporters": [
+      "cobertura",
+      "text",
+      "text-summary"
+    ]
   }
 }
