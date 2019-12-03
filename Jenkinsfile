@@ -19,7 +19,6 @@ pipeline {
 
         stage('Build Image Test') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'devopsautomate', passwordVariable: 'gitlabPassword', usernameVariable: 'gitlabUsername')]) {
                     sh '''
                         echo "Build Image"
                         docker build --pull -t ${dockerImage} -f docker/Dockerfile .
