@@ -5,6 +5,8 @@ pipeline {
             script: "echo ${env.GIT_BRANCH} | sed -e 's|/|-|g'",
             returnStdout: true
         ).trim()
+        dockerTag="${env.branchName}-${env.BUILD_NUMBER}"
+        dockerImage="${env.CONTAINER_IMAGE}:${env.dockerTag}"
     }
     stages {
         stage ('Cleanup') {
@@ -63,7 +65,6 @@ pipeline {
     post {
             always {
             sh '''
-               docker image rm -f ${CONTAINER_IMAGE}:${branchName}
                docker image rm -f ${dockerImage}
             '''
                 deleteDir()
