@@ -24,7 +24,6 @@ pipeline {
                         docker build --pull -t ${dockerImage} -f docker/Dockerfile .
                     '''
                 }
-            }
         }
 
         stage('Lint') {
