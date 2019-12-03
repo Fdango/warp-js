@@ -6,8 +6,8 @@
 FROM node:10.16.3-alpine
 
 RUN apk update && \
-    apk add build-base && \
-    apk add yarn python g++ make && rm -rf /var/cache/apk/*
+    apk add --no-cache build-base && \
+    apk add --no-cache yarn python g++ make && rm -rf /var/cache/apk/*
 
 WORKDIR /app 
 
