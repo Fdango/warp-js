@@ -5,9 +5,8 @@
 # Create the container from the alpine linux image
 FROM node:10.16.3-alpine
 
-RUN apk update && \
-    apk add --no-cache build-base && \
-    apk add --no-cache yarn python g++ make && rm -rf /var/cache/apk/*
+RUN apk add --no-cache build-base \
+    yarn python g++ make
 
 WORKDIR /app 
 
