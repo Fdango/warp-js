@@ -6,7 +6,7 @@
 FROM node:10.16.3-alpine
 
 RUN apk add --no-cache build-base \
-    yarn python g++ make
+    yarn python g++ make libtool autoconf automake
 
 WORKDIR /app 
 

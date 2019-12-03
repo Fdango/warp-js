@@ -12,7 +12,9 @@
     "build:development": "webpack --config webpack.dev.js --progress --profile --colors --mode=development",
     "lint": "eslint --fix src/**",
     "check:format": "prettier --check --config .prettierrc \"src/**/*.js\"",
-    "format": "prettier --write --config .prettierrc \"src/**/*.js\""
+    "format": "prettier --write --config .prettierrc \"src/**/*.js\"",
+    "eslint:check": "eslint \"src/**/*.js\"",
+    "eslint:fix": "eslint --fix \"src/**/*.js\""
   },
   "repository": {
     "type": "git",
