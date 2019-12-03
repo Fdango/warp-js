@@ -21,10 +21,7 @@ let sc
  */
 export function getStellarClient(config) {
   if (!sc) {
-    sc = new Stellar(
-      new StellarGRPCClient(config.grpc.host),
-      config.stellar,
-    )
+    sc = new Stellar(new StellarGRPCClient(config.grpc.host), config.stellar)
   }
   return sc
 }
