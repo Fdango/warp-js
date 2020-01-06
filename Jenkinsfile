@@ -88,7 +88,6 @@ pipeline {
         }
         always {
             sh '''
-               docker image rm -f ${CONTAINER_IMAGE}:${branchName}
                docker image rm -f ${dockerImage}
             '''
             deleteDir()
