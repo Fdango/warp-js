@@ -7,6 +7,11 @@ pipeline {
         ).trim()
         dockerTag="${env.branchName}-${env.BUILD_NUMBER}"
         dockerImage="${env.CONTAINER_IMAGE}:${env.dockerTag}"
+        appName="warp-js"
+        githubUsername="evrynet-official"
+
+        status_failure="{\"state\": \"failure\",\"context\": \"continuous-integration/jenkins\", \"description\": \"Jenkins\", \"target_url\": \"${BUILD_URL}\"}"
+        status_success="{\"state\": \"success\",\"context\": \"continuous-integration/jenkins\", \"description\": \"Jenkins\", \"target_url\": \"${BUILD_URL}\"}"
     }
     stages {
         stage ('Cleanup') {
@@ -61,11 +66,31 @@ pipeline {
         }
     }
     post {
-            always {
+        failure {
+            withCredentials([string(credentialsId: 'evry-github-token-pipeline-status', variable: 'githubToken')]) {
+                sh '''
+                    curl \"https://api.github.com/repos/${githubUsername}/${appName}/statuses/${GIT_COMMIT}?access_token=${githubToken}\" \
+                    -H \"Content-Type: application/json\" \
+                    -X POST \
+                    -d "${status_failure}"
+                '''
+                }
+        }
+        success {
+            withCredentials([string(credentialsId: 'evry-github-token-pipeline-status', variable: 'githubToken')]) {
+                sh '''
+                    curl \"https://api.github.com/repos/${githubUsername}/${appName}/statuses/${GIT_COMMIT}?access_token=${githubToken}\" \
+                    -H \"Content-Type: application/json\" \
+                    -X POST \
+                    -d "${status_success}"
+                '''
+                }
+        }
+        always {
             sh '''
                docker image rm -f ${dockerImage}
             '''
-                deleteDir()
-            }
+            deleteDir()
+        }
     }
 }
