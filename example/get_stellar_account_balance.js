@@ -17,7 +17,7 @@ const account = {
 }
 
 warp.client.stellar
-  .getAccountBalance(account.address, evry)
+  .getBalance(account.address, evry)
   .then((res) => {
     console.log(res)
   })

@@ -113,10 +113,12 @@ export class WhitelistedAsset extends Asset {
    * @param {string} payload.code - asset's code
    * @param {string} payload.issuer - asset's issuer
    * @param {string} payload.decimal - asset's decimal
+   * @param {string} payload.typeID - asset's type id
    */
-  constructor({ code, issuer, decimal }) {
+  constructor({ code, issuer, decimal, typeID }) {
     super({ code, issuer })
     this.decimal = decimal
+    this.typeID = typeID
   }
 
   /**
@@ -125,6 +127,10 @@ export class WhitelistedAsset extends Asset {
    */
   getDecimal() {
     return this.decimal
+  }
+
+  getTypeid() {
+    return this.typeID
   }
 }
 

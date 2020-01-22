@@ -81,11 +81,12 @@ export class Stellar {
    * @param {WhitelistedAsset} asset - asset of payment
    * @returns {string|StellarException} balance
    */
-  getAccountBalance(accountAddress, asset) {
+  getBalance(accountAddress, asset) {
     const grpcAsset = new Asset()
     grpcAsset.setCode(asset.code)
     grpcAsset.setIssuer(asset.issuer)
     grpcAsset.setDecimal(asset.decimal)
+    grpcAsset.setTypeid(asset.typeID)
     const grpcRequest = new GetBalanceRequest()
     grpcRequest.setAsset(grpcAsset)
     grpcRequest.setAccountaddress(accountAddress)
@@ -133,12 +134,11 @@ export class Stellar {
    * @param {string} payload.amount - amount to be sent
    * @param {StellarSDK.Asset} payload.asset - asset type
    */
-  async createDepositTx({ src, seq, amount, asset }) {
+  async newLockTransaction({ src, amount, asset }) {
     return this.newPaymentTx(
       src,
       '',
       this.config.escrowAccount,
-      seq,
       amount,
       asset,
     )
@@ -152,12 +152,11 @@ export class Stellar {
    * @param {string} payload.amount - amount of an asset to be transfered
    * @param {StellarSDK.Asset} payload.asset - stellar asset to be transfered
    */
-  async createWithdrawTx({ src, seq, amount, asset }) {
+  async newUnlockTransaction({ src, amount, asset }) {
     return this.newPaymentTx(
       src,
       this.config.escrowAccount,
       '',
-      seq,
       amount,
       asset,
     )
@@ -173,13 +172,14 @@ export class Stellar {
    * @param {StellarSDK.Asset} asset - asset of payment
    * @returns {string|StellarException} xdr or exception
    */
-  async newPaymentTx(txSrc, opSrc, opDest, seq, amount, asset) {
+  async newPaymentTx(txSrc, opSrc, opDest, amount, asset) {
     try {
       const kp = StellarSDK.Keypair.fromSecret(txSrc)
       const txPk = kp.publicKey()
       const _opSrc = opSrc || txPk
       const _opDest = opDest || txPk
-      const account = new StellarSDK.Account(txPk, seq)
+      const res = await this.getSequenceNumberBySecret(txSrc)
+      const account = new StellarSDK.Account(txPk, res.sequenceNumber)
       const transaction = new StellarSDK.TransactionBuilder(account, {
         fee: StellarSDK.BASE_FEE,
         networkPassphrase: this.config.network,
