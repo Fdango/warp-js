@@ -24,19 +24,19 @@ Warp JS SDK to implement a client for Warp protocol
 ## Installation
 1. Install dependency 
 ```
-	yarn install
+yarn install
 ```
 2. build file on local or development
 ```
-	yarn run build:local 
+yarn run build:local 
 ```
 or
 ```
-	yarn run build:development
+yarn run build:development
 ```
 3. create link to another project ( such as [ warp-client  ](https://github.com/evrynet-official/warp-client) ) 
 ```
-	yarn link
+yarn link
 ```
 
 
