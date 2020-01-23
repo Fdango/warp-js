@@ -129,37 +129,25 @@ export class Stellar {
    * Creates a payment operation XDR for given params.
    * The tx will be used for the asset moving stellar to evrynet.
    * @param {Object} payload - a payload clients send to create a transaction
-   * @param {string} payload.src - source address of transaction
+   * @param {string} payload.secret - source address of transaction
    * @param {string} payload.seq - sequence number of transaction
    * @param {string} payload.amount - amount to be sent
    * @param {StellarSDK.Asset} payload.asset - asset type
    */
-  async newLockTransaction({ src, amount, asset }) {
-    return this.newPaymentTx(
-      src,
-      '',
-      this.config.escrowAccount,
-      amount,
-      asset,
-    )
+  async newLockTransaction({ secret, amount, asset }) {
+    return this.newPaymentTx(secret, '', this.config.escrowAccount, amount, asset)
   }
 
   /**
    * Creates a payment operation XDR for given params
    * The tx will be used for the asset moving evrynet to stellar.
    * @param {string} payload - a payload clients send to withdraw a transaction
-   * @param {string} payload.src - a sender's stellar secret which will be received the asset
+   * @param {string} payload.secret - a sender's stellar secret which will be received the asset
    * @param {string} payload.amount - amount of an asset to be transfered
    * @param {StellarSDK.Asset} payload.asset - stellar asset to be transfered
    */
-  async newUnlockTransaction({ src, amount, asset }) {
-    return this.newPaymentTx(
-      src,
-      this.config.escrowAccount,
-      '',
-      amount,
-      asset,
-    )
+  async newUnlockTransaction({ secret, amount, asset }) {
+    return this.newPaymentTx(secret, this.config.escrowAccount, '', amount, asset)
   }
 
   /**

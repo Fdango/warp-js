@@ -44,14 +44,14 @@ export default class Warp {
       }
       // make a stellar deposit from escrow
       const stellarTx = await this.client.stellar.newLockTransaction({
-        src: stellarPriv,
+        secret: stellarPriv,
         amount,
         asset: whitelistedAsset.toStellarFormat(),
       })
       // make a lock asset msg call
       const payload = {
         amount,
-        priv: evrynetPriv,
+        secret: evrynetPriv,
       }
       const evrynetTx = whitelistedAsset.isNative()
         ? this.client.evry.txToHex(
@@ -93,14 +93,14 @@ export default class Warp {
       }
       // make a stellar withdraw from escrow
       const stellarTx = await this.client.stellar.newUnlockTransaction({
-        src: stellarPriv,
+        secret: stellarPriv,
         amount,
         asset: whitelistedAsset.toStellarFormat(),
       })
       // make a lock asset msg call
       const payload = {
         amount,
-        priv: evrynetPriv,
+        secret: evrynetPriv,
       }
       const evrynetTx = whitelistedAsset.isNative()
         ? this.client.evry.txToHex(

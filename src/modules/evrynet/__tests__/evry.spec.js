@@ -15,7 +15,8 @@ initWarpConfig(warpConfig)
 
 describe('EvryNet', () => {
   const senderpk = '0x789CA41C61F599ee883eB604c7D616F458dfC606'
-  const senderpriv = 'eec741cb4f13d6f4c873834bcce86b4059f32f54744a37042969fb37b5f2b4b0'
+  const senderpriv =
+    'eec741cb4f13d6f4c873834bcce86b4059f32f54744a37042969fb37b5f2b4b0'
   const currentNonce = '1'
   const InputAsset = new WhitelistedAsset({
     code: 'bar',
@@ -110,7 +111,9 @@ describe('EvryNet', () => {
       setInterval(function () {
         mockedStream.emit('error', new Error('this is an error'))
       }, 1000)
-      await expect(evrynet.getNonceFromPriv(senderpriv)).rejects.toThrow(EvrynetException)
+      await expect(evrynet.getNonceFromPriv(senderpriv)).rejects.toThrow(
+        EvrynetException,
+      )
     })
   })
 
@@ -180,7 +183,10 @@ describe('EvryNet', () => {
               getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getAssetsList: jest.fn().mockReturnValue([
@@ -192,7 +198,9 @@ describe('EvryNet', () => {
                   getDecimal: jest
                     .fn()
                     .mockReturnValue(expectedGRPCAsset.decimal),
-                  getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID)
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
                 },
               ]),
             })
@@ -215,7 +223,10 @@ describe('EvryNet', () => {
               getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getAssetsList: jest.fn().mockReturnValue(undefined),
@@ -312,7 +323,10 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -321,7 +335,7 @@ describe('EvryNet', () => {
           const tx = await evrynet.newLockTx({
             asset,
             amount: '10',
-            priv: senderpriv,
+            secret: senderpriv,
           })
           expect(tx.verifySignature()).toBeTruthy()
           const rwtxHex = evrynet.txToHex(tx)
@@ -343,7 +357,10 @@ describe('EvryNet', () => {
                 getNonce: jest.fn().mockReturnValue(mockedStream),
               }
             })
-            const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+            const evrynet = new Evrynet(
+              mockedClient(),
+              warpConfigInstance.evrynet,
+            )
             setInterval(function () {
               mockedStream.emit('data', {
                 getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -352,7 +369,7 @@ describe('EvryNet', () => {
             const tx = await evrynet.newLockTx({
               asset,
               amount: '10',
-              priv: senderpriv,
+              secret: senderpriv,
             })
             expect(tx.verifySignature()).toBeTruthy()
             const rwtxHex = evrynet.txToHex(tx)
@@ -377,7 +394,10 @@ describe('EvryNet', () => {
                 getNonce: jest.fn().mockReturnValue(mockedStream),
               }
             })
-            const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+            const evrynet = new Evrynet(
+              mockedClient(),
+              warpConfigInstance.evrynet,
+            )
             setInterval(function () {
               mockedStream.emit('data', {
                 getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -387,7 +407,7 @@ describe('EvryNet', () => {
               evrynet.newLockTx({
                 asset,
                 amount: '10',
-                priv: 'badpriv',
+                secret: 'badpriv',
               }),
             ).rejects.toThrow(EvrynetException)
           })
@@ -402,17 +422,21 @@ describe('EvryNet', () => {
                 getNonce: jest.fn().mockReturnValue(mockedStream),
               }
             })
-            const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+            const evrynet = new Evrynet(
+              mockedClient(),
+              warpConfigInstance.evrynet,
+            )
             setInterval(function () {
               mockedStream.emit('data', {
                 getNonce: jest.fn().mockReturnValue(currentNonce),
               })
             })
-            await expect(evrynet.newLockTx({
-              asset: null,
-              amount: 10,
-              priv: senderpriv,
-            }),
+            await expect(
+              evrynet.newLockTx({
+                asset: null,
+                amount: 10,
+                secret: senderpriv,
+              }),
             ).rejects.toThrow(EvrynetException)
           })
         })
@@ -432,7 +456,10 @@ describe('EvryNet', () => {
                 getNonce: jest.fn().mockReturnValue(mockedStream),
               }
             })
-            const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+            const evrynet = new Evrynet(
+              mockedClient(),
+              warpConfigInstance.evrynet,
+            )
             setInterval(function () {
               mockedStream.emit('data', {
                 getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -442,7 +469,7 @@ describe('EvryNet', () => {
               evrynet.newLockTx({
                 asset,
                 amount: '0',
-                priv: senderpriv,
+                secret: senderpriv,
               }),
             ).rejects.toThrow(EvrynetException)
           })
@@ -461,7 +488,10 @@ describe('EvryNet', () => {
                 getNonce: jest.fn().mockReturnValue(mockedStream),
               }
             })
-            const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+            const evrynet = new Evrynet(
+              mockedClient(),
+              warpConfigInstance.evrynet,
+            )
             setInterval(function () {
               mockedStream.emit('data', {
                 getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -471,7 +501,7 @@ describe('EvryNet', () => {
               evrynet.newLockTx({
                 asset,
                 amount: '-1',
-                priv: senderpriv,
+                secret: senderpriv,
               }),
             ).rejects.toThrow(EvrynetException)
           })
@@ -490,7 +520,10 @@ describe('EvryNet', () => {
                 getNonce: jest.fn().mockReturnValue(mockedStream),
               }
             })
-            const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+            const evrynet = new Evrynet(
+              mockedClient(),
+              warpConfigInstance.evrynet,
+            )
             setInterval(function () {
               mockedStream.emit('data', {
                 getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -500,7 +533,7 @@ describe('EvryNet', () => {
               evrynet.newLockTx({
                 asset,
                 amount: '1.00000001',
-                priv: senderpriv,
+                secret: senderpriv,
               }),
             ).rejects.toThrow(EvrynetException)
           })
@@ -518,7 +551,10 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -526,7 +562,7 @@ describe('EvryNet', () => {
           })
           let tx = await evrynet.newLockNativeTx({
             amount: 10,
-            priv: senderpriv,
+            secret: senderpriv,
           })
           expect(tx.verifySignature()).toBeTruthy()
 
@@ -545,7 +581,10 @@ describe('EvryNet', () => {
                 getNonce: jest.fn().mockReturnValue(mockedStream),
               }
             })
-            const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+            const evrynet = new Evrynet(
+              mockedClient(),
+              warpConfigInstance.evrynet,
+            )
             setInterval(function () {
               mockedStream.emit('data', {
                 getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -554,7 +593,7 @@ describe('EvryNet', () => {
             await expect(
               evrynet.newLockNativeTx({
                 amount: '1',
-                priv: 'badpriv',
+                secret: 'badpriv',
               }),
             ).rejects.toThrow(EvrynetException)
           })
@@ -569,7 +608,10 @@ describe('EvryNet', () => {
                 getNonce: jest.fn().mockReturnValue(mockedStream),
               }
             })
-            const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+            const evrynet = new Evrynet(
+              mockedClient(),
+              warpConfigInstance.evrynet,
+            )
             setInterval(function () {
               mockedStream.emit('data', {
                 getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -578,7 +620,7 @@ describe('EvryNet', () => {
             await expect(
               evrynet.newLockNativeTx({
                 amount: '-1',
-                priv: senderpriv,
+                secret: senderpriv,
               }),
             ).rejects.toThrow(EvrynetException)
           })
@@ -604,7 +646,10 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -613,7 +658,7 @@ describe('EvryNet', () => {
           const tx = await evrynet.newUnlockTx({
             asset,
             amount: '10',
-            priv: senderpriv,
+            secret: senderpriv,
           })
           expect(tx.verifySignature()).toBeTruthy()
           const rwtxHex = evrynet.txToHex(tx)
@@ -636,7 +681,10 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -645,7 +693,7 @@ describe('EvryNet', () => {
           const tx = await evrynet.newUnlockTx({
             asset,
             amount: '10',
-            priv: senderpriv,
+            secret: senderpriv,
           })
           expect(tx.verifySignature()).toBeTruthy()
           const rwtxHex = evrynet.txToHex(tx)
@@ -664,17 +712,21 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
             })
           })
-          await expect(evrynet.newUnlockTx({
-            asset: null,
-            amount: 10,
-            priv: senderpriv,
-          }),
+          await expect(
+            evrynet.newUnlockTx({
+              asset: null,
+              amount: 10,
+              secret: senderpriv,
+            }),
           ).rejects.toThrow(EvrynetException)
         })
       })
@@ -694,7 +746,10 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -704,7 +759,7 @@ describe('EvryNet', () => {
             evrynet.newUnlockTx({
               asset,
               amount: '10',
-              priv: 'badpriv',
+              secret: 'badpriv',
             }),
           ).rejects.toThrow(EvrynetException)
         })
@@ -724,7 +779,10 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -734,7 +792,7 @@ describe('EvryNet', () => {
             evrynet.newUnlockTx({
               asset,
               amount: '0',
-              priv: senderpriv,
+              secret: senderpriv,
             }),
           ).rejects.toThrow(EvrynetException)
         })
@@ -752,7 +810,10 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -762,7 +823,7 @@ describe('EvryNet', () => {
             evrynet.newUnlockTx({
               asset,
               amount: '-1',
-              priv: senderpriv,
+              secret: senderpriv,
             }),
           ).rejects.toThrow(EvrynetException)
         })
@@ -780,7 +841,10 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
@@ -790,7 +854,7 @@ describe('EvryNet', () => {
             evrynet.newUnlockTx({
               asset,
               amount: '1.00000001',
-              priv: senderpriv,
+              secret: senderpriv,
             }),
           ).rejects.toThrow(EvrynetException)
         })
@@ -816,7 +880,7 @@ describe('EvryNet', () => {
         })
         let tx = await evrynet.newUnlockNativeTx({
           amount: 10,
-          priv: senderpriv,
+          secret: senderpriv,
         })
         expect(tx.verifySignature()).toBeTruthy()
 
@@ -835,16 +899,20 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
             })
           })
-          await expect(evrynet.newUnlockNativeTx({
-            amount: 10,
-            priv: 'badpriv',
-          }),
+          await expect(
+            evrynet.newUnlockNativeTx({
+              amount: 10,
+              secret: 'badpriv',
+            }),
           ).rejects.toThrow(EvrynetException)
         })
       })
@@ -858,16 +926,20 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
             })
           })
-          await expect(evrynet.newUnlockNativeTx({
-            amount: '0',
-            priv: senderpriv,
-          }),
+          await expect(
+            evrynet.newUnlockNativeTx({
+              amount: '0',
+              secret: senderpriv,
+            }),
           ).rejects.toThrow(EvrynetException)
         })
 
@@ -879,16 +951,20 @@ describe('EvryNet', () => {
               getNonce: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
           setInterval(function () {
             mockedStream.emit('data', {
               getNonce: jest.fn().mockReturnValue(currentNonce),
             })
           })
-          await expect(evrynet.newUnlockNativeTx({
-            amount: '-1',
-            priv: senderpriv,
-          }),
+          await expect(
+            evrynet.newUnlockNativeTx({
+              amount: '-1',
+              secret: senderpriv,
+            }),
           ).rejects.toThrow(EvrynetException)
         })
       })
@@ -905,7 +981,9 @@ describe('EvryNet', () => {
 
     it('should throw an error', () => {
       const evrynet = new Evrynet(null, warpConfigInstance.evrynet)
-      expect(function () { evrynet.txToHex('badTx') }).toThrow(EvrynetException)
+      expect(function () {
+        evrynet.txToHex('badTx')
+      }).toThrow(EvrynetException)
     })
   })
 
@@ -914,20 +992,14 @@ describe('EvryNet', () => {
       describe('When decimal is less than stellar decimal unit', () => {
         it('Should return true on validation', () => {
           expect(
-            getEvryClient(warpConfigInstance)._validateAmount(
-              '10.0000001',
-              10,
-            ),
+            getEvryClient(warpConfigInstance)._validateAmount('10.0000001', 10),
           ).toBe(true)
         })
       })
       describe('When decimal is less than stellar decimal unit', () => {
         it('Should return true on validation', () => {
           expect(
-            getEvryClient(warpConfigInstance)._validateAmount(
-              '10.0000010',
-              6,
-            ),
+            getEvryClient(warpConfigInstance)._validateAmount('10.0000010', 6),
           ).toBe(true)
         })
       })
@@ -946,10 +1018,7 @@ describe('EvryNet', () => {
       describe('When decimal is less than stellar decimal unit', () => {
         it('Should return true on validation', () => {
           expect(
-            getEvryClient(warpConfigInstance)._validateAmount(
-              '10.0000011',
-              6,
-            ),
+            getEvryClient(warpConfigInstance)._validateAmount('10.0000011', 6),
           ).toBe(false)
         })
       })

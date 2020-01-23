@@ -16,7 +16,7 @@ describe('Stellar', () => {
     code: 'XLM',
     issuer: undefined,
     decimal: 3,
-    typeID: "1",
+    typeID: '1',
   })
   const getBalInput = {
     accountAddress: 'foo',
@@ -90,7 +90,7 @@ describe('Stellar', () => {
 
         const xlm = getLumensAsset()
         let txeB64 = await stellar.newLockTransaction({
-          src: sender,
+          secret: sender,
           amount,
           asset: xlm.toStellarFormat(),
         })
@@ -151,7 +151,7 @@ describe('Stellar', () => {
 
         const xlm = getLumensAsset()
         let txeB64 = await stellar.newUnlockTransaction({
-          src: sender,
+          secret: sender,
           amount,
           asset: xlm.toStellarFormat(),
         })

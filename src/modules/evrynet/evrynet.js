@@ -60,11 +60,7 @@ export class Evrynet {
     try {
       return new web3Instance.eth.Contract(abi, contractAddr)
     } catch (e) {
-      throw new EvrynetException(
-        null,
-        'Unable to lock a credit',
-        e.toString(),
-      )
+      throw new EvrynetException(null, 'Unable to lock a credit', e.toString())
     }
   }
 
@@ -131,11 +127,11 @@ export class Evrynet {
 
   /**
    * Returns a nonce for a given address
-   * @param {string} priv - evrynet private key to get a nonce
+   * @param {string} secret - evrynet private key to get a nonce
    * @returns {Object|EvrynetException} nounce object
    */
-  async getNonceFromPriv(priv) {
-    const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
+  async getNonceFromPriv(secret) {
+    const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${secret}`)
     try {
       const data = await this.getNonce(account.address)
       return data
@@ -186,12 +182,12 @@ export class Evrynet {
    * @param {Object} payload - payload for creating tx
    * @param {WhitelistedAsset} payload.asset - asset to be locked
    * @param {string} payload.amount - amount of the asset to be locked
-   * @param {string} payload.priv - destination account private key
+   * @param {string} payload.secret - destination account private key
    * @return {Transaction|EvrynetException} raw tx
    */
-  async newLockTx({ asset, amount, priv }) {
+  async newLockTx({ asset, amount, secret }) {
     try {
-      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
+      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${secret}`)
       if (!asset) {
         throw new EvrynetException(null, 'Invalid Asset')
       }
@@ -212,7 +208,7 @@ export class Evrynet {
         hexAmount,
       )
       const data = method.encodeABI()
-      const nonceRes = await this.getNonceFromPriv(priv)
+      const nonceRes = await this.getNonceFromPriv(secret)
       let tx = new Transaction(
         {
           nonce: Number(nonceRes.nonce),
@@ -226,14 +222,10 @@ export class Evrynet {
           common: this.config.customChain,
         },
       )
-      tx.sign(Buffer.from(priv, 'hex'))
+      tx.sign(Buffer.from(secret, 'hex'))
       return tx
     } catch (e) {
-      throw new EvrynetException(
-        null,
-        'Unable to lock a credit',
-        e.toString(),
-      )
+      throw new EvrynetException(null, 'Unable to lock a credit', e.toString())
     }
   }
 
@@ -241,12 +233,12 @@ export class Evrynet {
    * Creates a new native (Evrycoin) lock transaction
    * @param {Object} payload - payload for creating tx
    * @param {string} payload.amount - amount of the native asset to be locked
-   * @param {string} payload.priv - destination account private key
+   * @param {string} payload.secret - destination account private key
    * @return {Transaction|EvrynetException} raw tx
    */
-  async newLockNativeTx({ amount, priv }) {
+  async newLockNativeTx({ amount, secret }) {
     try {
-      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
+      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${secret}`)
       if (!this._validateAmount(amount, this.config.atomicEvryDecimalUnit)) {
         throw new EvrynetException(
           null,
@@ -263,7 +255,7 @@ export class Evrynet {
         hexAmount,
       )
       const data = method.encodeABI()
-      const nonceRes = await this.getNonceFromPriv(priv)
+      const nonceRes = await this.getNonceFromPriv(secret)
       let tx = new Transaction(
         {
           nonce: Number(nonceRes.nonce),
@@ -278,7 +270,7 @@ export class Evrynet {
           common: this.config.customChain,
         },
       )
-      tx.sign(Buffer.from(priv, 'hex'))
+      tx.sign(Buffer.from(secret, 'hex'))
       return tx
     } catch (e) {
       throw new EvrynetException(
@@ -294,12 +286,12 @@ export class Evrynet {
    * @param {Object} payload - payload for creating tx
    * @param {WhitelistedAsset} payload.asset - asset to be unlocked
    * @param {string} payload.amount - amount of the asset to be unlocked
-   * @param {string} payload.priv - destination account private key
+   * @param {string} payload.secret - destination account private key
    * @return {Transaction|EvrynetException} raw tx
    */
-  async newUnlockTx({ asset, amount, priv }) {
+  async newUnlockTx({ asset, amount, secret }) {
     try {
-      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
+      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${secret}`)
       if (!asset) {
         throw new EvrynetException(null, 'Invalid Asset')
       }
@@ -324,7 +316,7 @@ export class Evrynet {
         hexAmount,
       )
       const data = method.encodeABI()
-      const nonceRes = await this.getNonceFromPriv(priv)
+      const nonceRes = await this.getNonceFromPriv(secret)
       let tx = new Transaction(
         {
           nonce: Number(nonceRes.nonce),
@@ -338,7 +330,7 @@ export class Evrynet {
           common: this.config.customChain,
         },
       )
-      tx.sign(Buffer.from(priv, 'hex'))
+      tx.sign(Buffer.from(secret, 'hex'))
       return tx
     } catch (e) {
       throw new EvrynetException(
@@ -353,12 +345,12 @@ export class Evrynet {
    * Creates a new native (Evrycoin) unlock transaction
    * @param {Object} payload - payload for creating tx
    * @param {string} payload.amount - amount of the native asset to be unlocked
-   * @param {string} payload.priv - destination account private key
+   * @param {string} payload.secret - destination account private key
    * @return {Transaction|EvrynetException} raw tx
    */
-  async newUnlockNativeTx({ amount, priv }) {
+  async newUnlockNativeTx({ amount, secret }) {
     try {
-      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${priv}`)
+      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${secret}`)
       if (!this._validateAmount(amount, this.config.atomicEvryDecimalUnit)) {
         throw new EvrynetException(
           null,
@@ -375,7 +367,7 @@ export class Evrynet {
         hexAmount,
       )
       const data = method.encodeABI()
-      const nonceRes = await this.getNonceFromPriv(priv)
+      const nonceRes = await this.getNonceFromPriv(secret)
       let tx = new Transaction(
         {
           nonce: Number(nonceRes.nonce),
@@ -389,7 +381,7 @@ export class Evrynet {
           common: this.config.customChain,
         },
       )
-      tx.sign(Buffer.from(priv, 'hex'))
+      tx.sign(Buffer.from(secret, 'hex'))
       return tx
     } catch (e) {
       throw new EvrynetException(
@@ -440,11 +432,7 @@ export class Evrynet {
     try {
       return Buffer.from(tx.serialize(), 'hex').toString('hex')
     } catch (e) {
-      throw new EvrynetException(
-        null,
-        'Unable to lock a credit',
-        e.toString(),
-      )
+      throw new EvrynetException(null, 'Unable to lock a credit', e.toString())
     }
   }
 
@@ -465,7 +453,6 @@ export class Evrynet {
     return gasAmount
   }
 }
-
 
 export default {
   getEvryClient,
