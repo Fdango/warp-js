@@ -25,24 +25,24 @@ You can find example at warp-js example
 
 #### Get available assets
    - Request
-``
+```
 evry.getWhitelistAssets()
-``
+```
    - Response
-``
+```
 assets: [ 
-			{ 
-				code: "XLM", 
-				issuer: "", 
-				decimal: 7, 
-				typeID: "1"
-			}
-		]
-``
+	{ 
+		code: "XLM", 
+		issuer: "", 
+		decimal: 7, 
+		typeID: "1"
+	}
+]
+```
 
 #### Get user's Evrynet account balance
    - Request
-``
+```
 evry.getBalance({ 
 	address: "0x1234", 
 	asset: { 
@@ -52,25 +52,25 @@ evry.getBalance({
 		typeID: "2" 
 		} 
 })
-``
+```
   - Response
-``
+```
 balance: 10
-``
+```
 
 #### Get user's Evrynet account nonce
   - Request
-``
+```
 evry.getNonce({ address: "0x1234" })
-``
+```
   - Response
-``
+```
 nonce: "1234"
-``
+```
 
 #### Get user's Stellar account balance
   - Request
-``
+```
 stellar.getBalance({ 
 	address: "stellar public key", 
 	asset: { 
@@ -80,40 +80,40 @@ stellar.getBalance({
 		typeID: "3" 
 	} 
 })
-``
+```
   - Response
-``
+```
 balance: "10"
-``
+```
 
 #### Get user's Stellar account trustlines
   - Request
-``
+```
 stellar.getTrustlines({ address: "stellar public key" })
-``
+```
   - Response
-``
+```
 assets:[ 
 	{ 
 		code: "EVRY", 
 		issuer: "issuer" 
 	} 
 ]
-``
+```
 
 #### Get user's FeStellar account sequence number
   - Request
-``
+```
 stellar.getSequenceNumber({ address: "stellar public key" })
-``
+```
   - Response
-``
+```
 sequenceNumber: "1234"
-``
+```
 
 #### Generate stellar lock transaction
   - Request
-``
+```
 stellar.newLockTx({ 
 	secret: "stellar private key", 
 	amount: "1234", 
@@ -122,15 +122,15 @@ stellar.newLockTx({
 		issuer: ""
 	} 
 })
-``
+```
   - Response
-``
+```
 	xdr: ""
-``
+```
 
 #### Generate stellar unlock transaction
   - Request
-``
+```
 stellar.newUnlockTx({ 
 	secret: "stellar private key", 
 	amount: "1234", 
@@ -139,15 +139,15 @@ stellar.newUnlockTx({
 		issuer: ""
 	} 
 })
-``
+```
   - Response
-``
+```
 	xdr: ""
-``
+```
 
 #### Generate evrynet lock transaction
   - Request
-``
+```
 evry.newLockTx({ 
 	secret: "evrynet private key", 
 	amount: "1234", 
@@ -158,15 +158,15 @@ evry.newLockTx({
 		typeID: "1" 
 	} 
 })
-``
+```
   - Response
-``
+```
 rawTx: "0xabcd"
-``
+```
 
 #### Generate evrynet unlock transaction
   - Request
-``
+```
 evry.newUnlockTx({ 
 	secret: "evrynet private key", 
 	amount: "1234", 
@@ -177,54 +177,54 @@ evry.newUnlockTx({
 		typeID: "1" 
 	} 
 })
-``
+```
   - Response
-``
+```
 rawTx: "0xabcd"
-``
+```
 
 #### Generate evrynet lock native transaction
   - Request
-``
+```
 evry.newLockNativeTx({ 
 	secret: "evrynet private key", 
 	amount: "1234"
 })
-``
+```
   - Response
-``
+```
 rawTx: "0xabcd"
-``
+```
 
 #### Generate evrynet unlock native transaction
   - Request
-``
+```
 evry.newUnlockNativeTx({ 
 	secret: "evrynet private key", 
 	amount: "1234"
 })
-``
+```
   - Response
-``
+```
 rawTx: "0xabcd"
-``
+```
 
 #### Transfer asset from stellar to evrynet
   - Request
-``
+```
 warp.toEvrynet({ rawTx: "0xabcd", xdr: "", })
-``
+```
   - Response
-``
+```
 { stellarTxHash: "0x1234", evrynetTxHash: "0x1234" }
-``
+```
 
 #### Transfer asset from evrynet to stellar
   - Request
-``
+```
 warp.toStellar({ rawTx: "0xabcd", xdr: "", })
-``
+```
   - Response
-``
+```
 { stellarTxHash: "0x1234", evrynetTxHash: "0x1234" }
-``
+```
