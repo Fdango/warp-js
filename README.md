@@ -3,22 +3,22 @@ Warp JS SDK to implement a client for Warp protocol
 
 ## Contents
 
-- [Installation](https://github.com/evrynet-official/warp-js#installation)
-- [Function examples](https://github.com/evrynet-official/warp-js#function-examples)
-- [Get available assets](https://github.com/evrynet-official/warp-js#get-available-assets)
-- [Get user's Evrynet account balance](https://github.com/evrynet-official/warp-js#get-users-evrynet-account-balance)
-- [Get user’s Evrynet account nonce](https://github.com/evrynet-official/warp-js#get-users-evrynet-account-nonce)
-- [Get user’s Stellar account balance](https://github.com/evrynet-official/warp-js#get-users-stellar-account-balance)
-- [Get user's Stellar account trustlines](https://github.com/evrynet-official/warp-js#get-users-stellar-account-trustlines)
-- [Get user's Stellar account sequence number](https://github.com/evrynet-official/warp-js#get-users-stellar-account-sequence-number)
-- [Generate stellar lock transaction](https://github.com/evrynet-official/warp-js#generate-stellar-lock-transaction)
-- [Generate stellar unlock transaction](https://github.com/evrynet-official/warp-js#generate-stellar-unlock-transaction)
-- [Generate evrynet lock transaction](https://github.com/evrynet-official/warp-js#generate-evrynet-lock-transaction)
-- [Generate evrynet unlock transaction](https://github.com/evrynet-official/warp-js#generate-evrynet-unlock-transaction)
-- [Generate evrynet lock native transaction](https://github.com/evrynet-official/warp-js#generate-evrynet-lock-native-transaction)
-- [Generate evrynet unlock native transaction](https://github.com/evrynet-official/warp-js#generate-evrynet-unlock-native-transaction)
-- [Transfer asset from stellar to evrynet](https://github.com/evrynet-official/warp-js#transfer-asset-from-stellar-to-evrynet)
-- [Transfer asset from evrynet to stellar](https://github.com/evrynet-official/warp-js#transfer-asset-from-evrynet-to-stellar)
+- [Installation](#installation)
+- [Function examples](#function-examples)
+- [Get available assets](#get-available-assets)
+- [Get user's Evrynet account balance](#get-users-evrynet-account-balance)
+- [Get user’s Evrynet account nonce](#get-users-evrynet-account-nonce)
+- [Get user’s Stellar account balance](#get-users-stellar-account-balance)
+- [Get user's Stellar account trustlines](#get-users-stellar-account-trustlines)
+- [Get user's Stellar account sequence number](#get-users-stellar-account-sequence-number)
+- [Generate stellar lock transaction](#generate-stellar-lock-transaction)
+- [Generate stellar unlock transaction](#generate-stellar-unlock-transaction)
+- [Generate evrynet lock transaction](#generate-evrynet-lock-transaction)
+- [Generate evrynet unlock transaction](#generate-evrynet-unlock-transaction)
+- [Generate evrynet lock native transaction](#generate-evrynet-lock-native-transaction)
+- [Generate evrynet unlock native transaction](#generate-evrynet-unlock-native-transaction)
+- [Transfer asset from stellar to evrynet](#transfer-asset-from-stellar-to-evrynet)
+- [Transfer asset from evrynet to stellar](#transfer-asset-from-evrynet-to-stellar)
 
 ## Installation
 1. Install dependency 
