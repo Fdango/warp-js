@@ -23,7 +23,7 @@ or
 ## Function examples
 You can find example at warp-js example 
 
-**Get available assets**
+#### Get available assets
    - Request
 ``
 evry.getWhitelistAssets()
@@ -40,7 +40,7 @@ assets: [
 		]
 ``
 
-**Get user's Evrynet account balance**
+#### Get user's Evrynet account balance
    - Request
 ``
 evry.getBalance({ 
@@ -58,7 +58,7 @@ evry.getBalance({
 balance: 10
 ``
 
-**Get user's Evrynet account nonce**
+#### Get user's Evrynet account nonce
   - Request
 ``
 evry.getNonce({ address: "0x1234" })
@@ -68,7 +68,7 @@ evry.getNonce({ address: "0x1234" })
 nonce: "1234"
 ``
 
-**Get user's Stellar account balance**
+#### Get user's Stellar account balance
   - Request
 ``
 stellar.getBalance({ 
@@ -86,7 +86,7 @@ stellar.getBalance({
 balance: "10"
 ``
 
-**Get user's Stellar account trustlines**
+#### Get user's Stellar account trustlines
   - Request
 ``
 stellar.getTrustlines({ address: "stellar public key" })
@@ -101,7 +101,7 @@ assets:[
 ]
 ``
 
-**Get user's FeStellar account sequence number**
+#### Get user's FeStellar account sequence number
   - Request
 ``
 stellar.getSequenceNumber({ address: "stellar public key" })
@@ -111,7 +111,7 @@ stellar.getSequenceNumber({ address: "stellar public key" })
 sequenceNumber: "1234"
 ``
 
-**Generate stellar lock transaction**
+#### Generate stellar lock transaction
   - Request
 ``
 stellar.newLockTx({ 
@@ -128,7 +128,7 @@ stellar.newLockTx({
 	xdr: ""
 ``
 
-**Generate stellar unlock transaction**
+#### Generate stellar unlock transaction
   - Request
 ``
 stellar.newUnlockTx({ 
@@ -145,7 +145,7 @@ stellar.newUnlockTx({
 	xdr: ""
 ``
 
-**Generate evrynet lock transaction**
+#### Generate evrynet lock transaction
   - Request
 ``
 evry.newLockTx({ 
@@ -164,7 +164,7 @@ evry.newLockTx({
 rawTx: "0xabcd"
 ``
 
-**Generate evrynet unlock transaction**
+#### Generate evrynet unlock transaction
   - Request
 ``
 evry.newUnlockTx({ 
@@ -183,7 +183,7 @@ evry.newUnlockTx({
 rawTx: "0xabcd"
 ``
 
-**Generate evrynet lock native transaction**
+#### Generate evrynet lock native transaction
   - Request
 ``
 evry.newLockNativeTx({ 
@@ -196,7 +196,7 @@ evry.newLockNativeTx({
 rawTx: "0xabcd"
 ``
 
-**Generate evrynet unlock native transaction**
+#### Generate evrynet unlock native transaction
   - Request
 ``
 evry.newUnlockNativeTx({ 
@@ -209,7 +209,7 @@ evry.newUnlockNativeTx({
 rawTx: "0xabcd"
 ``
 
-**Transfer asset from stellar to evrynet**
+#### Transfer asset from stellar to evrynet
   - Request
 ``
 warp.toEvrynet({ rawTx: "0xabcd", xdr: "", })
@@ -219,7 +219,7 @@ warp.toEvrynet({ rawTx: "0xabcd", xdr: "", })
 { stellarTxHash: "0x1234", evrynetTxHash: "0x1234" }
 ``
 
-**Transfer asset from evrynet to stellar**
+#### Transfer asset from evrynet to stellar
   - Request
 ``
 warp.toStellar({ rawTx: "0xabcd", xdr: "", })
