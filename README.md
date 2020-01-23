@@ -145,7 +145,7 @@ stellar.newLockTx({
 ```
   - Response
 ```
-	xdr: ""
+xdr: ""
 ```
 
 #### Generate stellar unlock transaction
@@ -162,7 +162,7 @@ stellar.newUnlockTx({
 ```
   - Response
 ```
-	xdr: ""
+xdr: ""
 ```
 
 #### Generate evrynet lock transaction
