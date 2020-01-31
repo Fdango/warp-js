@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stellar;
 
-import "warp/common.proto";
+import "src/modules/warp/common.proto";
 
 message GetSequenceNumberRequest {
     string stellarAddress = 1;

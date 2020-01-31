@@ -1,13 +1,17 @@
 import EvrynetException from '@/exceptions/evrynet'
 import find from 'lodash/find'
-import map from 'lodash/map'
 import { WhitelistedAsset } from '@/entities/asset'
 import { EvrynetGRPCClient } from './evrynet_grpc_web_pb'
 import { GetNonceRequest, GetBalanceRequest } from './evrynet_pb'
 import { Asset } from '@/modules/warp/common_pb.js'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb.js'
 import { web3Instance } from '@/utils'
-import { warpABI } from 'ABIs'
+import {
+  warpABI,
+  nativeCustodianABI,
+  evrynetCustodianABI,
+  stellarCustodianABI,
+} from 'ABIs'
 import BigNumber from 'bignumber.js'
 import { Transaction } from 'ethereumjs-tx'
 
@@ -47,7 +51,18 @@ export class Evrynet {
   constructor(client, config) {
     this.client = client
     this.config = config
-    this.warp = this._newWarpContract(this.config.contractAddress, warpABI)
+    this.nativeCustodian = this._newContract(
+      this.config.contract.nativeCustodian.address,
+      nativeCustodianABI,
+    )
+    this.evrynetCustodian = this._newContract(
+      this.config.contract.evrynetCustodian.address,
+      evrynetCustodianABI,
+    )
+    this.stellarCustodian = this._newContract(
+      this.config.contract.stellarCustodian.address,
+      stellarCustodianABI,
+    )
   }
 
   /**
@@ -56,11 +71,15 @@ export class Evrynet {
    * @param {Buffer} abi - abi (interface) for contract
    * @return {Contract|EvrynetException} warp smart contract or exception
    */
-  _newWarpContract(contractAddr, abi) {
+  _newContract(contractAddr, abi) {
     try {
       return new web3Instance.eth.Contract(abi, contractAddr)
     } catch (e) {
-      throw new EvrynetException(null, 'Unable to lock a credit', e.toString())
+      throw new EvrynetException(
+        null,
+        'Unable to initiate contract',
+        e.toString(),
+      )
     }
   }
 
@@ -87,20 +106,111 @@ export class Evrynet {
    * Return a set of whitelist assets
    * @returns {Array.<WhitelistedAsset>} array of whitelisted assets
    */
-  getWhitelistAssets() {
+  async getWhitelistAssets() {
+    try {
+      var data = new Object()
+      var assets = new Array()
+      const nativeAssets = await this.getNativeAsset()
+      const evrynetAssets = await this.getEvrynetAssets()
+      const stellarAssets = await this.getStellarAssets()
+      assets = assets.concat(
+        nativeAssets.asset,
+        evrynetAssets.assets,
+        stellarAssets.assets,
+      )
+      data.assets = assets
+      return data
+    } catch (e) {
+      throw new EvrynetException(null, e.toString())
+    }
+  }
+
+  /**
+   * Return a set of whitelist evrynet's assets
+   * @returns {Array.<WhitelistedAsset>} array of whitelisted assets
+   */
+  getEvrynetAssets() {
     const empty = new Empty()
+    const assets = new Array()
     return new Promise((resolve, reject) => {
       const chan = this.client.getWhitelistAssets(empty, {})
       chan.on('data', (data) => {
-        const assets = map(data.getAssetsList(), (ech) => {
-          return new WhitelistedAsset({
-            code: ech.getCode(),
-            issuer: ech.getIssuer(),
-            decimal: ech.getDecimal(),
-            typeID: ech.getTypeid(),
-          })
-        })
+        if (data.getEvrynetcredit() !== undefined) {
+          data
+            .getEvrynetcredit()
+            .getAssetsList()
+            .forEach((asset) => {
+              assets.push(
+                new WhitelistedAsset({
+                  code: asset.getCode(),
+                  issuer: asset.getIssuer(),
+                  decimal: asset.getDecimal(),
+                  typeID: asset.getTypeid(),
+                }),
+              )
+            })
+        }
         resolve({ assets })
+      })
+      chan.on('error', (err) => {
+        reject(new EvrynetException(null, err.message))
+      })
+    })
+  }
+
+  /**
+   * Return a set of whitelist stellar's assets
+   * @returns {Array.<WhitelistedAsset>} array of whitelisted assets
+   */
+  getStellarAssets() {
+    const empty = new Empty()
+    const assets = new Array()
+    return new Promise((resolve, reject) => {
+      const chan = this.client.getWhitelistAssets(empty, {})
+      chan.on('data', (data) => {
+        if (data.getStellarcredit() !== undefined) {
+          data
+            .getStellarcredit()
+            .getAssetsList()
+            .forEach((asset) => {
+              assets.push(
+                new WhitelistedAsset({
+                  code: asset.getCode(),
+                  issuer: asset.getIssuer(),
+                  decimal: asset.getDecimal(),
+                  typeID: asset.getTypeid(),
+                }),
+              )
+            })
+        }
+        resolve({ assets })
+      })
+      chan.on('error', (err) => {
+        reject(new EvrynetException(null, err.message))
+      })
+    })
+  }
+
+  /**
+   * Return a set of whitelist native's asset
+   * @returns {WhitelistedAsset} whitelisted assets
+   */
+  getNativeAsset() {
+    const empty = new Empty()
+    var asset = new Object()
+    return new Promise((resolve, reject) => {
+      const chan = this.client.getWhitelistAssets(empty, {})
+      chan.on('data', (data) => {
+        if (data.getNativeasset() !== undefined) {
+          const nativeAsset = data.getNativeasset()
+          asset = new WhitelistedAsset({
+            code: nativeAsset.getCode(),
+            issuer: nativeAsset.getIssuer(),
+            decimal: nativeAsset.getDecimal(),
+            typeID: nativeAsset.getTypeid(),
+          })
+        }
+        resolve({ asset })
       })
       chan.on('error', (err) => {
         reject(new EvrynetException(null, err.message))
@@ -119,6 +229,54 @@ export class Evrynet {
       return find(data.assets, {
         code: asset.getCode(),
         issuer: asset.getIssuer(),
+      })
+    } catch (e) {
+      throw new EvrynetException(null, e.toString())
+    }
+  }
+
+  /**
+   * @param {nativeAsset} - native's asset of to be fetched from whitelisted
+   * @returns {boolean}
+   */
+  async isNativeAsset(nativeAsset) {
+    try {
+      const data = await this.getNativeAsset()
+      return (
+        nativeAsset.getCode() === data.asset.getCode() &&
+        nativeAsset.getIssuer() === data.asset.getIssuer()
+      )
+    } catch (e) {
+      throw new EvrynetException(null, e.toString())
+    }
+  }
+
+  /**
+   * @param {evrynetAsset} - evrynet's asset of to be fetched from whitelisted
+   * @returns {boolean}
+   */
+  async isEvrynetAsset(evrynetAsset) {
+    try {
+      const data = await this.getEvrynetAssets()
+      return find(data.assets, {
+        code: evrynetAsset.getCode(),
+        issuer: evrynetAsset.getIssuer(),
+      })
+    } catch (e) {
+      throw new EvrynetException(null, e.toString())
+    }
+  }
+
+  /**
+   * @param {stellarAsset} - stellar's asset of to be fetched from whitelisted
+   * @returns {boolean}
+   */
+  async isStellarAsset(stellarAsset) {
+    try {
+      const data = await this.getStellarAssets()
+      return find(data.assets, {
+        code: stellarAsset.getCode(),
+        issuer: stellarAsset.getIssuer(),
       })
     } catch (e) {
       throw new EvrynetException(null, e.toString())
@@ -187,21 +345,40 @@ export class Evrynet {
    */
   async newLockTx({ asset, amount, secret }) {
     try {
-      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${secret}`)
-      if (!asset) {
-        throw new EvrynetException(null, 'Invalid Asset')
+      const account = web3Instance.eth.accounts.privateKeyToAccount(
+        `0x${secret}`,
+      )
+      let decimal, hexAmount, method, toAddr
+      if (await this.isNativeAsset(asset)) {
+        decimal = this.config.atomicEvryDecimalUnit
+        method = this.nativeCustodian.methods.lock()
+        hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
+        toAddr = this.nativeCustodian.options.address
+      } else {
+        decimal = asset.decimal
+        hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
+        if (await this.isEvrynetAsset(asset)) {
+          method = this.evrynetCustodian.methods.lock(
+            asset.getTypeid(),
+            hexAmount,
+          )
+          toAddr = this.evrynetCustodian.options.address
+        } else if (await this.isStellarAsset(asset)) {
+          method = this.stellarCustodian.methods.lock(
+            asset.getTypeid(),
+            hexAmount,
+          )
+          toAddr = this.stellarCustodian.options.address
+        } else {
+          throw new EvrynetException(null, 'Invalid Asset')
+        }
       }
-      if (!this._validateAmount(amount, asset.decimal)) {
+      if (!this._validateAmount(amount, decimal)) {
         throw new EvrynetException(
           null,
-          `Not allow to move evry coin more than ${asset.decimal} decimals`,
+          `Not allow to move evry coin more than ${decimal} decimals`,
         )
       }
-      const hexAmount = web3Instance.utils.toHex(
-        this._parseAmount(amount, asset.decimal),
-      )
-      const assetID = asset.getID()
-      const method = this.warp.methods.lock(assetID, hexAmount)
       const gasLimit = await this.getGasLimit(
         method,
         account.address,
@@ -213,7 +390,7 @@ export class Evrynet {
         {
           nonce: Number(nonceRes.nonce),
           from: account.address,
-          to: this.warp.options.address,
+          to: toAddr,
           gasLimit: web3Instance.utils.toHex(gasLimit),
           gasPrice: this.config.gasPrice,
           data,
@@ -225,59 +402,7 @@ export class Evrynet {
       tx.sign(Buffer.from(secret, 'hex'))
       return tx
     } catch (e) {
-      throw new EvrynetException(null, 'Unable to lock a credit', e.toString())
-    }
-  }
-
-  /**
-   * Creates a new native (Evrycoin) lock transaction
-   * @param {Object} payload - payload for creating tx
-   * @param {string} payload.amount - amount of the native asset to be locked
-   * @param {string} payload.secret - destination account private key
-   * @return {Transaction|EvrynetException} raw tx
-   */
-  async newLockNativeTx({ amount, secret }) {
-    try {
-      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${secret}`)
-      if (!this._validateAmount(amount, this.config.atomicEvryDecimalUnit)) {
-        throw new EvrynetException(
-          null,
-          `Invalid amount: decimal is more than ${this.config.atomicStellarDecimalUnit}`,
-        )
-      }
-      const hexAmount = web3Instance.utils.toHex(
-        this._parseAmount(amount, this.config.atomicEvryDecimalUnit),
-      )
-      const method = this.warp.methods.lockNative()
-      const gasLimit = await this.getGasLimit(
-        method,
-        account.address,
-        hexAmount,
-      )
-      const data = method.encodeABI()
-      const nonceRes = await this.getNonceFromPriv(secret)
-      let tx = new Transaction(
-        {
-          nonce: Number(nonceRes.nonce),
-          from: account.address,
-          to: this.warp.options.address,
-          value: hexAmount,
-          gasLimit: web3Instance.utils.toHex(gasLimit),
-          gasPrice: this.config.gasPrice,
-          data,
-        },
-        {
-          common: this.config.customChain,
-        },
-      )
-      tx.sign(Buffer.from(secret, 'hex'))
-      return tx
-    } catch (e) {
-      throw new EvrynetException(
-        null,
-        'Unable to lock a native asset',
-        e.toString(),
-      )
+      throw new EvrynetException(null, 'Unable to lock a asset', e.toString())
     }
   }
 
@@ -291,25 +416,40 @@ export class Evrynet {
    */
   async newUnlockTx({ asset, amount, secret }) {
     try {
-      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${secret}`)
-      if (!asset) {
-        throw new EvrynetException(null, 'Invalid Asset')
+      const account = web3Instance.eth.accounts.privateKeyToAccount(
+        `0x${secret}`,
+      )
+      let decimal, hexAmount, method, toAddr
+      if (await this.isNativeAsset(asset)) {
+        decimal = this.config.atomicEvryDecimalUnit
+        hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
+        method = this.nativeCustodian.methods.unlock(account.address, hexAmount)
+        toAddr = this.nativeCustodian.options.address
+      } else {
+        decimal = asset.decimal
+        hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
+        if (await this.isEvrynetAsset(asset)) {
+          method = this.evrynetCustodian.methods.unlock(
+            asset.getTypeid(),
+            hexAmount,
+          )
+          toAddr = this.evrynetCustodian.options.address
+        } else if (await this.isStellarAsset(asset)) {
+          method = this.stellarCustodian.methods.unlock(
+            asset.getTypeid(),
+            hexAmount,
+          )
+          toAddr = this.stellarCustodian.options.address
+        } else {
+          throw new EvrynetException(null, 'Invalid Asset')
+        }
       }
-      if (!this._validateAmount(amount, asset.decimal)) {
+      if (!this._validateAmount(amount, decimal)) {
         throw new EvrynetException(
           null,
           `Not allow to move evrycoin more than ${asset.decimal} decimals`,
         )
       }
-      const hexAmount = web3Instance.utils.toHex(
-        this._parseAmount(amount, asset.decimal),
-      )
-      const assetID = asset.getID()
-      const method = this.warp.methods.unlock(
-        account.address,
-        assetID,
-        hexAmount,
-      )
       const gasLimit = await this.getGasLimit(
         method,
         account.address,
@@ -321,7 +461,7 @@ export class Evrynet {
         {
           nonce: Number(nonceRes.nonce),
           from: account.address,
-          to: this.warp.options.address,
+          to: toAddr,
           gasLimit: web3Instance.utils.toHex(gasLimit),
           gasPrice: this.config.gasPrice,
           data,
@@ -335,58 +475,7 @@ export class Evrynet {
     } catch (e) {
       throw new EvrynetException(
         null,
-        'Unable to unlock a credit',
-        e.toString(),
-      )
-    }
-  }
-
-  /**
-   * Creates a new native (Evrycoin) unlock transaction
-   * @param {Object} payload - payload for creating tx
-   * @param {string} payload.amount - amount of the native asset to be unlocked
-   * @param {string} payload.secret - destination account private key
-   * @return {Transaction|EvrynetException} raw tx
-   */
-  async newUnlockNativeTx({ amount, secret }) {
-    try {
-      const account = web3Instance.eth.accounts.privateKeyToAccount(`0x${secret}`)
-      if (!this._validateAmount(amount, this.config.atomicEvryDecimalUnit)) {
-        throw new EvrynetException(
-          null,
-          `Invalid amount: decimal is more than ${this.config.atomicStellarDecimalUnit}`,
-        )
-      }
-      const hexAmount = web3Instance.utils.toHex(
-        this._parseAmount(amount, this.config.atomicEvryDecimalUnit),
-      )
-      const method = this.warp.methods.unlockNative(account.address, hexAmount)
-      const gasLimit = await this.getGasLimit(
-        method,
-        account.address,
-        hexAmount,
-      )
-      const data = method.encodeABI()
-      const nonceRes = await this.getNonceFromPriv(secret)
-      let tx = new Transaction(
-        {
-          nonce: Number(nonceRes.nonce),
-          from: account.address,
-          to: this.warp.options.address,
-          gasLimit: web3Instance.utils.toHex(gasLimit),
-          gasPrice: this.config.gasPrice,
-          data,
-        },
-        {
-          common: this.config.customChain,
-        },
-      )
-      tx.sign(Buffer.from(secret, 'hex'))
-      return tx
-    } catch (e) {
-      throw new EvrynetException(
-        null,
-        'Unable to unlock a native asset',
+        'Unable to unlock a asset',
         e.toString(),
       )
     }
@@ -446,9 +535,9 @@ export class Evrynet {
   async getGasLimit(method, sourceAddress, value) {
     let gasAmount = this.config.shouldUseEstimatedGas
       ? (await method.estimateGas({
-        from: sourceAddress,
-        value: value,
-      })) + 1000
+          from: sourceAddress,
+          value: value,
+        })) + 1000
       : this.config.gasLimit
     return gasAmount
   }

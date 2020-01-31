@@ -74,18 +74,6 @@ export class Asset {
   }
 
   /**
-   * Get asset's id in hex-encoded format.
-   * @returns {string} - hex-encoded of asset name.
-   */
-  getID() {
-    if (!this.code) {
-      throw new AssetEntityException(null, 'cannot read name property')
-    }
-    const key = `${this.code},${this.issuer || ''}`
-    return web3Instance.utils.keccak256(key)
-  }
-
-  /**
    * Check if this asset is native.
    * @return {boolean} - the result wheter this asset if native or not.
    */

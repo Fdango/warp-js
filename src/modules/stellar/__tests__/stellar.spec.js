@@ -34,14 +34,14 @@ describe('Stellar', () => {
     describe('With invalid input', () => {
       it('should fail to get a stellar sequenceNumber', async () => {
         let mockedStream = new Stream.Readable()
-        mockedStream._read = () => { }
+        mockedStream._read = () => {}
         const mockedClient = jest.fn().mockImplementation(() => {
           return {
             getSequenceNumber: jest.fn().mockReturnValue(mockedStream),
           }
         })
         const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
-        setInterval(function () {
+        setInterval(function() {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
         await expect(stellar.getSequenceNumber('Bad')).rejects.toThrow(
@@ -52,14 +52,14 @@ describe('Stellar', () => {
     describe('With valid input', () => {
       it('should get a stellar sequenceNumber correctly', async () => {
         let mockedStream = new Stream.Readable()
-        mockedStream._read = () => { }
+        mockedStream._read = () => {}
         const mockedClient = jest.fn().mockImplementation(() => {
           return {
             getSequenceNumber: jest.fn().mockReturnValue(mockedStream),
           }
         })
         const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
-        setInterval(function () {
+        setInterval(function() {
           mockedStream.emit('data', {
             getSequencenumber: jest.fn().mockReturnValue(currentSeq),
           })
@@ -75,14 +75,14 @@ describe('Stellar', () => {
       it('should create a correct deposit payment transaction', async () => {
         let amount = '100.0000000'
         let mockedStream = new Stream.Readable()
-        mockedStream._read = () => { }
+        mockedStream._read = () => {}
         const mockedClient = jest.fn().mockImplementation(() => {
           return {
             getSequenceNumber: jest.fn().mockReturnValue(mockedStream),
           }
         })
         const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
-        setInterval(function () {
+        setInterval(function() {
           mockedStream.emit('data', {
             getSequencenumber: jest.fn().mockReturnValue(currentSeq),
           })
@@ -136,14 +136,14 @@ describe('Stellar', () => {
       it('should create a correct withdraw payment transaction', async () => {
         let amount = '100.0000000'
         let mockedStream = new Stream.Readable()
-        mockedStream._read = () => { }
+        mockedStream._read = () => {}
         const mockedClient = jest.fn().mockImplementation(() => {
           return {
             getSequenceNumber: jest.fn().mockReturnValue(mockedStream),
           }
         })
         const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
-        setInterval(function () {
+        setInterval(function() {
           mockedStream.emit('data', {
             getSequencenumber: jest.fn().mockReturnValue(currentSeq),
           })
@@ -196,14 +196,14 @@ describe('Stellar', () => {
     describe('When valid input', () => {
       it('should respond an expected balance', async () => {
         let mockedStream = new Stream.Readable()
-        mockedStream._read = () => { }
+        mockedStream._read = () => {}
         const mockedClient = jest.fn().mockImplementation(() => {
           return {
             getBalance: jest.fn().mockReturnValue(mockedStream),
           }
         })
         const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
-        setInterval(function () {
+        setInterval(function() {
           mockedStream.emit('data', {
             getBalance: jest.fn().mockReturnValue(expectedBalance),
           })
@@ -218,14 +218,14 @@ describe('Stellar', () => {
     describe('When a stream emit an error response', () => {
       it('should throw an error', async () => {
         let mockedStream = new Stream.Readable()
-        mockedStream._read = () => { }
+        mockedStream._read = () => {}
         const mockedClient = jest.fn().mockImplementation(() => {
           return {
             getBalance: jest.fn().mockReturnValue(mockedStream),
           }
         })
         const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
-        setInterval(function () {
+        setInterval(function() {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
         await expect(
@@ -246,14 +246,14 @@ describe('Stellar', () => {
           issuer: 'GATIJFZRBQH6S2BM2M2LPK7NMZWS43VQJQJNMSAR7LHW3XVPBBNV7BE5',
         }
         let mockedStream = new Stream.Readable()
-        mockedStream._read = () => { }
+        mockedStream._read = () => {}
         const mockedClient = jest.fn().mockImplementation(() => {
           return {
             getTrustlines: jest.fn().mockReturnValue(mockedStream),
           }
         })
         const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
-        setInterval(function () {
+        setInterval(function() {
           mockedStream.emit('data', {
             getAssetList: jest.fn().mockReturnValue([
               {
@@ -270,14 +270,14 @@ describe('Stellar', () => {
     describe('When a stream emit an error response', () => {
       it('should throw an error', async () => {
         let mockedStream = new Stream.Readable()
-        mockedStream._read = () => { }
+        mockedStream._read = () => {}
         const mockedClient = jest.fn().mockImplementation(() => {
           return {
             getTrustlines: jest.fn().mockReturnValue(mockedStream),
           }
         })
         const stellar = new Stellar(mockedClient(), warpConfigInstance.stellar)
-        setInterval(function () {
+        setInterval(function() {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
         await expect(

@@ -36,9 +36,9 @@ export default class Warp {
    */
   async toEvrynet({ evrynetPriv, stellarPriv, amount, asset }) {
     try {
-      const whitelistedAsset = asset.isNative()
-        ? asset
-        : await this.client.evry.getWhitelistAssetByCode(asset)
+      const whitelistedAsset = await this.client.evry.getWhitelistAssetByCode(
+        asset,
+      )
       if (!whitelistedAsset) {
         throw new WarpException(null, 'Whitelisted asset not found')
       }
@@ -53,16 +53,12 @@ export default class Warp {
         amount,
         secret: evrynetPriv,
       }
-      const evrynetTx = whitelistedAsset.isNative()
-        ? this.client.evry.txToHex(
-          await this.client.evry.newUnlockNativeTx(payload),
-        )
-        : this.client.evry.txToHex(
-          await this.client.evry.newUnlockTx({
-            ...payload,
-            asset: whitelistedAsset,
-          }),
-        )
+      const evrynetTx = this.client.evry.txToHex(
+        await this.client.evry.newUnlockTx({
+          ...payload,
+          asset: whitelistedAsset,
+        }),
+      )
       // make a transfer request
       return await this.client.transfer.toEvrynet(evrynetTx, stellarTx)
     } catch (e) {
@@ -85,9 +81,12 @@ export default class Warp {
    */
   async toStellar({ evrynetPriv, stellarPriv, amount, asset }) {
     try {
-      const whitelistedAsset = asset.isNative()
-        ? asset
-        : await this.client.evry.getWhitelistAssetByCode(asset)
+      // const whitelistedAsset = asset.isNative()
+      //   ? asset
+      //   : await this.client.evry.getWhitelistAssetByCode(asset)
+      const whitelistedAsset = await this.client.evry.getWhitelistAssetByCode(
+        asset,
+      )
       if (!whitelistedAsset) {
         throw new WarpException(null, 'Whitelisted asset not found')
       }
@@ -102,16 +101,22 @@ export default class Warp {
         amount,
         secret: evrynetPriv,
       }
-      const evrynetTx = whitelistedAsset.isNative()
-        ? this.client.evry.txToHex(
-          await this.client.evry.newLockNativeTx(payload),
-        )
-        : this.client.evry.txToHex(
-          await this.client.evry.newLockTx({
-            ...payload,
-            asset: whitelistedAsset,
-          }),
-        )
+      const evrynetTx = this.client.evry.txToHex(
+        await this.client.evry.newLockTx({
+          ...payload,
+          asset: whitelistedAsset,
+        }),
+      )
+      // const evrynetTx = whitelistedAsset.isNative()
+      //   ? this.client.evry.txToHex(
+      //     await this.client.evry.newLockNativeTx(payload),
+      //   )
+      //   : this.client.evry.txToHex(
+      //     await this.client.evry.newLockTx({
+      //       ...payload,
+      //       asset: whitelistedAsset,
+      //     }),
+      //   )
       // make a transfer request
       return await this.client.transfer.toStellar(evrynetTx, stellarTx)
     } catch (e) {

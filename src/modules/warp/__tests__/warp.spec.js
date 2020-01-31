@@ -28,46 +28,9 @@ describe('Warp SDK', () => {
         stellarTxHash: 'foo',
         evrynetTxHash: 'bar',
       }
-      describe('When asset is native', () => {
+      describe('When asset is input', () => {
         it('should return data object', async () => {
           input.asset = {
-            isNative: jest.fn().mockReturnValue(true),
-            code: 'foo',
-            issuer: 'bar',
-            toStellarFormat: jest.fn().mockReturnValue(input.asset),
-          }
-          getStellarClient.mockImplementation(() => {
-            return {
-              async newLockTransaction() {
-                return 'foo'
-              },
-            }
-          })
-          getTransferClient.mockImplementation(() => {
-            return {
-              toEvrynet: jest.fn().mockResolvedValue(expected),
-            }
-          })
-          getEvryClient.mockImplementation(() => {
-            return {
-              getWhitelistAssetByCode: jest.fn().mockResolvedValue({
-                ...input.asset,
-                decimal: 1,
-              }),
-              txToHex: jest.fn().mockReturnValue('foo'),
-              newUnlockNativeTx: jest.fn().mockReturnValue('bar'),
-            }
-          })
-          warp = new Warp()
-          const res = await warp.toEvrynet(input)
-          expect(res).toBeTruthy()
-          expect(res).toEqual(expected)
-        })
-      })
-      describe('When asset is credit', () => {
-        it('should return data object', async () => {
-          input.asset = {
-            isNative: jest.fn().mockReturnValue(false),
             code: 'foo',
             issuer: 'bar',
             toStellarFormat: jest.fn().mockReturnValue(input.asset),
@@ -127,9 +90,6 @@ describe('Warp SDK', () => {
 
       describe('With error from getWhitelistAssetByCode', () => {
         it('should throw an error', async () => {
-          input.asset = {
-            isNative: jest.fn().mockReturnValue(false),
-          }
           getEvryClient.mockImplementation(() => {
             return {
               getWhitelistAssetByCode: jest.fn().mockReturnValue(null),
@@ -140,63 +100,33 @@ describe('Warp SDK', () => {
         })
       })
 
-      describe('When asset is native ', () => {
-        describe('With error from newUnlockNativeTx', () => {
-          it('should throw an error', async () => {
-            getStellarClient.mockImplementation(() => {
-              return {
-                newLockTransaction: jest.fn().mockReturnValue('foo'),
-              }
-            })
-            getEvryClient.mockImplementation(() => {
-              return {
-                newUnlockNativeTx: jest
-                  .fn()
-                  .mockRejectedValue(new Error('this is an error')),
-              }
-            })
-            input.asset = {
-              isNative: jest.fn().mockReturnValue(true),
-              toStellarFormat: jest.fn().mockReturnValue(input.asset),
+      describe('With error from newUnlockTx', () => {
+        it('should throw an error', async () => {
+          getStellarClient.mockImplementation(() => {
+            return {
+              async newLockTransaction() {
+                return 'foo'
+              },
             }
-            warp = new Warp()
-            await expect(warp.toEvrynet(input)).rejects.toThrowError(
-              WarpException,
-            )
           })
-        })
-      })
-
-      describe('When asset is credit', () => {
-        describe('With error from newUnlockTx', () => {
-          it('should throw an error', async () => {
-            getStellarClient.mockImplementation(() => {
-              return {
-                async newLockTransaction() {
-                  return 'foo'
-                },
-              }
-            })
-            getEvryClient.mockImplementation(() => {
-              return {
-                getWhitelistAssetByCode: jest.fn().mockResolvedValue({
-                  ...input.asset,
-                  decimal: 1,
-                }),
-                newUnlockTx: jest
-                  .fn()
-                  .mockRejectedValue(new Error('this is an error')),
-              }
-            })
-            input.asset = {
-              isNative: jest.fn().mockReturnValue(false),
-              toStellarFormat: jest.fn().mockReturnValue(input.asset),
+          getEvryClient.mockImplementation(() => {
+            return {
+              getWhitelistAssetByCode: jest.fn().mockResolvedValue({
+                ...input.asset,
+                decimal: 1,
+              }),
+              newUnlockTx: jest
+                .fn()
+                .mockRejectedValue(new Error('this is an error')),
             }
-            warp = new Warp()
-            await expect(warp.toEvrynet(input)).rejects.toThrowError(
-              WarpException,
-            )
           })
+          input.asset = {
+            toStellarFormat: jest.fn().mockReturnValue(input.asset),
+          }
+          warp = new Warp()
+          await expect(warp.toEvrynet(input)).rejects.toThrowError(
+            WarpException,
+          )
         })
       })
 
@@ -227,7 +157,6 @@ describe('Warp SDK', () => {
             }
           })
           input.asset = {
-            isNative: jest.fn().mockReturnValue(false),
             toStellarFormat: jest.fn().mockReturnValue(input.asset),
           }
           warp = new Warp()
@@ -252,46 +181,9 @@ describe('Warp SDK', () => {
         stellarTxHash: 'foo',
         evrynetTxHash: 'bar',
       }
-      describe('When asset is native', () => {
+      describe('When asset is input', () => {
         it('should return data object', async () => {
           input.asset = {
-            isNative: jest.fn().mockReturnValue(true),
-            code: 'foo',
-            issuer: 'bar',
-            toStellarFormat: jest.fn().mockReturnValue(input.asset),
-          }
-          getStellarClient.mockImplementation(() => {
-            return {
-              async newUnlockTransaction() {
-                return 'foo'
-              },
-            }
-          })
-          getTransferClient.mockImplementation(() => {
-            return {
-              toStellar: jest.fn().mockResolvedValue(expected),
-            }
-          })
-          getEvryClient.mockImplementation(() => {
-            return {
-              getWhitelistAssetByCode: jest.fn().mockResolvedValue({
-                ...input.asset,
-                decimal: 1,
-              }),
-              newLockNativeTx: jest.fn().mockReturnValue('bar'),
-              txToHex: jest.fn().mockReturnValue('foo'),
-            }
-          })
-          warp = new Warp()
-          const res = await warp.toStellar(input)
-          expect(res).toBeTruthy()
-          expect(res).toEqual(expected)
-        })
-      })
-      describe('When asset is credit', () => {
-        it('should return data object', async () => {
-          input.asset = {
-            isNative: jest.fn().mockReturnValue(false),
             code: 'foo',
             issuer: 'bar',
             toStellarFormat: jest.fn().mockReturnValue(input.asset),
@@ -336,8 +228,15 @@ describe('Warp SDK', () => {
                 .mockRejectedValue(new Error('this is a error')),
             }
           })
+          getEvryClient.mockImplementation(() => {
+            return {
+              getWhitelistAssetByCode: jest.fn().mockResolvedValue({
+                ...input.asset,
+                decimal: 1,
+              }),
+            }
+          })
           input.asset = {
-            isNative: jest.fn().mockReturnValue(true),
             toStellarFormat: jest.fn().mockReturnValue(input.asset),
           }
           warp = new Warp()
@@ -347,9 +246,6 @@ describe('Warp SDK', () => {
 
       describe('With error from getWhitelistAssetByCode', () => {
         it('should throw an error', async () => {
-          input.asset = {
-            isNative: jest.fn().mockReturnValue(false),
-          }
           getEvryClient.mockImplementation(() => {
             return {
               getWhitelistAssetByCode: jest.fn().mockReturnValue(null),
@@ -360,65 +256,33 @@ describe('Warp SDK', () => {
         })
       })
 
-      describe('When asset is native ', () => {
-        describe('With error from newLockNativeTx', () => {
-          it('should throw an error', async () => {
-            getStellarClient.mockImplementation(() => {
-              return {
-                async newUnlockTransaction() {
-                  return 'foo'
-                },
-              }
-            })
-            getEvryClient.mockImplementation(() => {
-              return {
-                newLockNativeTx: jest
-                  .fn()
-                  .mockRejectedValue(new Error('this is an error')),
-              }
-            })
-            input.asset = {
-              isNative: jest.fn().mockReturnValue(true),
-              toStellarFormat: jest.fn().mockReturnValue(input.asset),
+      describe('With error from newLockTx', () => {
+        it('should throw an error', async () => {
+          getStellarClient.mockImplementation(() => {
+            return {
+              async newUnlockTransaction() {
+                return 'foo'
+              },
             }
-            warp = new Warp()
-            await expect(warp.toStellar(input)).rejects.toThrowError(
-              WarpException,
-            )
           })
-        })
-      })
-
-      describe('When asset is credit', () => {
-        describe('With error from newLockTx', () => {
-          it('should throw an error', async () => {
-            getStellarClient.mockImplementation(() => {
-              return {
-                async newUnlockTransaction() {
-                  return 'foo'
-                },
-              }
-            })
-            getEvryClient.mockImplementation(() => {
-              return {
-                getWhitelistAssetByCode: jest.fn().mockResolvedValue({
-                  ...input.asset,
-                  decimal: 1,
-                }),
-                newLockTx: jest
-                  .fn()
-                  .mockRejectedValue(new Error('this is an error')),
-              }
-            })
-            input.asset = {
-              isNative: jest.fn().mockReturnValue(false),
-              toStellarFormat: jest.fn().mockReturnValue(input.asset),
+          getEvryClient.mockImplementation(() => {
+            return {
+              getWhitelistAssetByCode: jest.fn().mockResolvedValue({
+                ...input.asset,
+                decimal: 1,
+              }),
+              newLockTx: jest
+                .fn()
+                .mockRejectedValue(new Error('this is an error')),
             }
-            warp = new Warp()
-            await expect(warp.toStellar(input)).rejects.toThrowError(
-              WarpException,
-            )
           })
+          input.asset = {
+            toStellarFormat: jest.fn().mockReturnValue(input.asset),
+          }
+          warp = new Warp()
+          await expect(warp.toStellar(input)).rejects.toThrowError(
+            WarpException,
+          )
         })
       })
 
@@ -449,7 +313,6 @@ describe('Warp SDK', () => {
             }
           })
           input.asset = {
-            isNative: jest.fn().mockReturnValue(false),
             toStellarFormat: jest.fn().mockReturnValue(input.asset),
           }
           warp = new Warp()

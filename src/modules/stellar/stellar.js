@@ -135,7 +135,13 @@ export class Stellar {
    * @param {StellarSDK.Asset} payload.asset - asset type
    */
   async newLockTransaction({ secret, amount, asset }) {
-    return this.newPaymentTx(secret, '', this.config.escrowAccount, amount, asset)
+    return this.newPaymentTx(
+      secret,
+      '',
+      this.config.escrowAccount,
+      amount,
+      asset,
+    )
   }
 
   /**
@@ -147,7 +153,13 @@ export class Stellar {
    * @param {StellarSDK.Asset} payload.asset - stellar asset to be transfered
    */
   async newUnlockTransaction({ secret, amount, asset }) {
-    return this.newPaymentTx(secret, this.config.escrowAccount, '', amount, asset)
+    return this.newPaymentTx(
+      secret,
+      this.config.escrowAccount,
+      '',
+      amount,
+      asset,
+    )
   }
 
   /**

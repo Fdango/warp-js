@@ -22,6 +22,17 @@ export default class EvrynetConfig {
       'constantinople',
     )
     this.provider = web3Instance.givenProvider
+    this.contract = {
+      nativeCustodian: {
+        address: '0xf582b66AC081253B67eA7ABB76919B27F75D361d',
+      },
+      evrynetCustodian: {
+        address: '0xf582b66AC081253B67eA7ABB76919B27F75D361d',
+      },
+      stellarCustodian: {
+        address: '0xf582b66AC081253B67eA7ABB76919B27F75D361d',
+      },
+    }
     Object.seal(this)
   }
 }
