@@ -81,9 +81,6 @@ export default class Warp {
    */
   async toStellar({ evrynetPriv, stellarPriv, amount, asset }) {
     try {
-      // const whitelistedAsset = asset.isNative()
-      //   ? asset
-      //   : await this.client.evry.getWhitelistAssetByCode(asset)
       const whitelistedAsset = await this.client.evry.getWhitelistAssetByCode(
         asset,
       )
@@ -107,16 +104,6 @@ export default class Warp {
           asset: whitelistedAsset,
         }),
       )
-      // const evrynetTx = whitelistedAsset.isNative()
-      //   ? this.client.evry.txToHex(
-      //     await this.client.evry.newLockNativeTx(payload),
-      //   )
-      //   : this.client.evry.txToHex(
-      //     await this.client.evry.newLockTx({
-      //       ...payload,
-      //       asset: whitelistedAsset,
-      //     }),
-      //   )
       // make a transfer request
       return await this.client.transfer.toStellar(evrynetTx, stellarTx)
     } catch (e) {
