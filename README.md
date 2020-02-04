@@ -1,4 +1,5 @@
 
+
 # warp-js
 Warp JS SDK to implement a client for Warp protocol
 
@@ -16,8 +17,6 @@ Warp JS SDK to implement a client for Warp protocol
     - [Generate stellar unlock transaction](#generate-stellar-unlock-transaction)
     - [Generate evrynet lock transaction](#generate-evrynet-lock-transaction)
     - [Generate evrynet unlock transaction](#generate-evrynet-unlock-transaction)
-    - [Generate evrynet lock native transaction](#generate-evrynet-lock-native-transaction)
-    - [Generate evrynet unlock native transaction](#generate-evrynet-unlock-native-transaction)
     - [Transfer asset from stellar to evrynet](#transfer-asset-from-stellar-to-evrynet)
     - [Transfer asset from evrynet to stellar](#transfer-asset-from-evrynet-to-stellar)
 
@@ -196,32 +195,6 @@ evry.newUnlockTx({
 		decimal: 7, 
 		typeID: "1" 
 	} 
-})
-```
-  - Response
-```
-rawTx: "0xabcd"
-```
-
-#### Generate evrynet lock native transaction
-  - Request
-```
-evry.newLockNativeTx({ 
-	secret: "evrynet private key", 
-	amount: "1234"
-})
-```
-  - Response
-```
-rawTx: "0xabcd"
-```
-
-#### Generate evrynet unlock native transaction
-  - Request
-```
-evry.newUnlockNativeTx({ 
-	secret: "evrynet private key", 
-	amount: "1234"
 })
 ```
   - Response
