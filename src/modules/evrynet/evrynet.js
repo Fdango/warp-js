@@ -39,7 +39,7 @@ export function getEvryClient(config) {
  * @typedef Evrynet
  * @property {EvrynetGRPCClient} client - grpc client
  * @property {Web3} web3 - web3 utility module
- * @property {Contract} warp - warp smart contractjj
+ * @property {Contract} warp - warp smart contract
  */
 export class Evrynet {
   /**
