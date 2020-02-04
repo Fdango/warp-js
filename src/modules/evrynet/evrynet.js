@@ -7,7 +7,6 @@ import { Asset } from '@/modules/warp/common_pb.js'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb.js'
 import { web3Instance } from '@/utils'
 import {
-  warpABI,
   nativeCustodianABI,
   evrynetCustodianABI,
   stellarCustodianABI,
@@ -261,7 +260,7 @@ export class Evrynet {
       return find(data.assets, {
         code: evrynetAsset.getCode(),
         issuer: evrynetAsset.getIssuer(),
-      })
+      }) ? true : false
     } catch (e) {
       throw new EvrynetException(null, e.toString())
     }
@@ -277,7 +276,7 @@ export class Evrynet {
       return find(data.assets, {
         code: stellarAsset.getCode(),
         issuer: stellarAsset.getIssuer(),
-      })
+      }) ? true : false
     } catch (e) {
       throw new EvrynetException(null, e.toString())
     }
@@ -535,9 +534,9 @@ export class Evrynet {
   async getGasLimit(method, sourceAddress, value) {
     let gasAmount = this.config.shouldUseEstimatedGas
       ? (await method.estimateGas({
-          from: sourceAddress,
-          value: value,
-        })) + 1000
+        from: sourceAddress,
+        value: value,
+      })) + 1000
       : this.config.gasLimit
     return gasAmount
   }
