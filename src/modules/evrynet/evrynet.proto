@@ -13,18 +13,10 @@ message GetNonceResponse{
     string nonce = 1;
 }
 
-message StellarCredit {
-    repeated common.Asset assets = 1;
-}
- 
-message EvrynetCredit {
-    repeated common.Asset assets = 1;
-}
- 
 message GetWhitelistAssetsResponse {
     common.Asset nativeAsset = 1;
-    StellarCredit stellarCredit = 2;
-    EvrynetCredit evrynetCredit = 3;
+    repeated common.Asset stellarCredit = 2;
+    repeated common.Asset evrynetCredit = 3;
 }
 
 message GetBalanceRequest {    
