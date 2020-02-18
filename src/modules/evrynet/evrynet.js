@@ -19,7 +19,7 @@ let ec
 
 let evrynetAssets = new Array()
 let stellarAssets = new Array()
-let nativeAsset = new Object()
+let nativeAsset = new WhitelistedAsset({})
 
 /**
  * @typedef {import('./entities/asset').WhitelistedAsset} WhitelistedAsset
@@ -114,7 +114,7 @@ export class Evrynet {
     let empty = new Empty()
     evrynetAssets = []
     stellarAssets = []
-    nativeAsset = new Array()
+    nativeAsset = {}
     return new Promise((resolve, reject) => {
       const chan = this.client.getWhitelistAssets(empty, {})
       chan.on('data', (data) => {
@@ -188,14 +188,10 @@ export class Evrynet {
    * @returns {boolean}
    */
   isNativeAsset(asset) {
-    try {
-      return (
-        asset.getCode() === nativeAsset.getCode() &&
-        asset.getIssuer() === nativeAsset.getIssuer()
-      )
-    } catch (e) {
-      throw new EvrynetException(null, e.toString())
-    }
+    return (
+      asset.getCode() === nativeAsset.getCode() &&
+      asset.getIssuer() === nativeAsset.getIssuer()
+    )
   }
 
   /**
@@ -203,29 +199,21 @@ export class Evrynet {
    * @returns {boolean}
    */
   isEvrynetAsset(asset) {
-    try {
-      return !!find(evrynetAssets, {
-        code: asset.getCode(),
-        issuer: asset.getIssuer(),
-      })
-    } catch (e) {
-      throw new EvrynetException(null, e.toString())
-    }
+    return !!find(evrynetAssets, {
+      code: asset.getCode(),
+      issuer: asset.getIssuer(),
+    })
   }
 
   /**
-   * @param {stellarAsset} - stellar's asset of to be fetched from whitelisted
+   * @param {asset} - stellar's asset of to be fetched from whitelisted
    * @returns {boolean}
    */
-  isStellarAsset(stellarAsset) {
-    try {
-      return !!find(stellarAssets, {
-        code: stellarAsset.getCode(),
-        issuer: stellarAsset.getIssuer(),
-      })
-    } catch (e) {
-      throw new EvrynetException(null, e.toString())
-    }
+  isStellarAsset(asset) {
+    return !!find(stellarAssets, {
+      code: asset.getCode(),
+      issuer: asset.getIssuer(),
+    })
   }
 
   /**
@@ -431,10 +419,11 @@ export class Evrynet {
    */
   async getGasLimit(method, sourceAddress, value) {
     let gasAmount = this.config.shouldUseEstimatedGas
+    let additionalGas = 1000
       ? (await method.estimateGas({
         from: sourceAddress,
         value: value,
-      })) + 1000
+      })) + additionalGas
       : this.config.gasLimit
     return gasAmount
   }
@@ -443,7 +432,6 @@ export class Evrynet {
     let decimal, hexAmount, method, toAddr
     switch (!!asset) {
       case (await this.isNativeAsset(asset)):
-        console.log("native")
         decimal = this.config.atomicEvryDecimalUnit
         hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
         method = this.nativeCustodian.methods.lock()
@@ -477,7 +465,6 @@ export class Evrynet {
     let decimal, hexAmount, method, toAddr
     switch (!!asset) {
       case (await this.isNativeAsset(asset)):
-        console.log("native")
         decimal = this.config.atomicEvryDecimalUnit
         hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
         method = this.nativeCustodian.methods.unlock(account.address, hexAmount)
