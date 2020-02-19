@@ -1,7 +1,5 @@
 import StellarSDK from 'stellar-sdk'
 import { warpConfigInstance } from '@/config'
-import AssetEntityException from '@/exceptions/asset_entity'
-import { web3Instance } from '@/utils'
 
 /**
  * @typedef {import('web3')} Web3
