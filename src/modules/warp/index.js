@@ -1,6 +1,5 @@
 import { getStellarClient } from '@/modules/stellar/stellar'
 import { getEvryClient } from '@/modules/evrynet/evrynet'
-import { getWarpContract } from '@/modules/contract/warp'
 import { getTransferClient } from '@/modules/transfer/transfer'
 import assetEntity from '@/entities/asset'
 import WarpException from '@/exceptions/warp_sdk'
@@ -24,9 +23,6 @@ export default class Warp {
       evry: getEvryClient(warpConfigInstance),
       transfer: getTransferClient(warpConfigInstance),
     }
-    this.contract = {
-      warp: getWarpContract(warpConfigInstance),
-    }
   }
 
   /**
@@ -40,40 +36,29 @@ export default class Warp {
    */
   async toEvrynet({ evrynetPriv, stellarPriv, amount, asset }) {
     try {
-      const whitelistedAsset = asset.isNative()
-        ? asset
-        : await this.client.evry.getWhitelistAssetByCode(asset)
+      const whitelistedAsset = await this.client.evry.getWhitelistAssetByCode(
+        asset,
+      )
       if (!whitelistedAsset) {
         throw new WarpException(null, 'Whitelisted asset not found')
       }
-      // instanciate stellar client
-      const res = await this.client.stellar.getSequenceNumberBySecret(
-        stellarPriv,
-      )
-      // make a stellar withdraw from escrow
-      const stellarTx = await this.client.stellar.createDepositTx({
-        src: stellarPriv,
-        seq: res.sequenceNumber,
+      // make a stellar deposit from escrow
+      const stellarTx = await this.client.stellar.newLockTransaction({
+        secret: stellarPriv,
         amount,
         asset: whitelistedAsset.toStellarFormat(),
       })
-      const nonceRes = await this.client.evry.getNonceFromPriv(evrynetPriv)
       // make a lock asset msg call
       const payload = {
         amount,
-        priv: evrynetPriv,
-        nonce: Number(nonceRes.nonce),
+        secret: evrynetPriv,
       }
-      const evrynetTx = whitelistedAsset.isNative()
-        ? this.contract.warp.txToHex(
-            await this.contract.warp.newUnlockNativeTx(payload),
-          )
-        : this.contract.warp.txToHex(
-            await this.contract.warp.newUnlockTx({
-              ...payload,
-              asset: whitelistedAsset,
-            }),
-          )
+      const evrynetTx = this.client.evry.txToHex(
+        await this.client.evry.newUnlockTx({
+          ...payload,
+          asset: whitelistedAsset,
+        }),
+      )
       // make a transfer request
       return await this.client.transfer.toEvrynet(evrynetTx, stellarTx)
     } catch (e) {
@@ -96,40 +81,29 @@ export default class Warp {
    */
   async toStellar({ evrynetPriv, stellarPriv, amount, asset }) {
     try {
-      const whitelistedAsset = asset.isNative()
-        ? asset
-        : await this.client.evry.getWhitelistAssetByCode(asset)
+      const whitelistedAsset = await this.client.evry.getWhitelistAssetByCode(
+        asset,
+      )
       if (!whitelistedAsset) {
         throw new WarpException(null, 'Whitelisted asset not found')
       }
-      // instanciate stellar client
-      const res = await this.client.stellar.getSequenceNumberBySecret(
-        stellarPriv,
-      )
       // make a stellar withdraw from escrow
-      const stellarTx = await this.client.stellar.createWithdrawTx({
-        src: stellarPriv,
-        seq: res.sequenceNumber,
+      const stellarTx = await this.client.stellar.newUnlockTransaction({
+        secret: stellarPriv,
         amount,
         asset: whitelistedAsset.toStellarFormat(),
       })
-      const nonceRes = await this.client.evry.getNonceFromPriv(evrynetPriv)
       // make a lock asset msg call
       const payload = {
         amount,
-        priv: evrynetPriv,
-        nonce: Number(nonceRes.nonce),
+        secret: evrynetPriv,
       }
-      const evrynetTx = whitelistedAsset.isNative()
-        ? this.contract.warp.txToHex(
-            await this.contract.warp.newLockNativeTx(payload),
-          )
-        : this.contract.warp.txToHex(
-            await this.contract.warp.newLockTx({
-              ...payload,
-              asset: whitelistedAsset,
-            }),
-          )
+      const evrynetTx = this.client.evry.txToHex(
+        await this.client.evry.newLockTx({
+          ...payload,
+          asset: whitelistedAsset,
+        }),
+      )
       // make a transfer request
       return await this.client.transfer.toStellar(evrynetTx, stellarTx)
     } catch (e) {

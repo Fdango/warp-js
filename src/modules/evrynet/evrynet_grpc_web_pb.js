@@ -6,14 +6,17 @@
 
 // GENERATED CODE -- DO NOT EDIT!
 
-const grpc = {}
-grpc.web = require('grpc-web')
+
+
+const grpc = {};
+grpc.web = require('grpc-web');
+
 
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js')
 
-var warp_common_pb = require('../warp/common_pb.js')
-const proto = {}
-proto.evrynet = require('./evrynet_pb.js')
+var src_modules_warp_common_pb = require('../../../src/modules/warp/common_pb.js')
+const proto = {};
+proto.evrynet = require('./evrynet_pb.js');
 
 /**
  * @param {string} hostname
@@ -23,31 +26,23 @@ proto.evrynet = require('./evrynet_pb.js')
  * @struct
  * @final
  */
-proto.evrynet.EvrynetGRPCClient = function(hostname, credentials, options) {
-  if (!options) options = {}
-  options['format'] = 'text'
+proto.evrynet.EvrynetGRPCClient =
+    function(hostname, credentials, options) {
+  if (!options) options = {};
+  options['format'] = 'text';
 
   /**
    * @private @const {!grpc.web.GrpcWebClientBase} The client
    */
-  this.client_ = new grpc.web.GrpcWebClientBase(options)
+  this.client_ = new grpc.web.GrpcWebClientBase(options);
 
   /**
    * @private @const {string} The hostname
    */
-  this.hostname_ = hostname
+  this.hostname_ = hostname;
 
-  /**
-   * @private @const {?Object} The credentials to be used to connect
-   *    to the server
-   */
-  this.credentials_ = credentials
+};
 
-  /**
-   * @private @const {?Object} Options for the client
-   */
-  this.options_ = options
-}
 
 /**
  * @param {string} hostname
@@ -57,35 +52,23 @@ proto.evrynet.EvrynetGRPCClient = function(hostname, credentials, options) {
  * @struct
  * @final
  */
-proto.evrynet.EvrynetGRPCPromiseClient = function(
-  hostname,
-  credentials,
-  options,
-) {
-  if (!options) options = {}
-  options['format'] = 'text'
+proto.evrynet.EvrynetGRPCPromiseClient =
+    function(hostname, credentials, options) {
+  if (!options) options = {};
+  options['format'] = 'text';
 
   /**
    * @private @const {!grpc.web.GrpcWebClientBase} The client
    */
-  this.client_ = new grpc.web.GrpcWebClientBase(options)
+  this.client_ = new grpc.web.GrpcWebClientBase(options);
 
   /**
    * @private @const {string} The hostname
    */
-  this.hostname_ = hostname
+  this.hostname_ = hostname;
 
-  /**
-   * @private @const {?Object} The credentials to be used to connect
-   *    to the server
-   */
-  this.credentials_ = credentials
+};
 
-  /**
-   * @private @const {?Object} Options for the client
-   */
-  this.options_ = options
-}
 
 /**
  * @const
@@ -98,12 +81,16 @@ const methodDescriptor_EvrynetGRPC_GetNonce = new grpc.web.MethodDescriptor(
   grpc.web.MethodType.SERVER_STREAMING,
   proto.evrynet.GetNonceRequest,
   proto.evrynet.GetNonceResponse,
-  /** @param {!proto.evrynet.GetNonceRequest} request */
+  /**
+   * @param {!proto.evrynet.GetNonceRequest} request
+   * @return {!Uint8Array}
+   */
   function(request) {
-    return request.serializeBinary()
+    return request.serializeBinary();
   },
-  proto.evrynet.GetNonceResponse.deserializeBinary,
-)
+  proto.evrynet.GetNonceResponse.deserializeBinary
+);
+
 
 /**
  * @const
@@ -113,12 +100,16 @@ const methodDescriptor_EvrynetGRPC_GetNonce = new grpc.web.MethodDescriptor(
  */
 const methodInfo_EvrynetGRPC_GetNonce = new grpc.web.AbstractClientBase.MethodInfo(
   proto.evrynet.GetNonceResponse,
-  /** @param {!proto.evrynet.GetNonceRequest} request */
+  /**
+   * @param {!proto.evrynet.GetNonceRequest} request
+   * @return {!Uint8Array}
+   */
   function(request) {
-    return request.serializeBinary()
+    return request.serializeBinary();
   },
-  proto.evrynet.GetNonceResponse.deserializeBinary,
-)
+  proto.evrynet.GetNonceResponse.deserializeBinary
+);
+
 
 /**
  * @param {!proto.evrynet.GetNonceRequest} request The request proto
@@ -127,17 +118,15 @@ const methodInfo_EvrynetGRPC_GetNonce = new grpc.web.AbstractClientBase.MethodIn
  * @return {!grpc.web.ClientReadableStream<!proto.evrynet.GetNonceResponse>}
  *     The XHR Node Readable Stream
  */
-proto.evrynet.EvrynetGRPCClient.prototype.getNonce = function(
-  request,
-  metadata,
-) {
-  return this.client_.serverStreaming(
-    this.hostname_ + '/evrynet.EvrynetGRPC/GetNonce',
-    request,
-    metadata || {},
-    methodDescriptor_EvrynetGRPC_GetNonce,
-  )
-}
+proto.evrynet.EvrynetGRPCClient.prototype.getNonce =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/evrynet.EvrynetGRPC/GetNonce',
+      request,
+      metadata || {},
+      methodDescriptor_EvrynetGRPC_GetNonce);
+};
+
 
 /**
  * @param {!proto.evrynet.GetNonceRequest} request The request proto
@@ -146,17 +135,15 @@ proto.evrynet.EvrynetGRPCClient.prototype.getNonce = function(
  * @return {!grpc.web.ClientReadableStream<!proto.evrynet.GetNonceResponse>}
  *     The XHR Node Readable Stream
  */
-proto.evrynet.EvrynetGRPCPromiseClient.prototype.getNonce = function(
-  request,
-  metadata,
-) {
-  return this.client_.serverStreaming(
-    this.hostname_ + '/evrynet.EvrynetGRPC/GetNonce',
-    request,
-    metadata || {},
-    methodDescriptor_EvrynetGRPC_GetNonce,
-  )
-}
+proto.evrynet.EvrynetGRPCPromiseClient.prototype.getNonce =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/evrynet.EvrynetGRPC/GetNonce',
+      request,
+      metadata || {},
+      methodDescriptor_EvrynetGRPC_GetNonce);
+};
+
 
 /**
  * @const
@@ -169,12 +156,16 @@ const methodDescriptor_EvrynetGRPC_GetWhitelistAssets = new grpc.web.MethodDescr
   grpc.web.MethodType.SERVER_STREAMING,
   google_protobuf_empty_pb.Empty,
   proto.evrynet.GetWhitelistAssetsResponse,
-  /** @param {!proto.google.protobuf.Empty} request */
+  /**
+   * @param {!proto.google.protobuf.Empty} request
+   * @return {!Uint8Array}
+   */
   function(request) {
-    return request.serializeBinary()
+    return request.serializeBinary();
   },
-  proto.evrynet.GetWhitelistAssetsResponse.deserializeBinary,
-)
+  proto.evrynet.GetWhitelistAssetsResponse.deserializeBinary
+);
+
 
 /**
  * @const
@@ -184,12 +175,16 @@ const methodDescriptor_EvrynetGRPC_GetWhitelistAssets = new grpc.web.MethodDescr
  */
 const methodInfo_EvrynetGRPC_GetWhitelistAssets = new grpc.web.AbstractClientBase.MethodInfo(
   proto.evrynet.GetWhitelistAssetsResponse,
-  /** @param {!proto.google.protobuf.Empty} request */
+  /**
+   * @param {!proto.google.protobuf.Empty} request
+   * @return {!Uint8Array}
+   */
   function(request) {
-    return request.serializeBinary()
+    return request.serializeBinary();
   },
-  proto.evrynet.GetWhitelistAssetsResponse.deserializeBinary,
-)
+  proto.evrynet.GetWhitelistAssetsResponse.deserializeBinary
+);
+
 
 /**
  * @param {!proto.google.protobuf.Empty} request The request proto
@@ -198,17 +193,15 @@ const methodInfo_EvrynetGRPC_GetWhitelistAssets = new grpc.web.AbstractClientBas
  * @return {!grpc.web.ClientReadableStream<!proto.evrynet.GetWhitelistAssetsResponse>}
  *     The XHR Node Readable Stream
  */
-proto.evrynet.EvrynetGRPCClient.prototype.getWhitelistAssets = function(
-  request,
-  metadata,
-) {
-  return this.client_.serverStreaming(
-    this.hostname_ + '/evrynet.EvrynetGRPC/GetWhitelistAssets',
-    request,
-    metadata || {},
-    methodDescriptor_EvrynetGRPC_GetWhitelistAssets,
-  )
-}
+proto.evrynet.EvrynetGRPCClient.prototype.getWhitelistAssets =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/evrynet.EvrynetGRPC/GetWhitelistAssets',
+      request,
+      metadata || {},
+      methodDescriptor_EvrynetGRPC_GetWhitelistAssets);
+};
+
 
 /**
  * @param {!proto.google.protobuf.Empty} request The request proto
@@ -217,17 +210,15 @@ proto.evrynet.EvrynetGRPCClient.prototype.getWhitelistAssets = function(
  * @return {!grpc.web.ClientReadableStream<!proto.evrynet.GetWhitelistAssetsResponse>}
  *     The XHR Node Readable Stream
  */
-proto.evrynet.EvrynetGRPCPromiseClient.prototype.getWhitelistAssets = function(
-  request,
-  metadata,
-) {
-  return this.client_.serverStreaming(
-    this.hostname_ + '/evrynet.EvrynetGRPC/GetWhitelistAssets',
-    request,
-    metadata || {},
-    methodDescriptor_EvrynetGRPC_GetWhitelistAssets,
-  )
-}
+proto.evrynet.EvrynetGRPCPromiseClient.prototype.getWhitelistAssets =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/evrynet.EvrynetGRPC/GetWhitelistAssets',
+      request,
+      metadata || {},
+      methodDescriptor_EvrynetGRPC_GetWhitelistAssets);
+};
+
 
 /**
  * @const
@@ -240,12 +231,16 @@ const methodDescriptor_EvrynetGRPC_GetBalance = new grpc.web.MethodDescriptor(
   grpc.web.MethodType.SERVER_STREAMING,
   proto.evrynet.GetBalanceRequest,
   proto.evrynet.GetBalanceResponse,
-  /** @param {!proto.evrynet.GetBalanceRequest} request */
+  /**
+   * @param {!proto.evrynet.GetBalanceRequest} request
+   * @return {!Uint8Array}
+   */
   function(request) {
-    return request.serializeBinary()
+    return request.serializeBinary();
   },
-  proto.evrynet.GetBalanceResponse.deserializeBinary,
-)
+  proto.evrynet.GetBalanceResponse.deserializeBinary
+);
+
 
 /**
  * @const
@@ -255,12 +250,16 @@ const methodDescriptor_EvrynetGRPC_GetBalance = new grpc.web.MethodDescriptor(
  */
 const methodInfo_EvrynetGRPC_GetBalance = new grpc.web.AbstractClientBase.MethodInfo(
   proto.evrynet.GetBalanceResponse,
-  /** @param {!proto.evrynet.GetBalanceRequest} request */
+  /**
+   * @param {!proto.evrynet.GetBalanceRequest} request
+   * @return {!Uint8Array}
+   */
   function(request) {
-    return request.serializeBinary()
+    return request.serializeBinary();
   },
-  proto.evrynet.GetBalanceResponse.deserializeBinary,
-)
+  proto.evrynet.GetBalanceResponse.deserializeBinary
+);
+
 
 /**
  * @param {!proto.evrynet.GetBalanceRequest} request The request proto
@@ -269,17 +268,15 @@ const methodInfo_EvrynetGRPC_GetBalance = new grpc.web.AbstractClientBase.Method
  * @return {!grpc.web.ClientReadableStream<!proto.evrynet.GetBalanceResponse>}
  *     The XHR Node Readable Stream
  */
-proto.evrynet.EvrynetGRPCClient.prototype.getBalance = function(
-  request,
-  metadata,
-) {
-  return this.client_.serverStreaming(
-    this.hostname_ + '/evrynet.EvrynetGRPC/GetBalance',
-    request,
-    metadata || {},
-    methodDescriptor_EvrynetGRPC_GetBalance,
-  )
-}
+proto.evrynet.EvrynetGRPCClient.prototype.getBalance =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/evrynet.EvrynetGRPC/GetBalance',
+      request,
+      metadata || {},
+      methodDescriptor_EvrynetGRPC_GetBalance);
+};
+
 
 /**
  * @param {!proto.evrynet.GetBalanceRequest} request The request proto
@@ -288,16 +285,15 @@ proto.evrynet.EvrynetGRPCClient.prototype.getBalance = function(
  * @return {!grpc.web.ClientReadableStream<!proto.evrynet.GetBalanceResponse>}
  *     The XHR Node Readable Stream
  */
-proto.evrynet.EvrynetGRPCPromiseClient.prototype.getBalance = function(
-  request,
-  metadata,
-) {
-  return this.client_.serverStreaming(
-    this.hostname_ + '/evrynet.EvrynetGRPC/GetBalance',
-    request,
-    metadata || {},
-    methodDescriptor_EvrynetGRPC_GetBalance,
-  )
-}
+proto.evrynet.EvrynetGRPCPromiseClient.prototype.getBalance =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/evrynet.EvrynetGRPC/GetBalance',
+      request,
+      metadata || {},
+      methodDescriptor_EvrynetGRPC_GetBalance);
+};
 
-module.exports = proto.evrynet
+
+module.exports = proto.evrynet;
+

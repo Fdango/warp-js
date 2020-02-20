@@ -3,25 +3,40 @@ import EvrynetException from '@/exceptions/evrynet'
 import Stream from 'stream'
 import { WhitelistedAsset } from '@/entities/asset'
 import map from 'lodash/map'
+import { getEvryClient } from '../evrynet'
+import { warpConfigInstance, WarpConfig, initWarpConfig } from '@/config'
+import Ganache from 'ganache-cli'
+import { Transaction } from 'ethereumjs-tx'
+
+const warpConfig = new WarpConfig()
+warpConfig.evrynet.provider = Ganache.provider()
+warpConfig.evrynet.shouldUseEstimatedGas = true
+initWarpConfig(warpConfig)
 
 describe('EvryNet', () => {
   const senderpk = '0x789CA41C61F599ee883eB604c7D616F458dfC606'
+  const senderpriv =
+    'eec741cb4f13d6f4c873834bcce86b4059f32f54744a37042969fb37b5f2b4b0'
   const currentNonce = '1'
   const InputAsset = new WhitelistedAsset({
     code: 'bar',
     issuer: 'foo',
     decimal: 3,
+    typeID: '1',
   })
   const expectedGRPCAsset = {
     code: 'bar',
     issuer: 'foo',
     decimal: 3,
+    typeID: '1',
+    creditOrigin: 1,
   }
   const expectedBalance = '1'
   const mockedGetBalCredit = new WhitelistedAsset({
     code: 'XLM',
     issuer: undefined,
     decimal: 3,
+    typeID: '1',
   })
   const getBalInput = {
     accountAddress: 'foo',
@@ -33,7 +48,7 @@ describe('EvryNet', () => {
   }
 
   describe('When get nonce', () => {
-    it('should get a stellar sequenceNumber correctly', async () => {
+    it('should get nonce correctly', async () => {
       let mockedStream = new Stream.Readable()
       mockedStream._read = () => {}
       const mockedClient = jest.fn().mockImplementation(() => {
@@ -41,17 +56,17 @@ describe('EvryNet', () => {
           getNonce: jest.fn().mockReturnValue(mockedStream),
         }
       })
-      const evry = new Evrynet(mockedClient())
+      const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
       setInterval(function() {
         mockedStream.emit('data', {
           getNonce: jest.fn().mockReturnValue(currentNonce),
         })
       }, 1000)
-      let res = await evry.getNonce(senderpk)
+      let res = await evrynet.getNonce(senderpk)
       expect(res.nonce).toBe(currentNonce)
     })
 
-    it('should fail getting a stellar sequenceNumber if input invalid', async () => {
+    it('should throw an error', async () => {
       let mockedStream = new Stream.Readable()
       mockedStream._read = () => {}
       const mockedClient = jest.fn().mockImplementation(() => {
@@ -59,11 +74,48 @@ describe('EvryNet', () => {
           getNonce: jest.fn().mockReturnValue(mockedStream),
         }
       })
-      const evry = new Evrynet(mockedClient())
+      const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
       setInterval(function() {
         mockedStream.emit('error', new Error('this is an error'))
       }, 1000)
-      await expect(evry.getNonce(senderpk)).rejects.toThrow(EvrynetException)
+      await expect(evrynet.getNonce(senderpk)).rejects.toThrow(EvrynetException)
+    })
+  })
+
+  describe('When get nonce from private key', () => {
+    it('should get nonce correctly', async () => {
+      let mockedStream = new Stream.Readable()
+      mockedStream._read = () => {}
+      const mockedClient = jest.fn().mockImplementation(() => {
+        return {
+          getNonce: jest.fn().mockReturnValue(mockedStream),
+        }
+      })
+      const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+      setInterval(function() {
+        mockedStream.emit('data', {
+          getNonce: jest.fn().mockReturnValue(currentNonce),
+        })
+      }, 1000)
+      let res = await evrynet.getNonceFromPriv(senderpriv)
+      expect(res.nonce).toBe(currentNonce)
+    })
+
+    it('should throw an error', async () => {
+      let mockedStream = new Stream.Readable()
+      mockedStream._read = () => {}
+      const mockedClient = jest.fn().mockImplementation(() => {
+        return {
+          getNonce: jest.fn().mockReturnValue(mockedStream),
+        }
+      })
+      const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+      setInterval(function() {
+        mockedStream.emit('error', new Error('this is an error'))
+      }, 1000)
+      await expect(evrynet.getNonceFromPriv(senderpriv)).rejects.toThrow(
+        EvrynetException,
+      )
     })
   })
 
@@ -77,45 +129,71 @@ describe('EvryNet', () => {
             getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const evry = new Evrynet(mockedClient())
-        setInterval(function() {
+        const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+        setTimeout(function() {
           mockedStream.emit('data', {
-            getAssetsList: jest.fn().mockReturnValue([
+            getNativeasset: jest.fn().mockReturnValue({
+              getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+              getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+              getDecimal: jest.fn().mockReturnValue(expectedGRPCAsset.decimal),
+              getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+              NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+            }),
+            getEvrynetcreditList: jest.fn().mockReturnValue([
               {
                 getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
                 getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
                 getDecimal: jest
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
+              },
+            ]),
+            getStellarcreditList: jest.fn().mockReturnValue([
+              {
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                STELLAR_CREDIT: WhitelistedAsset.STELLAR_CREDIT,
               },
             ]),
           })
-        }, 1000)
-        const res = await evry.getWhitelistAssets({})
+        }, 100)
+        const res = await evrynet.getWhitelistAssets({})
         const actual = map(res.assets, (ech) => ({
           code: ech.getCode(),
           issuer: ech.getIssuer(),
           decimal: ech.getDecimal(),
+          typeID: ech.getTypeid(),
+          creditOrigin: ech.getCreditOrigin(),
         }))
         expect(actual).toEqual(expect.arrayContaining([expectedGRPCAsset]))
       })
-    })
-    describe('When a stream emit an error response', () => {
-      it('should throw an error', async () => {
-        let mockedStream = new Stream.Readable()
-        mockedStream._read = () => {}
-        const mockedClient = jest.fn().mockImplementation(() => {
-          return {
-            getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
-          }
+
+      describe('When a stream emit an error response', () => {
+        it('should throw an error', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setTimeout(function() {
+            mockedStream.emit('error', new Error('this is an error'))
+          }, 100)
+          await expect(evrynet.getWhitelistAssets({})).rejects.toThrow(
+            EvrynetException,
+          )
         })
-        const evry = new Evrynet(mockedClient())
-        setInterval(function() {
-          mockedStream.emit('error', new Error('this is an error'))
-        }, 1000)
-        await expect(evry.getWhitelistAssets({})).rejects.toThrow(
-          EvrynetException,
-        )
       })
     })
   })
@@ -131,27 +209,32 @@ describe('EvryNet', () => {
               getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evry = new Evrynet(mockedClient())
-          setInterval(function() {
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setTimeout(function() {
             mockedStream.emit('data', {
-              getAssetsList: jest.fn().mockReturnValue([
-                {
-                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
-                  getIssuer: jest
-                    .fn()
-                    .mockReturnValue(expectedGRPCAsset.issuer),
-                  getDecimal: jest
-                    .fn()
-                    .mockReturnValue(expectedGRPCAsset.decimal),
-                },
-              ]),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
             })
-          }, 1000)
-          const actual = await evry.getWhitelistAssetByCode(InputAsset)
+          }, 100)
+          const actual = await evrynet.getWhitelistAssetByCode(InputAsset)
           expect({
             code: actual.getCode(),
             issuer: actual.getIssuer(),
             decimal: actual.getDecimal(),
+            typeID: actual.getTypeid(),
+            creditOrigin: actual.getCreditOrigin(),
           }).toEqual(expectedGRPCAsset)
         })
       })
@@ -164,13 +247,18 @@ describe('EvryNet', () => {
               getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
             }
           })
-          const evry = new Evrynet(mockedClient())
-          setInterval(function() {
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setTimeout(function() {
             mockedStream.emit('data', {
-              getAssetsList: jest.fn().mockReturnValue(undefined),
+              getNativeasset: jest.fn().mockReturnValue(undefined),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
             })
-          }, 1000)
-          const actual = await evry.getWhitelistAssetByCode(InputAsset)
+          }, 100)
+          const actual = await evrynet.getWhitelistAssetByCode(InputAsset)
           expect(actual).toBeUndefined()
         })
       })
@@ -184,12 +272,12 @@ describe('EvryNet', () => {
             getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const evry = new Evrynet(mockedClient())
-        setInterval(function() {
+        const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+        setTimeout(function() {
           mockedStream.emit('error', new Error('this is an error'))
-        }, 1000)
+        }, 100)
         await expect(
-          evry.getWhitelistAssetByCode({
+          evrynet.getWhitelistAssetByCode({
             code: null,
             issuer: 'invalid',
           }),
@@ -208,14 +296,14 @@ describe('EvryNet', () => {
             getBalance: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const evry = new Evrynet(mockedClient())
-        setInterval(function() {
+        const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+        setTimeout(function() {
           mockedStream.emit('data', {
             getBalance: jest.fn().mockReturnValue(expectedBalance),
           })
-        }, 1000)
+        }, 100)
         await expect(
-          evry.getAccountBalance(getBalInput.accountAddress, getBalInput.asset),
+          evrynet.getBalance(getBalInput.accountAddress, getBalInput.asset),
         ).resolves.toEqual({
           balance: expectedBalance,
         })
@@ -230,16 +318,996 @@ describe('EvryNet', () => {
             getBalance: jest.fn().mockReturnValue(mockedStream),
           }
         })
-        const evry = new Evrynet(mockedClient())
-        setInterval(function() {
+        const evrynet = new Evrynet(mockedClient(), warpConfigInstance.evrynet)
+        setTimeout(function() {
           mockedStream.emit('error', new Error('this is an error'))
-        }, 1000)
+        }, 100)
         await expect(
-          evry.getAccountBalance(
+          evrynet.getBalance(
             getBalInvalidInput.accountAddress,
             getBalInvalidInput.asset,
           ),
         ).rejects.toThrow(EvrynetException)
+      })
+    })
+  })
+
+  describe('When creating new lock raw tx', () => {
+    describe('When success', () => {
+      describe('When asset is a native', () => {
+        it('should be success', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          }, 1000)
+          const tx = await evrynet.newLockTx({
+            asset: InputAsset,
+            amount: '10',
+            secret: senderpriv,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = evrynet.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+
+      describe('When asset is a evrynet asset', () => {
+        it('should be success', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(undefined),
+                getIssuer: jest.fn().mockReturnValue(undefined),
+                getDecimal: jest.fn().mockReturnValue(undefined),
+                getTypeid: jest.fn().mockReturnValue(undefined),
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue([
+                {
+                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                  getIssuer: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.issuer),
+                  getDecimal: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.decimal),
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
+                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
+                },
+              ]),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          }, 1000)
+          const tx = await evrynet.newLockTx({
+            asset: InputAsset,
+            amount: '10',
+            secret: senderpriv,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = evrynet.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+
+      describe('When asset is a stellar asset', () => {
+        it('should be success', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(undefined),
+                getIssuer: jest.fn().mockReturnValue(undefined),
+                getDecimal: jest.fn().mockReturnValue(undefined),
+                getTypeid: jest.fn().mockReturnValue(undefined),
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+              getStellarcreditList: jest.fn().mockReturnValue([
+                {
+                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                  getIssuer: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.issuer),
+                  getDecimal: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.decimal),
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
+                  STELLAR_CREDIT: WhitelistedAsset.STELLAR_CREDIT,
+                },
+              ]),
+            })
+          }, 100)
+          const tx = await evrynet.newLockTx({
+            asset: InputAsset,
+            amount: '10',
+            secret: senderpriv,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = evrynet.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+
+      describe('When credit decimal is less than stellar atomic decimal unit', () => {
+        it('should be successfully creating a new lock credit raw tx', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(undefined),
+                getIssuer: jest.fn().mockReturnValue(undefined),
+                getDecimal: jest.fn().mockReturnValue(undefined),
+                getTypeid: jest.fn().mockReturnValue(undefined),
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue([
+                {
+                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                  getIssuer: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.issuer),
+                  getDecimal: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.decimal),
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
+                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
+                },
+              ]),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          }, 1000)
+          const tx = await evrynet.newLockTx({
+            asset: InputAsset,
+            amount: '10',
+            secret: senderpriv,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = evrynet.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+
+      describe('When credit decimal is more than stellar atomic decimal unit', () => {
+        it('should be successfully creating a new lock credit raw tx', async () => {
+          const asset = InputAsset
+          asset.decimal = 10
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(undefined),
+                getIssuer: jest.fn().mockReturnValue(undefined),
+                getDecimal: jest.fn().mockReturnValue(undefined),
+                getTypeid: jest.fn().mockReturnValue(undefined),
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue([
+                {
+                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                  getIssuer: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.issuer),
+                  getDecimal: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.decimal),
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
+                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
+                },
+              ]),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          }, 1000)
+          const tx = await evrynet.newLockTx({
+            asset,
+            amount: '10',
+            secret: senderpriv,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = evrynet.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+    })
+
+    describe('When error', () => {
+      describe('With invalid private key', () => {
+        it('should throw an error from creating a new lock raw tx', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          })
+          await expect(
+            evrynet.newLockTx({
+              asset: InputAsset,
+              amount: '10',
+              secret: 'badpriv',
+            }),
+          ).rejects.toThrow(EvrynetException)
+        })
+      })
+
+      describe('With invalid asset', () => {
+        it('should throw an error from creating a new lock raw tx', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(undefined),
+                getIssuer: jest.fn().mockReturnValue(undefined),
+                getDecimal: jest.fn().mockReturnValue(undefined),
+                getTypeid: jest.fn().mockReturnValue(undefined),
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue([
+                {
+                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                  getIssuer: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.issuer),
+                  getDecimal: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.decimal),
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
+                  EVRYNET_CREDIT: 0,
+                },
+              ]),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          })
+          await expect(
+            evrynet.newLockTx({
+              asset: InputAsset,
+              amount: 10,
+              secret: senderpriv,
+            }),
+          ).rejects.toThrow(EvrynetException)
+        })
+      })
+
+      describe('With invalid amount', () => {
+        it('should throw an error from creating a new lock raw tx from zero', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          })
+          await expect(
+            evrynet.newLockTx({
+              asset: InputAsset,
+              amount: '0',
+              secret: senderpriv,
+            }),
+          ).rejects.toThrow(EvrynetException)
+        })
+
+        it('should throw an error from creating a new lock raw tx from negative', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          })
+          await expect(
+            evrynet.newLockTx({
+              asset: InputAsset,
+              amount: '-1',
+              secret: senderpriv,
+            }),
+          ).rejects.toThrow(EvrynetException)
+        })
+
+        it('should throw an error from creating a new lock raw tx from invalid decimal', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          })
+          await expect(
+            evrynet.newLockTx({
+              asset: InputAsset,
+              amount: '1.00000001',
+              secret: senderpriv,
+            }),
+          ).rejects.toThrow(EvrynetException)
+        })
+      })
+    })
+  })
+
+  describe('When creating new unlock raw tx', () => {
+    describe('When success', () => {
+      describe('When asset is a native', () => {
+        it('should be success', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          }, 1000)
+          const tx = await evrynet.newUnlockTx({
+            asset: InputAsset,
+            amount: '10',
+            secret: senderpriv,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = evrynet.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+
+      describe('When asset is a evrynet asset', () => {
+        it('should be success', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(undefined),
+                getIssuer: jest.fn().mockReturnValue(undefined),
+                getDecimal: jest.fn().mockReturnValue(undefined),
+                getTypeid: jest.fn().mockReturnValue(undefined),
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue([
+                {
+                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                  getIssuer: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.issuer),
+                  getDecimal: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.decimal),
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
+                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
+                },
+              ]),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          }, 1000)
+          const tx = await evrynet.newUnlockTx({
+            asset: InputAsset,
+            amount: '10',
+            secret: senderpriv,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = evrynet.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+
+      describe('When asset is a stellar asset', () => {
+        it('should be success', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(undefined),
+                getIssuer: jest.fn().mockReturnValue(undefined),
+                getDecimal: jest.fn().mockReturnValue(undefined),
+                getTypeid: jest.fn().mockReturnValue(undefined),
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+              getStellarcreditList: jest.fn().mockReturnValue([
+                {
+                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                  getIssuer: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.issuer),
+                  getDecimal: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.decimal),
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
+                  STELLAR_CREDIT: WhitelistedAsset.STELLAR_CREDIT,
+                },
+              ]),
+            })
+          }, 100)
+          const tx = await evrynet.newUnlockTx({
+            asset: InputAsset,
+            amount: '10',
+            secret: senderpriv,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = evrynet.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+
+      describe('When credit decimal is less than stellar atomic decimal unit', () => {
+        it('should be successfully creating a new unlock raw tx', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(undefined),
+                getIssuer: jest.fn().mockReturnValue(undefined),
+                getDecimal: jest.fn().mockReturnValue(undefined),
+                getTypeid: jest.fn().mockReturnValue(undefined),
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue([
+                {
+                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                  getIssuer: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.issuer),
+                  getDecimal: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.decimal),
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
+                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
+                },
+              ]),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          }, 1000)
+          const tx = await evrynet.newUnlockTx({
+            asset: InputAsset,
+            amount: '10',
+            secret: senderpriv,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = evrynet.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+
+      describe('When credit decimal is more than stellar atomic decimal unit', () => {
+        it('should be successfully creating a new unlock raw tx', async () => {
+          const asset = InputAsset
+          asset.decimal = 10
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(undefined),
+                getIssuer: jest.fn().mockReturnValue(undefined),
+                getDecimal: jest.fn().mockReturnValue(undefined),
+                getTypeid: jest.fn().mockReturnValue(undefined),
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue([
+                {
+                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                  getIssuer: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.issuer),
+                  getDecimal: jest.fn().mockReturnValue(10),
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
+                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
+                },
+              ]),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          }, 1000)
+          const tx = await evrynet.newUnlockTx({
+            asset,
+            amount: '10',
+            secret: senderpriv,
+          })
+          expect(tx.verifySignature()).toBeTruthy()
+          const rwtxHex = evrynet.txToHex(tx)
+          expect(rwtxHex).toBeDefined()
+        })
+      })
+    })
+
+    describe('When error', () => {
+      describe('With invalid private key', () => {
+        it('should throw an error from creating a unlock raw tx', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          })
+          await expect(
+            evrynet.newUnlockTx({
+              asset: InputAsset,
+              amount: '10',
+              secret: 'badpriv',
+            }),
+          ).rejects.toThrow(EvrynetException)
+        })
+      })
+
+      describe('With invalid asset', () => {
+        it('should throw an error from creating a new unlock raw tx', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(undefined),
+                getIssuer: jest.fn().mockReturnValue(undefined),
+                getDecimal: jest.fn().mockReturnValue(undefined),
+                getTypeid: jest.fn().mockReturnValue(undefined),
+              }),
+              getEvrynetcreditList: jest.fn().mockReturnValue([
+                {
+                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                  getIssuer: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.issuer),
+                  getDecimal: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.decimal),
+                  getTypeid: jest
+                    .fn()
+                    .mockReturnValue(expectedGRPCAsset.typeID),
+                  EVRYNET_CREDIT: 0,
+                },
+              ]),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          })
+          await expect(
+            evrynet.newUnlockTx({
+              asset: InputAsset,
+              amount: 10,
+              secret: senderpriv,
+            }),
+          ).rejects.toThrow(EvrynetException)
+        })
+      })
+
+      describe('With invalid amount', () => {
+        it('should throw an error from creating a new unlock raw tx from zero', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          })
+          await expect(
+            evrynet.newUnlockTx({
+              asset: InputAsset,
+              amount: '0',
+              secret: senderpriv,
+            }),
+          ).rejects.toThrow(EvrynetException)
+        })
+
+        it('should throw an error from creating a new unlock raw tx from negative', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          })
+          await expect(
+            evrynet.newUnlockTx({
+              asset: InputAsset,
+              amount: '-1',
+              secret: senderpriv,
+            }),
+          ).rejects.toThrow(EvrynetException)
+        })
+
+        it('should throw an error from creating a new unlock raw tx from invalid decimal', async () => {
+          let mockedStream = new Stream.Readable()
+          mockedStream._read = () => {}
+          const mockedClient = jest.fn().mockImplementation(() => {
+            return {
+              getNonce: jest.fn().mockReturnValue(mockedStream),
+              getWhitelistAssets: jest.fn().mockReturnValue(mockedStream),
+            }
+          })
+          const evrynet = new Evrynet(
+            mockedClient(),
+            warpConfigInstance.evrynet,
+          )
+          setInterval(function() {
+            mockedStream.emit('data', {
+              getNonce: jest.fn().mockReturnValue(currentNonce),
+              getNativeasset: jest.fn().mockReturnValue({
+                getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
+                getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
+                getDecimal: jest
+                  .fn()
+                  .mockReturnValue(expectedGRPCAsset.decimal),
+                getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
+                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
+              }),
+              getStellarcreditList: jest.fn().mockReturnValue(undefined),
+              getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
+            })
+          })
+          await expect(
+            evrynet.newUnlockTx({
+              asset: InputAsset,
+              amount: '1.00000001',
+              secret: senderpriv,
+            }),
+          ).rejects.toThrow(EvrynetException)
+        })
+      })
+    })
+  })
+
+  describe('Convert tx to hex', () => {
+    it('should convert success', () => {
+      const evrynet = new Evrynet(null, warpConfigInstance.evrynet)
+      const tx = new Transaction()
+      const txHex = evrynet.txToHex(tx)
+      expect(txHex).toBeDefined()
+    })
+
+    it('should throw an error', () => {
+      const evrynet = new Evrynet(null, warpConfigInstance.evrynet)
+      expect(function() {
+        evrynet.txToHex('badTx')
+      }).toThrow(EvrynetException)
+    })
+  })
+
+  describe('Validate amount', () => {
+    describe('When amount is valid', () => {
+      describe('When decimal is less than stellar decimal unit', () => {
+        it('Should return true on validation', () => {
+          expect(
+            getEvryClient(warpConfigInstance)._validateAmount('10.0000001', 10),
+          ).toBe(true)
+        })
+      })
+      describe('When decimal is less than stellar decimal unit', () => {
+        it('Should return true on validation', () => {
+          expect(
+            getEvryClient(warpConfigInstance)._validateAmount('10.0000010', 6),
+          ).toBe(true)
+        })
+      })
+    })
+    describe('When amount is invalid', () => {
+      describe('When decimal is less than stellar decimal unit', () => {
+        it('Should return true on validation', () => {
+          expect(
+            getEvryClient(warpConfigInstance)._validateAmount(
+              '10.00000001',
+              10,
+            ),
+          ).toBe(false)
+        })
+      })
+      describe('When decimal is less than stellar decimal unit', () => {
+        it('Should return true on validation', () => {
+          expect(
+            getEvryClient(warpConfigInstance)._validateAmount('10.0000011', 6),
+          ).toBe(false)
+        })
       })
     })
   })
@@ -249,7 +1317,7 @@ describe('EvryNet', () => {
       const privateKey =
         '0a05a1645d8a0a5b8f593c84324ea36194211814ccc51211e81e6b09cf7a5460'
       const expected = `0x9993B01f1BBAF72f3B8f5fee269f15e483655e43`
-      const evrynet = new Evrynet()
+      const evrynet = new Evrynet(null, warpConfigInstance.evrynet)
       expect(evrynet.getPublickeyFromPrivateKey(privateKey)).toEqual(expected)
     })
   })

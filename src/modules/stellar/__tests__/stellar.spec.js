@@ -16,6 +16,7 @@ describe('Stellar', () => {
     code: 'XLM',
     issuer: undefined,
     decimal: 3,
+    typeID: '1',
   })
   const getBalInput = {
     accountAddress: 'foo',
@@ -69,7 +70,7 @@ describe('Stellar', () => {
     })
   })
 
-  describe('When deposit transaction', () => {
+  describe('When lock transaction', () => {
     describe('With valid input', () => {
       it('should create a correct deposit payment transaction', async () => {
         let amount = '100.0000000'
@@ -86,11 +87,10 @@ describe('Stellar', () => {
             getSequencenumber: jest.fn().mockReturnValue(currentSeq),
           })
         }, 1000)
-        let res = await stellar.getSequenceNumber(senderpk)
+
         const xlm = getLumensAsset()
-        let txeB64 = await stellar.createDepositTx({
-          src: sender,
-          seq: res.sequenceNumber,
+        let txeB64 = await stellar.newLockTransaction({
+          secret: sender,
           amount,
           asset: xlm.toStellarFormat(),
         })
@@ -131,7 +131,7 @@ describe('Stellar', () => {
     })
   })
 
-  describe('When withdraw transaction', () => {
+  describe('When unlock transaction', () => {
     describe('With valid input', () => {
       it('should create a correct withdraw payment transaction', async () => {
         let amount = '100.0000000'
@@ -148,11 +148,10 @@ describe('Stellar', () => {
             getSequencenumber: jest.fn().mockReturnValue(currentSeq),
           })
         }, 1000)
-        let res = await stellar.getSequenceNumber(senderpk)
+
         const xlm = getLumensAsset()
-        let txeB64 = await stellar.createWithdrawTx({
-          src: sender,
-          seq: res.sequenceNumber,
+        let txeB64 = await stellar.newUnlockTransaction({
+          secret: sender,
           amount,
           asset: xlm.toStellarFormat(),
         })
@@ -209,7 +208,7 @@ describe('Stellar', () => {
             getBalance: jest.fn().mockReturnValue(expectedBalance),
           })
         }, 1000)
-        let res = await stellar.getAccountBalance(
+        let res = await stellar.getBalance(
           getBalInput.accountAddress,
           getBalInput.asset,
         )
@@ -230,7 +229,7 @@ describe('Stellar', () => {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
         await expect(
-          stellar.getAccountBalance(
+          stellar.getBalance(
             getBalInvalidInput.accountAddress,
             getBalInvalidInput.asset,
           ),
