@@ -70,17 +70,6 @@ export class Asset {
   toStellarFormat() {
     return new StellarSDK.Asset(this.code, this.issuer)
   }
-
-  /**
-   * Check if this asset is native.
-   * @return {boolean} - the result wheter this asset if native or not.
-   */
-  isNative() {
-    return (
-      this.code === warpConfigInstance.stellar.asset.evry.name &&
-      this.issuer === warpConfigInstance.stellar.issuer
-    )
-  }
 }
 
 /**
@@ -101,10 +90,23 @@ export class WhitelistedAsset extends Asset {
    * @param {string} payload.decimal - asset's decimal
    * @param {string} payload.typeID - asset's type id
    */
-  constructor({ code, issuer, decimal, typeID }) {
+  constructor({ code, issuer, decimal, typeID, creditOrigin }) {
     super({ code, issuer })
     this.decimal = decimal
     this.typeID = typeID
+    this.creditOrigin = creditOrigin
+  }
+
+  static get NATIVE_ASSET() {
+    return 1
+  }
+
+  static get STELLAR_CREDIT() {
+    return 2
+  }
+
+  static get EVRYNET_CREDIT() {
+    return 3
   }
 
   /**
@@ -117,6 +119,10 @@ export class WhitelistedAsset extends Asset {
 
   getTypeid() {
     return this.typeID
+  }
+
+  getCreditOrigin() {
+    return this.creditOrigin
   }
 }
 

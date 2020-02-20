@@ -62,9 +62,6 @@ export class Evrynet {
       this.config.contract.stellarCustodian.address,
       stellarCustodianABI,
     )
-    this.evrynetAssets
-    this.stellarAssets
-    this.nativeAsset
   }
 
   /**
@@ -113,45 +110,44 @@ export class Evrynet {
     let empty = new Empty()
     return new Promise((resolve, reject) => {
       const chan = this.client.getWhitelistAssets(empty, {})
-      this.evrynetAssets = []
-      this.stellarAssets = []
-      this.nativeAsset = {}
       chan.on('data', (data) => {
         if (data.getEvrynetcreditList()) {
           data.getEvrynetcreditList().forEach((asset) => {
-            this.evrynetAssets.push(
+            assets.push(
               new WhitelistedAsset({
                 code: asset.getCode(),
                 issuer: asset.getIssuer(),
                 decimal: asset.getDecimal(),
                 typeID: asset.getTypeid(),
+                creditOrigin: asset.EVRYNET_CREDIT,
               }),
             )
           })
-          assets = assets.concat(this.evrynetAssets)
         }
         if (data.getStellarcreditList()) {
           data.getStellarcreditList().forEach((asset) => {
-            this.stellarAssets.push(
+            assets.push(
               new WhitelistedAsset({
                 code: asset.getCode(),
                 issuer: asset.getIssuer(),
                 decimal: asset.getDecimal(),
                 typeID: asset.getTypeid(),
+                creditOrigin: asset.STELLAR_CREDIT,
               }),
             )
           })
-          assets = assets.concat(this.stellarAssets)
         }
         if (data.getNativeasset()) {
           const asset = data.getNativeasset()
-          this.nativeAsset = new WhitelistedAsset({
-            code: asset.getCode(),
-            issuer: asset.getIssuer(),
-            decimal: asset.getDecimal(),
-            typeID: asset.getTypeid(),
-          })
-          assets.push(this.nativeAsset)
+          assets.push(
+            new WhitelistedAsset({
+              code: asset.getCode(),
+              issuer: asset.getIssuer(),
+              decimal: asset.getDecimal(),
+              typeID: asset.getTypeid(),
+              creditOrigin: asset.NATIVE_ASSET,
+            }),
+          )
         }
         resolve({ assets })
       })
@@ -176,39 +172,6 @@ export class Evrynet {
     } catch (e) {
       throw new EvrynetException(null, e.toString())
     }
-  }
-
-  /**
-   * @param {asset} - native's asset of to be fetched from whitelisted
-   * @returns {boolean}
-   */
-  isNativeAsset(asset) {
-    return (
-      asset.getCode() === this.nativeAsset.getCode() &&
-      asset.getIssuer() === this.nativeAsset.getIssuer()
-    )
-  }
-
-  /**
-   * @param {asset} - evrynet's asset of to be fetched from whitelisted
-   * @returns {boolean}
-   */
-  isEvrynetAsset(asset) {
-    return !!find(this.evrynetAssets, {
-      code: asset.getCode(),
-      issuer: asset.getIssuer(),
-    })
-  }
-
-  /**
-   * @param {asset} - stellar's asset of to be fetched from whitelisted
-   * @returns {boolean}
-   */
-  isStellarAsset(asset) {
-    return !!find(this.stellarAssets, {
-      code: asset.getCode(),
-      issuer: asset.getIssuer(),
-    })
   }
 
   /**
@@ -276,8 +239,9 @@ export class Evrynet {
       const account = web3Instance.eth.accounts.privateKeyToAccount(
         `0x${secret}`,
       )
+      const whitelistedAsset = await this.getWhitelistAssetByCode(asset)
       const { decimal, hexAmount, method, toAddr } = this.getLockTxParam(
-        asset,
+        whitelistedAsset,
         amount,
       )
       if (!this._validateAmount(amount, decimal)) {
@@ -326,15 +290,16 @@ export class Evrynet {
       const account = web3Instance.eth.accounts.privateKeyToAccount(
         `0x${secret}`,
       )
+      const whitelistedAsset = await this.getWhitelistAssetByCode(asset)
       const { decimal, hexAmount, method, toAddr } = this.getUnlockTxParam(
-        asset,
+        whitelistedAsset,
         amount,
         account,
       )
       if (!this._validateAmount(amount, decimal)) {
         throw new EvrynetException(
           null,
-          `Not allow to move evrycoin more than ${asset.decimal} decimals`,
+          `Not allow to move evrycoin more than ${decimal} decimals`,
         )
       }
       const gasLimit = await this.getGasLimit(
@@ -419,23 +384,23 @@ export class Evrynet {
     let additionalGas = 1000
     let gasAmount = this.config.shouldUseEstimatedGas
       ? (await method.estimateGas({
-          from: sourceAddress,
-          value: value,
-        })) + additionalGas
+        from: sourceAddress,
+        value: value,
+      })) + additionalGas
       : this.config.gasLimit
     return gasAmount
   }
 
   getLockTxParam(asset, amount) {
     let decimal, hexAmount, method, toAddr
-    switch (!!asset) {
-      case this.isNativeAsset(asset):
+    switch (asset.getCreditOrigin()) {
+      case WhitelistedAsset.NATIVE_ASSET:
         decimal = this.config.atomicEvryDecimalUnit
         hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
         method = this.nativeCustodian.methods.lock()
         toAddr = this.nativeCustodian.options.address
         break
-      case this.isEvrynetAsset(asset):
+      case WhitelistedAsset.EVRYNET_CREDIT:
         decimal = asset.decimal
         hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
         method = this.evrynetCustodian.methods.lock(
@@ -444,7 +409,7 @@ export class Evrynet {
         )
         toAddr = this.evrynetCustodian.options.address
         break
-      case this.isStellarAsset(asset):
+      case WhitelistedAsset.STELLAR_CREDIT:
         decimal = asset.decimal
         hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
         method = this.stellarCustodian.methods.lock(
@@ -461,14 +426,14 @@ export class Evrynet {
 
   getUnlockTxParam(asset, amount, account) {
     let decimal, hexAmount, method, toAddr
-    switch (!!asset) {
-      case this.isNativeAsset(asset):
+    switch (asset.getCreditOrigin()) {
+      case WhitelistedAsset.NATIVE_ASSET:
         decimal = this.config.atomicEvryDecimalUnit
         hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
         method = this.nativeCustodian.methods.unlock(account.address, hexAmount)
         toAddr = this.nativeCustodian.options.address
         break
-      case this.isEvrynetAsset(asset):
+      case WhitelistedAsset.EVRYNET_CREDIT:
         decimal = asset.decimal
         hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
         method = this.evrynetCustodian.methods.unlock(
@@ -477,7 +442,7 @@ export class Evrynet {
         )
         toAddr = this.evrynetCustodian.options.address
         break
-      case this.isStellarAsset(asset):
+      case WhitelistedAsset.STELLAR_CREDIT:
         decimal = asset.decimal
         hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
         method = this.stellarCustodian.methods.unlock(
