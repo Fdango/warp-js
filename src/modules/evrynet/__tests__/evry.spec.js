@@ -303,7 +303,10 @@ describe('EvryNet', () => {
           })
         }, 100)
         await expect(
-          evrynet.getBalance(getBalInput.accountAddress, getBalInput.asset),
+          evrynet.getBalance({
+            address: getBalInput.accountAddress,
+            asset: getBalInput.asset,
+          }),
         ).resolves.toEqual({
           balance: expectedBalance,
         })
@@ -323,10 +326,10 @@ describe('EvryNet', () => {
           mockedStream.emit('error', new Error('this is an error'))
         }, 100)
         await expect(
-          evrynet.getBalance(
-            getBalInvalidInput.accountAddress,
-            getBalInvalidInput.asset,
-          ),
+          evrynet.getBalance({
+            account: getBalInvalidInput.accountAddress,
+            asset: getBalInvalidInput.asset,
+          }),
         ).rejects.toThrow(EvrynetException)
       })
     })

@@ -190,11 +190,12 @@ export class Evrynet {
   }
 
   /**
-   * @param {string} accountAddress - a address of account
-   * @param {WhitelistedAsset} asset - asset of payment
+   * @param {Object} payload - payload for getting balance
+   * @param {string} payload.address - a address of account
+   * @param {WhitelistedAsset} payload.asset - asset of payment
    * @returns {string|EvrynetException} balance
    */
-  async getBalance(accountAddress, asset) {
+  async getBalance({ address, asset }) {
     const grpcAsset = new Asset()
     grpcAsset.setCode(asset.code)
     grpcAsset.setIssuer(asset.issuer)
@@ -202,7 +203,7 @@ export class Evrynet {
     grpcAsset.setTypeid(asset.typeID)
     const grpcRequest = new GetBalanceRequest()
     grpcRequest.setAsset(grpcAsset)
-    grpcRequest.setAccountaddress(accountAddress)
+    grpcRequest.setAccountaddress(address)
     return new Promise((resolve, reject) => {
       const chan = this.client.getBalance(grpcRequest, {})
       chan.on('data', (data) => {
@@ -384,9 +385,9 @@ export class Evrynet {
     let additionalGas = 1000
     let gasAmount = this.config.shouldUseEstimatedGas
       ? (await method.estimateGas({
-        from: sourceAddress,
-        value: value,
-      })) + additionalGas
+          from: sourceAddress,
+          value: value,
+        })) + additionalGas
       : this.config.gasLimit
     return gasAmount
   }
