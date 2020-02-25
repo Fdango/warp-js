@@ -208,10 +208,10 @@ describe('Stellar', () => {
             getBalance: jest.fn().mockReturnValue(expectedBalance),
           })
         }, 1000)
-        let res = await stellar.getBalance(
-          getBalInput.accountAddress,
-          getBalInput.asset,
-        )
+        let res = await stellar.getBalance({
+          address: getBalInput.accountAddress,
+          asset: getBalInput.asset,
+        })
         expect(res.balance).toEqual(expectedBalance)
       })
     })
@@ -229,10 +229,10 @@ describe('Stellar', () => {
           mockedStream.emit('error', new Error('this is an error'))
         }, 1000)
         await expect(
-          stellar.getBalance(
-            getBalInvalidInput.accountAddress,
-            getBalInvalidInput.asset,
-          ),
+          stellar.getBalance({
+            address: getBalInvalidInput.accountAddress,
+            asset: getBalInvalidInput.asset,
+          }),
         ).rejects.toThrow(StellarException)
       })
     })

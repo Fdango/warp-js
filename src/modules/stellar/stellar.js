@@ -77,11 +77,12 @@ export class Stellar {
   }
 
   /**
-   * @param {string} accountAddress - a address of account
-   * @param {WhitelistedAsset} asset - asset of payment
+   * @param {Object} payload - payload for getting balance
+   * @param {string} payload.address - a address of account
+   * @param {WhitelistedAsset} payload.asset - asset of payment
    * @returns {string|StellarException} balance
    */
-  getBalance(accountAddress, asset) {
+  getBalance({ address, asset }) {
     const grpcAsset = new Asset()
     grpcAsset.setCode(asset.code)
     grpcAsset.setIssuer(asset.issuer)
@@ -89,7 +90,7 @@ export class Stellar {
     grpcAsset.setTypeid(asset.typeID)
     const grpcRequest = new GetBalanceRequest()
     grpcRequest.setAsset(grpcAsset)
-    grpcRequest.setAccountaddress(accountAddress)
+    grpcRequest.setAccountaddress(address)
     return new Promise((resolve, reject) => {
       const chan = this.client.getBalance(grpcRequest, {})
       chan.on('data', (data) => {
