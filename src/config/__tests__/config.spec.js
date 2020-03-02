@@ -35,15 +35,15 @@ describe('initWarpConfig', () => {
       expect(warpConfigInstance.grpc.proto.stellar).not.toEqual(
         expected.grpc.stellar,
       )
-      expect(warpConfigInstance.evrynet.contract.nativeCustodian.address).not.toEqual(
-        expected.evrynet.contract.nativeCustodian.address,
-      )
-      expect(warpConfigInstance.evrynet.contract.evrynetCustodian.address).not.toEqual(
-        expected.evrynet.contract.evrynetCustodian.address,
-      )
-      expect(warpConfigInstance.evrynet.contract.stellarCustodian.address).not.toEqual(
-        expected.evrynet.contract.stellarCustodian.address,
-      )
+      expect(
+        warpConfigInstance.evrynet.contract.nativeCustodian.address,
+      ).not.toEqual(expected.evrynet.contract.nativeCustodian.address)
+      expect(
+        warpConfigInstance.evrynet.contract.evrynetCustodian.address,
+      ).not.toEqual(expected.evrynet.contract.evrynetCustodian.address)
+      expect(
+        warpConfigInstance.evrynet.contract.stellarCustodian.address,
+      ).not.toEqual(expected.evrynet.contract.stellarCustodian.address)
     })
   })
 
@@ -52,9 +52,12 @@ describe('initWarpConfig', () => {
       let newConfig = new WarpConfig()
       newConfig.stellar.escrowAccount = expected.stellar.escrowAccount
       newConfig.grpc.proto.stellar = expected.grpc.stellar
-      newConfig.evrynet.contract.nativeCustodian.address = expected.evrynet.contract.nativeCustodian.address
-      newConfig.evrynet.contract.evrynetCustodian.address = expected.evrynet.contract.evrynetCustodian.address
-      newConfig.evrynet.contract.stellarCustodian.address = expected.evrynet.contract.stellarCustodian.address
+      newConfig.evrynet.contract.nativeCustodian.address =
+        expected.evrynet.contract.nativeCustodian.address
+      newConfig.evrynet.contract.evrynetCustodian.address =
+        expected.evrynet.contract.evrynetCustodian.address
+      newConfig.evrynet.contract.stellarCustodian.address =
+        expected.evrynet.contract.stellarCustodian.address
       initWarpConfig(newConfig)
       expect(warpConfigInstance.stellar.escrowAccount).toEqual(
         expected.stellar.escrowAccount,
@@ -62,15 +65,15 @@ describe('initWarpConfig', () => {
       expect(warpConfigInstance.grpc.proto.stellar).toEqual(
         expected.grpc.stellar,
       )
-      expect(warpConfigInstance.evrynet.contract.nativeCustodian.address).toEqual(
-        expected.evrynet.contract.nativeCustodian.address,
-      )
-      expect(warpConfigInstance.evrynet.contract.evrynetCustodian.address).toEqual(
-        expected.evrynet.contract.evrynetCustodian.address,
-      )
-      expect(warpConfigInstance.evrynet.contract.stellarCustodian.address).toEqual(
-        expected.evrynet.contract.stellarCustodian.address,
-      )
+      expect(
+        warpConfigInstance.evrynet.contract.nativeCustodian.address,
+      ).toEqual(expected.evrynet.contract.nativeCustodian.address)
+      expect(
+        warpConfigInstance.evrynet.contract.evrynetCustodian.address,
+      ).toEqual(expected.evrynet.contract.evrynetCustodian.address)
+      expect(
+        warpConfigInstance.evrynet.contract.stellarCustodian.address,
+      ).toEqual(expected.evrynet.contract.stellarCustodian.address)
     })
   })
 })

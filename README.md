@@ -31,7 +31,7 @@ or
 ```
 yarn run build:development
 ```
-3. create link to another project ( such as [ warp-client  ](https://github.com/evrynet-official/warp-client) ) 
+3. create link to another project ( such as [ warp-client  ](https://github.com/Evrynetlabs/warp-client) ) 
 ```
 yarn link
 ```

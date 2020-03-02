@@ -1,6 +1,6 @@
 {
-  "name": "warp-js",
-  "version": "0.0.1",
+  "name": "@Evrynetlabs/warp-js",
+  "version": "2.0.0",
   "description": "warp protocol javascript sdk for client side",
   "main": "lib/warp.js",
   "scripts": {
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/evrynet-official/warp-js.git"
+    "url": "git+https://github.com/Evrynetlabs/warp-js.git"
   },
   "keywords": [
     "warp",
@@ -29,9 +29,9 @@
   "author": "Evrynet Team",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/evrynet-official/warp-js/issues"
+    "url": "https://github.com/Evrynetlabs/warp-js/issues"
   },
-  "homepage": "https://github.com/evrynet-official/warp-js#readme",
+  "homepage": "https://github.com/Evrynetlabs/warp-js#readme",
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/runtime": "^7.4.5",
