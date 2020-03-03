@@ -1,6 +1,7 @@
 import { getStellarClient } from '@/modules/stellar/stellar'
 import { getEvryClient } from '@/modules/evrynet/evrynet'
 import { getTransferClient } from '@/modules/transfer/transfer'
+import { getNetClient } from '@/modules/net/net'
 import assetEntity from '@/entities/asset'
 import WarpException from '@/exceptions/warp_sdk'
 import { warpConfigInstance } from '@/config'
@@ -22,6 +23,7 @@ export default class Warp {
       stellar: getStellarClient(warpConfigInstance),
       evry: getEvryClient(warpConfigInstance),
       transfer: getTransferClient(warpConfigInstance),
+      net: getNetClient(warpConfigInstance),
     }
   }
 
