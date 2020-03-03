@@ -326,7 +326,11 @@ export class Evrynet {
       tx.sign(Buffer.from(secret, 'hex'))
       return tx
     } catch (e) {
-      throw new EvrynetException(null, 'Unable to unlock a asset', e.toString())
+      throw new EvrynetException(
+        null,
+        'Unable to unlock an asset',
+        e.toString(),
+      )
     }
   }
 
