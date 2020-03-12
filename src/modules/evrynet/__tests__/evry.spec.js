@@ -137,7 +137,6 @@ describe('EvryNet', () => {
               getIssuer: jest.fn().mockReturnValue(expectedGRPCAsset.issuer),
               getDecimal: jest.fn().mockReturnValue(expectedGRPCAsset.decimal),
               getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-              NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
             }),
             getEvrynetcreditList: jest.fn().mockReturnValue([
               {
@@ -147,7 +146,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
               },
             ]),
             getStellarcreditList: jest.fn().mockReturnValue([
@@ -158,7 +156,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                STELLAR_CREDIT: WhitelistedAsset.STELLAR_CREDIT,
               },
             ]),
           })
@@ -222,7 +219,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
@@ -361,7 +357,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
@@ -413,7 +408,6 @@ describe('EvryNet', () => {
                   getTypeid: jest
                     .fn()
                     .mockReturnValue(expectedGRPCAsset.typeID),
-                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
                 },
               ]),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
@@ -466,7 +460,6 @@ describe('EvryNet', () => {
                   getTypeid: jest
                     .fn()
                     .mockReturnValue(expectedGRPCAsset.typeID),
-                  STELLAR_CREDIT: WhitelistedAsset.STELLAR_CREDIT,
                 },
               ]),
             })
@@ -517,7 +510,6 @@ describe('EvryNet', () => {
                   getTypeid: jest
                     .fn()
                     .mockReturnValue(expectedGRPCAsset.typeID),
-                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
                 },
               ]),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
@@ -571,7 +563,6 @@ describe('EvryNet', () => {
                   getTypeid: jest
                     .fn()
                     .mockReturnValue(expectedGRPCAsset.typeID),
-                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
                 },
               ]),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
@@ -614,7 +605,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
@@ -645,31 +635,7 @@ describe('EvryNet', () => {
             warpConfigInstance.evrynet,
           )
           setInterval(function() {
-            mockedStream.emit('data', {
-              getNonce: jest.fn().mockReturnValue(currentNonce),
-              getNativeasset: jest.fn().mockReturnValue({
-                getCode: jest.fn().mockReturnValue(undefined),
-                getIssuer: jest.fn().mockReturnValue(undefined),
-                getDecimal: jest.fn().mockReturnValue(undefined),
-                getTypeid: jest.fn().mockReturnValue(undefined),
-              }),
-              getEvrynetcreditList: jest.fn().mockReturnValue([
-                {
-                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
-                  getIssuer: jest
-                    .fn()
-                    .mockReturnValue(expectedGRPCAsset.issuer),
-                  getDecimal: jest
-                    .fn()
-                    .mockReturnValue(expectedGRPCAsset.decimal),
-                  getTypeid: jest
-                    .fn()
-                    .mockReturnValue(expectedGRPCAsset.typeID),
-                  EVRYNET_CREDIT: 0,
-                },
-              ]),
-              getStellarcreditList: jest.fn().mockReturnValue(undefined),
-            })
+            mockedStream.emit('error', new Error('this is an error'))
           })
           await expect(
             evrynet.newLockTx({
@@ -705,7 +671,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
@@ -743,7 +708,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
@@ -781,7 +745,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
@@ -825,7 +788,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
@@ -877,7 +839,6 @@ describe('EvryNet', () => {
                   getTypeid: jest
                     .fn()
                     .mockReturnValue(expectedGRPCAsset.typeID),
-                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
                 },
               ]),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
@@ -930,7 +891,6 @@ describe('EvryNet', () => {
                   getTypeid: jest
                     .fn()
                     .mockReturnValue(expectedGRPCAsset.typeID),
-                  STELLAR_CREDIT: WhitelistedAsset.STELLAR_CREDIT,
                 },
               ]),
             })
@@ -981,7 +941,6 @@ describe('EvryNet', () => {
                   getTypeid: jest
                     .fn()
                     .mockReturnValue(expectedGRPCAsset.typeID),
-                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
                 },
               ]),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
@@ -1033,7 +992,6 @@ describe('EvryNet', () => {
                   getTypeid: jest
                     .fn()
                     .mockReturnValue(expectedGRPCAsset.typeID),
-                  EVRYNET_CREDIT: WhitelistedAsset.EVRYNET_CREDIT,
                 },
               ]),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
@@ -1076,7 +1034,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
@@ -1107,31 +1064,7 @@ describe('EvryNet', () => {
             warpConfigInstance.evrynet,
           )
           setInterval(function() {
-            mockedStream.emit('data', {
-              getNonce: jest.fn().mockReturnValue(currentNonce),
-              getNativeasset: jest.fn().mockReturnValue({
-                getCode: jest.fn().mockReturnValue(undefined),
-                getIssuer: jest.fn().mockReturnValue(undefined),
-                getDecimal: jest.fn().mockReturnValue(undefined),
-                getTypeid: jest.fn().mockReturnValue(undefined),
-              }),
-              getEvrynetcreditList: jest.fn().mockReturnValue([
-                {
-                  getCode: jest.fn().mockReturnValue(expectedGRPCAsset.code),
-                  getIssuer: jest
-                    .fn()
-                    .mockReturnValue(expectedGRPCAsset.issuer),
-                  getDecimal: jest
-                    .fn()
-                    .mockReturnValue(expectedGRPCAsset.decimal),
-                  getTypeid: jest
-                    .fn()
-                    .mockReturnValue(expectedGRPCAsset.typeID),
-                  EVRYNET_CREDIT: 0,
-                },
-              ]),
-              getStellarcreditList: jest.fn().mockReturnValue(undefined),
-            })
+            mockedStream.emit('error', new Error('this is an error'))
           })
           await expect(
             evrynet.newUnlockTx({
@@ -1167,7 +1100,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
@@ -1205,7 +1137,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),
@@ -1243,7 +1174,6 @@ describe('EvryNet', () => {
                   .fn()
                   .mockReturnValue(expectedGRPCAsset.decimal),
                 getTypeid: jest.fn().mockReturnValue(expectedGRPCAsset.typeID),
-                NATIVE_ASSET: WhitelistedAsset.NATIVE_ASSET,
               }),
               getStellarcreditList: jest.fn().mockReturnValue(undefined),
               getEvrynetcreditList: jest.fn().mockReturnValue(undefined),

@@ -119,7 +119,7 @@ export class Evrynet {
                 issuer: asset.getIssuer(),
                 decimal: asset.getDecimal(),
                 typeID: asset.getTypeid(),
-                creditOrigin: asset.EVRYNET_CREDIT,
+                creditOrigin: WhitelistedAsset.EVRYNET_CREDIT,
               }),
             )
           })
@@ -132,7 +132,7 @@ export class Evrynet {
                 issuer: asset.getIssuer(),
                 decimal: asset.getDecimal(),
                 typeID: asset.getTypeid(),
-                creditOrigin: asset.STELLAR_CREDIT,
+                creditOrigin: WhitelistedAsset.STELLAR_CREDIT,
               }),
             )
           })
@@ -145,7 +145,7 @@ export class Evrynet {
               issuer: asset.getIssuer(),
               decimal: asset.getDecimal(),
               typeID: asset.getTypeid(),
-              creditOrigin: asset.NATIVE_ASSET,
+              creditOrigin: WhitelistedAsset.NATIVE_ASSET,
             }),
           )
         }
