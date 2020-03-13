@@ -241,7 +241,7 @@ export class Evrynet {
         `0x${secret}`,
       )
       const whitelistedAsset = await this.getWhitelistAssetByCode(asset)
-      const { decimal, hexAmount, method, toAddr } = this.getLockTxParam(
+      const { decimal, method, toAddr, value } = this.getLockTxParam(
         whitelistedAsset,
         amount,
       )
@@ -251,26 +251,21 @@ export class Evrynet {
           `Not allow to move evry coin more than ${decimal} decimals`,
         )
       }
-      const gasLimit = await this.getGasLimit(
-        method,
-        account.address,
-        hexAmount,
-      )
+      const gasLimit = await this.getGasLimit(method, account.address, value)
       const data = method.encodeABI()
       const nonceRes = await this.getNonceFromPriv(secret)
-      let tx = new Transaction(
-        {
-          nonce: Number(nonceRes.nonce),
-          from: account.address,
-          to: toAddr,
-          gasLimit: web3Instance.utils.toHex(gasLimit),
-          gasPrice: this.config.gasPrice,
-          data,
-        },
-        {
-          common: this.config.customChain,
-        },
-      )
+      const txParams = {
+        nonce: Number(nonceRes.nonce),
+        from: account.address,
+        to: toAddr,
+        gasLimit: web3Instance.utils.toHex(gasLimit),
+        gasPrice: this.config.gasPrice,
+        data,
+        ...(value && { value: value }),
+      }
+      let tx = new Transaction(txParams, {
+        common: this.config.customChain,
+      })
       tx.sign(Buffer.from(secret, 'hex'))
       return tx
     } catch (e) {
@@ -390,18 +385,18 @@ export class Evrynet {
     let gasAmount = this.config.shouldUseEstimatedGas
       ? (await method.estimateGas({
           from: sourceAddress,
-          value: value,
+          ...(value && { value: value }),
         })) + additionalGas
       : this.config.gasLimit
     return gasAmount
   }
 
   getLockTxParam(asset, amount) {
-    let decimal, hexAmount, method, toAddr
+    let decimal, hexAmount, method, toAddr, value
     switch (asset.getCreditOrigin()) {
       case WhitelistedAsset.NATIVE_ASSET:
         decimal = this.config.atomicEvryDecimalUnit
-        hexAmount = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
+        value = web3Instance.utils.toHex(this._parseAmount(amount, decimal))
         method = this.nativeCustodian.methods.lock()
         toAddr = this.nativeCustodian.options.address
         break
@@ -426,7 +421,7 @@ export class Evrynet {
       default:
         throw new EvrynetException(null, 'Invalid Asset')
     }
-    return { decimal, hexAmount, method, toAddr }
+    return { decimal, method, toAddr, value }
   }
 
   getUnlockTxParam(asset, amount, account) {
