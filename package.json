@@ -1,8 +1,15 @@
 {
-  "name": "@Evrynetlabs/warp-js",
-  "version": "2.0.0",
+  "name": "@evrynetlabs/warp-js",
+  "version": "2.0.1",
   "description": "warp protocol javascript sdk for client side",
   "main": "lib/warp.js",
+  "files": [
+    "/lib/**/*"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "test": "jest",
     "test-coverage": "jest --coverage",
@@ -10,6 +17,7 @@
     "example:development": "NODE_ENV=development babel-node",
     "build:local": "webpack --config webpack.local.js --progress --profile --colors --mode=development",
     "build:development": "webpack --config webpack.dev.js --progress --profile --colors --mode=development",
+    "build:production": "webpack --config webpack.prod.js --progress --profile --colors --mode=production",
     "lint": "eslint --fix src/**",
     "check:format": "prettier --check --config .prettierrc \"src/**/*.js\"",
     "format": "prettier --write --config .prettierrc \"src/**/*.js\"",
@@ -27,7 +35,7 @@
     "evrynet"
   ],
   "author": "Evrynet Team",
-  "license": "MIT",
+  "license": "OSL-3.0",
   "bugs": {
     "url": "https://github.com/Evrynetlabs/warp-js/issues"
   },
