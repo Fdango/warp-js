@@ -4,6 +4,10 @@ Warp JS SDK to implement a client for Warp protocol
 ## Contents
 
 - [Installation](#installation)
+- [Developing](#developing)
+- [Versioning](#versioning)
+- [Tests](#tests)
+- [Style Guide](#style-guide)
 - [Function examples](#function-examples)
     - [Get available assets](#get-available-assets)
     - [Get user's Evrynet account balance](#get-users-evrynet-account-balance)
@@ -17,25 +21,73 @@ Warp JS SDK to implement a client for Warp protocol
     - [Generate evrynet unlock transaction](#generate-evrynet-unlock-transaction)
     - [Transfer asset from stellar to evrynet](#transfer-asset-from-stellar-to-evrynet)
     - [Transfer asset from evrynet to stellar](#transfer-asset-from-evrynet-to-stellar)
+- [Licensing](#licensing)
 
 ## Installation
-1. Install dependency 
-```
-yarn install
-```
-2. build file on local or development
-```
-yarn run build:local 
-```
-or
-```
-yarn run build:development
-```
-3. create link to another project ( such as [ warp-client  ](https://github.com/Evrynetlabs/warp-client) ) 
-```
-yarn link
+```console
+$ npm install @evrynetlabs/warp-js
 ```
 
+## Developing
+### Build With
+- [Stellar SDK](https://www.stellar.org/developers/js-stellar-sdk/reference/)
+- [Ethereum JS](https://github.com/ethereumjs)
+- [Web3](https://github.com/ethereum/web3.js/)
+
+### Prerequisites
+- Knowledge of Warp Contract [here](https://github.com/evrynetlabs/warp-contract)
+- Knowledge of EER-2 (Evrynet Enhancement Request) [here](https://github.com/evrynetlabs/credit-contract)
+    - User needs to `setApprovalForAll(address _operator, bool _approved)` and let a custodian contract as an operator.
+     - For custom credit contract, user needs to `SetMinter(uint256 indexed _typeID, address _minter);` and let let a custodian contract as a minter.
+
+### Building
+For local development
+```console
+$ yarn run build:local
+```
+
+or
+
+```console
+$ yarn run build:development
+```
+
+For production use
+
+```console
+$ yarn run build:production
+```
+
+## Versioning
+We use a [SemVer](https://semver.org/) for versioning. Please see the [release](https://github.com/Evrynetlabs/warp-js/releases).
+
+## Tests
+For unit testing
+
+```console 
+$ yarn run test
+```
+
+For unit testing with coverage
+```console
+$ yarn run test-coverage
+```
+
+Jest as well as Enzyme has been used for testing libraries.
+
+## Style guide
+Eslint has been used for linting as well as prettier
+- For Lint check, run:
+```console 
+$ yarn run lint
+```
+- For prettier format, run:
+```console
+$ yarn run format
+```
+
+## Api Reference
+Please see [this link](https://github.com/Evrynetlabs/warp)
 
 ## Function examples
 You can find example at warp-js example 
@@ -219,3 +271,6 @@ warp.toStellar({ rawTx: "0xabcd", xdr: "", })
 ```
 { stellarTxHash: "0x1234", evrynetTxHash: "0x1234" }
 ```
+
+## Licensing
+Warp client is licensed under the OSL Open Software License v3.0, also included in our repository in the LICENSE file.
