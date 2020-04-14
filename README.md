@@ -273,4 +273,4 @@ warp.toStellar({ rawTx: "0xabcd", xdr: "", })
 ```
 
 ## Licensing
-Warp client is licensed under the OSL Open Software License v3.0, also included in our repository in the LICENSE file.
+Warp JS is licensed under the OSL Open Software License v3.0, also included in our repository in the LICENSE file.
