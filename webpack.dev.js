@@ -3,11 +3,11 @@ const common = require('./webpack.common.js')
 const webpack = require('webpack')
 
 module.exports = merge(common, {
-  devtool: 'inline-source-map',
   mode: 'development',
   devServer: {
     contentBase: './dist',
   },
+  devtool: 'inline-source-map',
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {

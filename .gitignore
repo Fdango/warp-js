@@ -67,3 +67,5 @@ jsconfig.json
 lib/
 
 .idea
+
+stats.*.json
