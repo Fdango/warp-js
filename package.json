@@ -1,6 +1,6 @@
 {
   "name": "@evrynetlabs/warp-js",
-  "version": "2.0.2-beta.2",
+  "version": "2.0.2",
   "description": "warp protocol javascript sdk for client side",
   "main": "lib/index.js",
   "files": [
