@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package evrynet;
+
+import "google/protobuf/empty.proto";
+import "src/modules/warp/common.proto";
+
+message GetNonceRequest {
+    string evrynetAddress = 1;
+}
+
+message GetNonceResponse{    
+    string nonce = 1;
+}
+
+message GetWhitelistAssetsResponse {
+    common.Asset nativeAsset = 1;
+    repeated common.Asset stellarCredit = 2;
+    repeated common.Asset evrynetCredit = 3;
+}
+
+message GetBalanceRequest {    
+    string accountAddress = 1;
+    common.Asset asset = 2;
+}
+    
+message GetBalanceResponse {    
+    string balance = 1;
+}
+
+service EvrynetGRPC {    
+    rpc GetNonce (GetNonceRequest) returns (stream GetNonceResponse);    
+    rpc GetWhitelistAssets (google.protobuf.Empty) returns (stream GetWhitelistAssetsResponse);    
+    rpc GetBalance(GetBalanceRequest) returns (stream GetBalanceResponse);
+}

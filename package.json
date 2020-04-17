@@ -1,0 +1,109 @@
+{
+  "name": "@evrynetlabs/warp-js",
+  "version": "2.0.2",
+  "description": "warp protocol javascript sdk for client side",
+  "main": "lib/index.js",
+  "files": [
+    "/lib/**/*"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "test": "jest",
+    "test-coverage": "jest --coverage",
+    "example:local": "NODE_ENV=local babel-node",
+    "example:development": "NODE_ENV=development babel-node",
+    "build:local": "webpack --config webpack.local.js --progress --profile --json > stats.local.json",
+    "build:development": "webpack --config webpack.dev.js --progress --profile --json > stats.dev.json",
+    "build:production": "webpack --config webpack.prod.js --progress --profile --json > stats.prod.json",
+    "lint": "eslint --fix src/**",
+    "check:format": "prettier --check --config .prettierrc \"src/**/*.js\"",
+    "format": "prettier --write --config .prettierrc \"src/**/*.js\"",
+    "eslint:check": "eslint \"src/**/*.js\"",
+    "eslint:fix": "eslint --fix \"src/**/*.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Evrynetlabs/warp-js.git"
+  },
+  "keywords": [
+    "warp",
+    "bridge",
+    "stellar",
+    "evrynet"
+  ],
+  "author": "Evrynet Team",
+  "license": "OSL-3.0",
+  "bugs": {
+    "url": "https://github.com/Evrynetlabs/warp-js/issues"
+  },
+  "homepage": "https://github.com/Evrynetlabs/warp-js#readme",
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/runtime": "^7.4.5",
+    "bignumber.js": "^9.0.0",
+    "chai": "^4.2.0",
+    "ethereumjs-common": "^1.3.0",
+    "ethereumjs-tx": "^2.0.0",
+    "ganache-cli": "^6.7.0",
+    "lodash": "^4.17.15",
+    "stellar-base": "^2.0.1",
+    "stellar-sdk": "^3.0.0",
+    "web3": "^1.0.0-beta.55"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/node": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/register": "^7.4.4",
+    "babel-eslint": "10.0.3",
+    "babel-jest": "^24.8.0",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-add-module-exports": "^1.0.2",
+    "babel-plugin-module-resolver": "^3.2.0",
+    "eslint": "^6.0.1",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-loader": "^2.2.1",
+    "eslint-plugin-prettier": "^3.1.0",
+    "google-protobuf": "^3.6.1",
+    "grpc-web": "^1.0.6",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2",
+    "terser-webpack-plugin": "^2.3.5",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0",
+    "webpack-merge": "^4.2.1",
+    "wrapper-webpack-plugin": "^2.1.0"
+  },
+  "jest": {
+    "verbose": true,
+    "rootDir": ".",
+    "modulePaths": [],
+    "moduleNameMapper": {
+      "@/(.*)$": "<rootDir>/src/$1",
+      "ABIs/(.*)$": "<rootDir>/abi/$1"
+    },
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
+    "globals": {
+      "NODE_ENV": "test"
+    },
+    "coveragePathIgnorePatterns": [
+      "_pb.js",
+      ".proto"
+    ],
+    "testPathIgnorePatterns": [
+      "_pb.js",
+      ".proto"
+    ],
+    "coverageReporters": [
+      "cobertura",
+      "text",
+      "text-summary"
+    ]
+  }
+}

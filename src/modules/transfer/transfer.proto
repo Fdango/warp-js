@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package transfer;
+
+message TransferRequest {
+    string stellarXDR = 1;
+    string evrynetRawTx = 2;
+}
+
+message TransferResponse {
+    string stellarTxHash = 1;
+    string evrynetTxHash = 2;
+}
+
+service TransferGRPC {
+    rpc ToEvrynet (TransferRequest) returns (stream TransferResponse);
+    rpc ToStellar (TransferRequest) returns (stream TransferResponse);
+}

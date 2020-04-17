@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package stellar;
+
+import "src/modules/warp/common.proto";
+
+message GetSequenceNumberRequest {
+    string stellarAddress = 1;
+}
+
+message GetSequenceNumberResponse {    
+    string sequenceNumber = 1;
+}
+
+message GetBalanceRequest {    
+    string accountAddress = 1;
+    common.Asset asset = 2;
+}
+
+message GetBalanceResponse {    
+    string balance = 1;
+}
+
+message GetTrustlinesRequest {
+    string stellarAddress = 1;
+}
+
+message StellarAsset {
+    string code = 1;
+    string issuer = 2;
+}
+
+message GetTrustlinesResponse {
+    repeated StellarAsset asset = 1;
+}
+
+service StellarGRPC {
+    rpc GetSequenceNumber (GetSequenceNumberRequest) returns (stream GetSequenceNumberResponse);    
+    rpc GetBalance(GetBalanceRequest) returns (stream GetBalanceResponse);
+    rpc GetTrustlines(GetTrustlinesRequest) returns (stream GetTrustlinesResponse);
+}
