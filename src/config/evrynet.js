@@ -15,8 +15,8 @@ export default class EvrynetConfig {
       'mainnet',
       {
         name: 'evry-dev',
-        chainId: 15,
-        networkId: 15,
+        chainId: 101,
+        networkId: 101,
       },
       'constantinople',
     )
